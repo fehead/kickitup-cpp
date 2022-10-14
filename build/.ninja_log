@@ -1,0 +1,8 @@
+# ninja log v5
+6	50	1665046518276682844	CMakeFiles/KickItUp.dir/Main.cpp.o	ed54cb8a4cafc2e9
+1	6	0	/home/fehead/git/kickitup-cpp/build/CMakeFiles/cmake.verify_globs	c428ce704c917e36
+7	67	1665046518293348990	CMakeFiles/KickItUp.dir/backup/Timer.cpp.o	c32758b280e4e355
+6	106	1665046518333347741	CMakeFiles/KickItUp.dir/GameConfig.cpp.o	43d701c62b4e8ae7
+9	235	1665046518463343679	CMakeFiles/KickItUp.dir/backup/Util.cpp.o	1ecc44a6d4b0be1f
+13	38	1665047799019794582	CMakeFiles/KickItUp.dir/CMakeFiles/3.24.1/CompilerIdCXX/CMakeCXXCompilerId.cpp.o	ccb54af039195a31
+15	309	1665047799289794239	CMakeFiles/KickItUp.dir/data/Ksf.cpp.o	ce28d8f36cce5ed3

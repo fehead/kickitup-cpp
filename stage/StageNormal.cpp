@@ -1,11 +1,11 @@
 #include "StageNormal.h"
 #include "Context.h"
-#include "../Input/InputManager.h"
-#include "../Sound/SoundStore.h"
-#include "../Video/SDLSurfaceStore.h"
-#include "../Data/SongMgr.h"
-#include "../Video/Surface.h"
-#include "../Sound/Sound.h"
+#include "../input/InputManager.h"
+#include "../sound/SoundStore.h"
+#include "../video/SDLSurfaceStore.h"
+#include "../data/SongMgr.h"
+#include "../video/Surface.h"
+#include "../sound/Sound.h"
 #include <sstream>
 #include <cmath>
 
@@ -206,7 +206,7 @@ void StageNormal::GetIn()
 
     SetQuitStage( false );
 
-    m_pSelectedSong = g_SongMgr.GetSelectSong();
+    m_pSelectedSong = g_pSongMgr->GetSelectSong();
     m_showStep.assign( m_pSelectedSong->m_ksf[0].GetStepSize(), true );
 
     // start time setting.

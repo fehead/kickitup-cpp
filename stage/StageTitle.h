@@ -2,7 +2,7 @@
 #define _KICKITUP_STAGETITLE_H
 
 #include "Stage.h"
-#include "../Input/iInputHandler.h"
+#include "../input/iInputHandler.h"
 
 class Surface;
 class Sound;

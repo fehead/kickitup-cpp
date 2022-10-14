@@ -1,13 +1,13 @@
 #include "StageSelect.h"
-#include "../KickItup.h"
-#include "../Video/Surface.h"
-#include "../Sound/Sound.h"
-#include "../Video/SurfaceStore.h"
-#include "../Sound/SoundStore.h"
-#include "../Input/InputManager.h"
+#include "../KickItUp.h"
+#include "../video/Surface.h"
+#include "../sound/Sound.h"
+#include "../video/SurfaceStore.h"
+#include "../sound/SoundStore.h"
+#include "../input/InputManager.h"
 #include "Context.h"
 #include "../GameConfig.h"
-#include "../Data/SongMgr.h"
+#include "../data/SongMgr.h"
 
 #include <algorithm>
 
@@ -174,10 +174,10 @@ void StageSelect::GetIn()
 	g_Input.RegisterObserver( "StageSelect", this );
 
     // LeftSong ���.
-    m_pSongLeft = g_SongMgr.GetLeftSong();
+    m_pSongLeft = g_pSongMgr->GetLeftSong();
 
     // RightSong ���.
-    m_pSongRight = g_SongMgr.GetRightSong();
+    m_pSongRight = g_pSongMgr->GetRightSong();
 
     _resetSelectSong();
 
@@ -298,7 +298,7 @@ void StageSelect::GoNextStage()
 // ���� ȭ������.
 void StageSelect::_turnLeft()
 {
-    g_SongMgr.TurnLeft();
+    g_pSongMgr->TurnLeft();
     _resetSelectSong();
     m_pMove->Play();
 }
@@ -306,7 +306,7 @@ void StageSelect::_turnLeft()
 // ������ ȭ������.
 void StageSelect::_turnRight()
 {
-    g_SongMgr.TurnRight();
+    g_pSongMgr->TurnRight();
     _resetSelectSong();
     m_pMove->Play();
 }
@@ -318,8 +318,8 @@ void StageSelect::_resetSelectSong()
     m_pSongSelect = 0;
     m_pSoundIntro->Stop();
     m_pSoundIntro->Free();
-    m_pSongLeft = g_SongMgr.GetLeftSong();
-    m_pSongRight = g_SongMgr.GetRightSong();
+    m_pSongLeft = g_pSongMgr->GetLeftSong();
+    m_pSongRight = g_pSongMgr->GetRightSong();
     m_pBGM->Play( true );
 
     for( int i = 0 ; i < 2 ; ++i ) {
@@ -335,10 +335,10 @@ void StageSelect::_selectSong( const int direction )
 {
     Song *  pNewSelectedSong = 0;
     if( direction == 0 ) {
-        pNewSelectedSong = g_SongMgr.GetLeftSong();
+        pNewSelectedSong = g_pSongMgr->GetLeftSong();
     }
     else {
-        pNewSelectedSong = g_SongMgr.GetRightSong();
+        pNewSelectedSong = g_pSongMgr->GetRightSong();
     }
 
     // �̹� ���õǾ� ������ ���� ����������.
@@ -353,7 +353,7 @@ void StageSelect::_selectSong( const int direction )
     m_pSongSelect = pNewSelectedSong;
 
     m_pBGM->Stop();
-    g_SongMgr.SetSelectSong( m_pSongSelect );
+    g_pSongMgr->SetSelectSong( m_pSongSelect );
     m_pSoundIntro->Stop();
     m_pSoundIntro->Free();
     m_pSoundIntro->Load( m_pSongSelect->GetIntroPath() );

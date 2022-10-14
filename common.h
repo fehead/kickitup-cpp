@@ -32,4 +32,6 @@ enum    eButtonToArray
 // 버튼과 키를 연결시키기 위한 변수
 static const int ARRAY_TO_BUTON[5] = {1, 7, 5, 9, 3 };
 
+#define PATH_LEN    255
+
 #endif // _KICKITUP_COMMON_H_

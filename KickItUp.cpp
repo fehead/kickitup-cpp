@@ -44,7 +44,8 @@ bool KickItUp::Initialize()
     _loadImage();
     _loadSound();
 
-    g_SongMgr.Load( "song" );
+    g_pSongMgr = new SongMgr();
+	g_pSongMgr->Load( "song" );
 
 	// Initialize Stage.
 	m_pContext = new Context( *this );
@@ -92,6 +93,9 @@ void KickItUp::Destroy()
 	delete m_pContext;
 	m_pContext = 0;
 
+	delete g_pSongMgr;
+	g_pSongMgr = 0;
+	
 	// TODO: save config.
 
 	// TODO: Input destory

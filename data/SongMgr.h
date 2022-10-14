@@ -44,7 +44,7 @@ private:
 	bool	_getRealFileName(const string & filename, string * realname);
 };
 
-extern SongMgr g_SongMgr;
+extern SongMgr * g_pSongMgr;
 
 
 inline Song *  SongMgr::GetLeftSong() const

@@ -15,7 +15,7 @@ public:
 
 private:
 	KickItUp &	m_kickItUp;
-	int			m_curPlayCnt;			///< ¿¬¼ÓÇÑ °ÔÀÓ È½¼ö. ¿©±â¼­´Â 4È¸¸¦³Ñ±â¸é °ÔÀÓÀÌ ³¡³­´Ù.
+	int			m_curPlayCnt;			///< ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È½ï¿½ï¿½. ï¿½ï¿½ï¿½â¼­ï¿½ï¿½ 4È¸ï¿½ï¿½ï¿½Ñ±ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 
 	Stage *		m_pStageTitle;
 	Stage *		m_pStageSelect;
@@ -28,7 +28,7 @@ private:
 
 public:
 	Context( KickItUp & kickItUp );
-	~Context(void);
+	virtual ~Context(void);
 
 	KickItUp &	GetKickItUp() const	{	return m_kickItUp;	}
 

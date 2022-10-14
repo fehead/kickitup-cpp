@@ -6,7 +6,8 @@
  */
 
 #include "SDLSurface.h"
-#include "../Util/File.h"
+#include "../util/File.h"
+#include <iostream>
 
 SDLSurface::SDLSurface( SDL_Surface * pMainSurface )	: _pMainSurface( pMainSurface ) ,
 	_pSurface( 0 )
@@ -28,10 +29,11 @@ bool SDLSurface::Load( const std::string & fileName )
 	//Load the image
 	pLoadedImage = SDL_LoadBMP( fileName.c_str() );
 
-	assert( pLoadedImage );
-
-	if( pLoadedImage == 0 )
+	if( pLoadedImage == 0 ) {
+		std::cerr << fileName << " Load Error" << std::endl;
+		assert( pLoadedImage );
 		return false;
+	}
 
 	//Create an optimized image
 	_pSurface = SDL_DisplayFormat( pLoadedImage );

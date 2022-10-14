@@ -3,8 +3,8 @@
 
 #include "../common.h"
 #include "Stage.h"
-#include "../Input/iInputHandler.h"
-#include "../Video/ZoomAnimation.h"
+#include "../input/iInputHandler.h"
+#include "../video/ZoomAnimation.h"
 #include <deque>
 using std::deque;
 
@@ -24,19 +24,19 @@ private:
 	Context &			m_context;
 
 	Surface *	m_pBG;				// BackGround Image.
-	Surface *	m_pStateComment;	// ÇÏ´Ü »óÅÂ Ç¥½Ã
-	Surface *	m_pShiftLeft;		// ÇÏ´Ü ¿ÞÂÊ ¹öÆ°(´Ù¸¥°î¼±ÅÃ¹öÆ°)
-	Surface *	m_pShiftRight;		// ÇÏ´Ü ¿À¸¥ÂÊ ¹öÆ°(´Ù¸¥°î¼±ÅÃ¹öÆ°)
+	Surface *	m_pStateComment;	// ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
+	Surface *	m_pShiftLeft;		// ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°(ï¿½Ù¸ï¿½ï¿½î¼±ï¿½Ã¹ï¿½Æ°)
+	Surface *	m_pShiftRight;		// ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°(ï¿½Ù¸ï¿½ï¿½î¼±ï¿½Ã¹ï¿½Æ°)
     Surface *   m_pModeIcon[ePM_Max];        // easy, hard, double crazy icon
 	Sound *		m_pBGM;				// BackGround Music
-    Sound *     m_pMove;            // shiftRight ShiftLeft ButtonÀ» ´­·¶À»¶§ ³ª´Â ¼Ò¸®.
+    Sound *     m_pMove;            // shiftRight ShiftLeft Buttonï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¸ï¿½.
 
-    Song *      m_pSongLeft;        // ¿ÞÂÊ ³ë·¡
-    Song *      m_pSongRight;       // ¿À¸¥ÂÊ ³ë·¡.
-    Song *      m_pSongSelect;      // ¼±ÅÃµÈ ³ë·¡.
-    Sound *     m_pSoundIntro;      // ¼±ÅÃµÈ »ç¿îµå
+    Song *      m_pSongLeft;        // ï¿½ï¿½ï¿½ï¿½ ï¿½ë·¡
+    Song *      m_pSongRight;       // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ë·¡.
+    Song *      m_pSongSelect;      // ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ë·¡.
+    Sound *     m_pSoundIntro;      // ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    ZoomAnimation   m_buttonAni[4];    // ¹öÆ°
+    ZoomAnimation   m_buttonAni[4];    // ï¿½ï¿½Æ°
 
 	deque<eInputName>	m_chatkeys[2];
 
@@ -59,11 +59,11 @@ public:
 	virtual void		GoNextStage();	///< goto next stage.
 
 private:
-    void                _turnLeft();    ///< ¿ÞÂÊÀ¸·Î È­¸éÀÌµ¿
-    void                _turnRight();   ///< ¿À¸¥ÂÊÀ¸·Î È­¸éÀÌµ¿
-    void                _resetSelectSong(); ///< ¼±ÅÃµÈ°î ¸®¼¿
-    void                _selectSong( const int direction );      ///< °î ¼±ÅÃ
-    void                _selectRightSong();  ///< ¿À¸¥ÂÊ °î ¼±ÅÃ
+    void                _turnLeft();    ///< ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È­ï¿½ï¿½ï¿½Ìµï¿½
+    void                _turnRight();   ///< ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È­ï¿½ï¿½ï¿½Ìµï¿½
+    void                _resetSelectSong(); ///< ï¿½ï¿½ï¿½ÃµÈ°ï¿½ ï¿½ï¿½ï¿½ï¿½
+    void                _selectSong( const int direction );      ///< ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    void                _selectRightSong();  ///< ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     void                _checkHiddenMode(); ///< check hidden mode.
 };
 

@@ -1,9 +1,12 @@
 #include "Song.h"
 #include "Ksf.h"
-#include "../Video/SurfaceStore.h"
-#include "../Video/Surface.h"
-#include <direct.h>
+#include "../video/SurfaceStore.h"
+#include "../video/Surface.h"
+#include <sys/types.h>
+// #include <dirent.h>
+#include <unistd.h>
 #include <fstream>
+#include <sstream>
 
 #ifdef _WIN32
 #include <io.h>
@@ -37,7 +40,7 @@ bool Song::ReadKsf( const int & index, const string & filename )
 	_getFullPath( "intro.wav", m_introWavPath );
 	_getFullPath( "intro.mp3", m_introMp3Path );
 
-	_loadDiscImg( "disc.bmp" );
+	_loadDiscImg( "Disc.bmp" );
 	return true;
 }
 
@@ -124,8 +127,8 @@ bool Song::_loadDiscImg( const string & filename )
 
 #ifdef _WIN32
 // find absolutely file name.
-// ´ë¼Ò¹®ÀÚ ±¸ºÐÀÌ È®½ÇÇÑ ÆÄÀÏÀ» Ã£´Â´Ù.
-// À©µµ¿ì¿¡¼­´Â ´ë¼Ò±¸ºÐÀÌ ÇÊ¿ä ¾ø´Ù.
+// ï¿½ï¿½Ò¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½Â´ï¿½.
+// ï¿½ï¿½ï¿½ï¿½ï¿½ì¿¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ò±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½.
 bool Song::_findFile( const string & inFilename, string & outFiename )
 {
 	outFiename = inFilename;
@@ -139,7 +142,7 @@ bool Song::_findFile( const string & inFilename, string & outFiename )
 #include <strings.h>
 
 // find absolutely file name.
-// À¯´Ð½º¿¡¼­´Â ´ë¼Ò¹®ÀÚ°¡ ±¸ºÐµÇ±â¶§¹®¿¡ ÆÄÀÏÀ» ÀÏÀÏÀÌ Ã£¾Æ ÀÌ¸¦ ¾Ë¾Æ³»¾ßÇÑ´Ù.
+// ï¿½ï¿½ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ò¹ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ÐµÇ±â¶§ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½Ë¾Æ³ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
 bool Song::_findFile ( const string & inFilename, string & outFiename )
 {
 	struct dirent * item;
@@ -169,7 +172,8 @@ bool Song::_findFile ( const string & inFilename, string & outFiename )
 
 	if ( !bFound )
 	{
-		std::stringstream	str ( inFilename );
+		std::stringstream	str;
+		str.str( inFilename );
 		str << "directory or file is not found ";
 		return false;
 	}

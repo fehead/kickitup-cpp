@@ -4,14 +4,15 @@
 #include <sstream>
 #include <cstring>
 #include <strings.h>
-#include <dirent.h>
 #include <sys/types.h>
+#include <dirent.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <vector>
 
 using std::vector;
 
-SongMgr g_SongMgr;
+SongMgr * g_pSongMgr;
 
 SongMgr::SongMgr(void)  :   m_leftSongIndex( 0 ), m_rightSongIndex( 1 ), m_pSongSelect( 0 )
 {

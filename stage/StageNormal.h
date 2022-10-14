@@ -3,8 +3,8 @@
 
 #include "../common.h"
 #include "Stage.h"
-#include "../Input/iInputHandler.h"
-#include "../Video/Animation.h"
+#include "../input/iInputHandler.h"
+#include "../video/Animation.h"
 #include <deque>
 #include <vector>
 

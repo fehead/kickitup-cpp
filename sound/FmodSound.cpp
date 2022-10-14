@@ -6,7 +6,7 @@
  */
 
 #include "FmodSound.h"
-#include "../Util/File.h"
+#include "../util/File.h"
 #include <cassert>
 
 FmodSound::FmodSound( FMOD_SYSTEM * pSystem)  : m_pSystem( pSystem ),
