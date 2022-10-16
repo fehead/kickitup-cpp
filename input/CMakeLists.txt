@@ -5,7 +5,7 @@ file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
 add_library(input STATIC ${SRC_FILES})
 
 target_link_libraries(input PRIVATE SDL)
+target_compile_options(input PRIVATE -Wall -Werror -g)
 
 # target_include_directories(shape PUBLIC ${CMAKE_SOURCE_DIR}/includes)
-# target_compile_options(shape PRIVATE -Wall -Werror -g)
 # target_link_libraries(shape PRIVATE pthread)

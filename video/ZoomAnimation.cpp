@@ -33,7 +33,7 @@ void    ZoomAnimation::OnAnimate( const unsigned long delta )
 
 void    ZoomAnimation::OnRender()
 {
-    std::auto_ptr<Surface> pSurface( getSurface()->ZoomSurface( m_curZoom ) );
+    std::unique_ptr<Surface> pSurface( getSurface()->ZoomSurface( m_curZoom ) );
     if(pSurface.get() == 0) {
     	return;
     }

@@ -147,7 +147,7 @@ bool Song::_findFile ( const string & inFilename, string & outFiename )
 {
 	struct dirent * item;
 	DIR * dp;
-	char    cPathStr[PATH_LEN+1] = { 0, };
+	// char    cPathStr[PATH_LEN+1] = { 0, };
 
 	dp = opendir ( "." );
 	bool	bFound = false;

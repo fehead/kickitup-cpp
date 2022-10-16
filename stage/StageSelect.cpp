@@ -49,8 +49,9 @@ bool StageSelect::Initialize()
     m_pModeIcon[ePM_Double] = g_pSurfaceStore->Order( "double_icon" );
     m_pModeIcon[ePM_Double]->Load( "images/double_icon.bmp" );
 
-    for( int i = ePM_Min ; i < ePM_Max ; ++i )
+    for( int i = ePM_Min ; i < ePM_Max ; ++i ) {
         m_pModeIcon[i]->SetColorKey();
+	}
 
 	// loading sound.
 	m_pBGM = g_pSoundStore->Order( "music_select" );
