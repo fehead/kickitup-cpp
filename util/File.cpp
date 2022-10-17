@@ -6,14 +6,19 @@
  */
 
 #include "File.h"
-#include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
-#include <strings.h>
 #include <iostream>
 
-/**
+#ifdef _WIN32
+#	include <io.h>
+#else
+#	include <dirent.h>
+#	include <unistd.h>
+#	include <strings.h>
+#endif // _WIN32
+
+ /**
  * 파일이나 디렉토리명을 대소문자 구분없이 찾아 파일명을 반환한다.
  *
  * @param	filename	찾을 파일명이나 디렉토리명.
@@ -23,8 +28,10 @@
  */
 bool File::GetRealFileName(const string & filename, string * realname)
 {
+#ifdef _WIN32
 	*realname = filename;
-	return true;
+	return Access(filename);
+#else
 
 	struct dirent * item;
 
@@ -51,6 +58,7 @@ bool File::GetRealFileName(const string & filename, string * realname)
 		return false;
 	}
 	return true;
+#endif // _WIN32
 }
 
 
