@@ -4,12 +4,14 @@
 #include "../video/Surface.h"
 #include <sys/types.h>
 // #include <dirent.h>
-#include <unistd.h>
 #include <fstream>
 #include <sstream>
+#include <direct.h> // _getcwd
 
 #ifdef _WIN32
 #include <io.h>
+#else
+#include <unistd.h>
 #endif // _WIN32
 
 using std::ifstream;
@@ -66,14 +68,17 @@ string Song::GetBGImgPath() const
 }
 
 
+
+#include <direct.h> // _getcwd
+
 // Get the Full file path.
 bool Song::_getFullPath( const string & inFileName, string & outFileName )
 {
-    // Get Current Directory.
+    // Get Current Directory.		
 	char    curDir[256] = { 0, };
 	if( getcwd( curDir, sizeof( curDir ) ) == NULL )
 		return false;
-
+	
     // get ignore filename
 	string realFileName;
 	_findFile(inFileName, realFileName );
@@ -127,8 +132,6 @@ bool Song::_loadDiscImg( const string & filename )
 
 #ifdef _WIN32
 // find absolutely file name.
-// ��ҹ��� ������ Ȯ���� ������ ã�´�.
-// �����쿡���� ��ұ����� �ʿ� ����.
 bool Song::_findFile( const string & inFilename, string & outFiename )
 {
 	outFiename = inFilename;
