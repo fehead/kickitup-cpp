@@ -43,7 +43,7 @@ bool SongMgr::_getDirs ( vector<string> & dirs )
 {
 #ifdef _WIN32	
 	struct _finddata_t fd;	
-	intptr_t dp = _findfirst(".", &fd);
+	intptr_t dp = _findfirst("*", &fd);
 
 	int ret = 0;
 	while (ret != -1) {

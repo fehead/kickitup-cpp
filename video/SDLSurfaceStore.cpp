@@ -29,7 +29,7 @@ bool	SDLSurfaceStore::Initialize()
 	if (_pWindow == 0)
 		return false;
 
-	_pRenderer = SDL_CreateRenderer(_pWindow, -1, SDL_RENDERER_ACCELERATED);
+	// _pRenderer = SDL_CreateRenderer(_pWindow, -1, SDL_RENDERER_ACCELERATED);
 
 	_pSurface = SDL_GetWindowSurface(_pWindow);
 
@@ -63,6 +63,7 @@ bool	SDLSurfaceStore::Process( unsigned long delta )
 {	
 	SurfaceStore::Process( delta );
 	// SDL_Flip( _pSurface );	
-	SDL_RenderPresent(_pRenderer);
+	// SDL_RenderPresent(_pRenderer);
+	SDL_UpdateWindowSurface(_pWindow);
 	return true;
 }
