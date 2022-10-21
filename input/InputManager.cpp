@@ -7,7 +7,7 @@
 
 #include "InputManager.h"
 #include "KeyboardDevice.h"
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 InputManager	g_Input;
 
@@ -72,21 +72,21 @@ bool InputManager::_createDevice()
 void InputManager::_registerKey()
 {
 	m_registeredKeyList.clear();
-	_registerKey( eIN_GO, SDLK_RETURN );
-	_registerKey( eIN_GO, SDLK_KP_ENTER );
-	_registerKey( eIN_BACK, SDLK_ESCAPE );
+	_registerKey( eIN_GO, SDL_SCANCODE_RETURN);
+	_registerKey( eIN_GO, SDL_SCANCODE_KP_ENTER );
+	_registerKey( eIN_BACK, SDL_SCANCODE_ESCAPE );
 
-	_registerKey( eIN_ARROW_1P_TOP_LEFT,	SDLK_q );
-	_registerKey( eIN_ARROW_1P_TOP_RIGHT,	SDLK_e );
-	_registerKey( eIN_ARROW_1P_MIDLE,		SDLK_s );
-	_registerKey( eIN_ARROW_1P_BOTTOM_LEFT, SDLK_z );
-	_registerKey( eIN_ARROW_1P_BOTTOM_RIGHT,SDLK_c );
+	_registerKey( eIN_ARROW_1P_TOP_LEFT, SDL_SCANCODE_Q);
+	_registerKey( eIN_ARROW_1P_TOP_RIGHT, SDL_SCANCODE_E);
+	_registerKey( eIN_ARROW_1P_MIDLE, SDL_SCANCODE_S);
+	_registerKey( eIN_ARROW_1P_BOTTOM_LEFT, SDL_SCANCODE_Z);
+	_registerKey( eIN_ARROW_1P_BOTTOM_RIGHT, SDL_SCANCODE_C);
 
-	_registerKey( eIN_ARROW_2P_TOP_LEFT,	SDLK_KP7);
-	_registerKey( eIN_ARROW_2P_TOP_RIGHT,	SDLK_KP9 );
-	_registerKey( eIN_ARROW_2P_MIDLE,		SDLK_KP5 );
-	_registerKey( eIN_ARROW_2P_BOTTOM_LEFT, SDLK_KP1 );
-	_registerKey( eIN_ARROW_2P_BOTTOM_RIGHT,SDLK_KP3 );
+	_registerKey( eIN_ARROW_2P_TOP_LEFT, SDL_SCANCODE_KP_7);
+	_registerKey( eIN_ARROW_2P_TOP_RIGHT, SDL_SCANCODE_KP_9);
+	_registerKey( eIN_ARROW_2P_MIDLE, SDL_SCANCODE_KP_5);
+	_registerKey( eIN_ARROW_2P_BOTTOM_LEFT, SDL_SCANCODE_KP_1);
+	_registerKey( eIN_ARROW_2P_BOTTOM_RIGHT, SDL_SCANCODE_KP_3);
 
 }
 
@@ -94,7 +94,7 @@ void InputManager::_registerKey()
 //	kind : keyboard가 눌렸을때 나오는 키값.
 void InputManager::_registerKey( eInputName name, int kind )
 {
-	sRegisteredKey	key;
+	sRegisteredKey	key = {0,};
 	key.inputState = eIS_NONE;
 	key.keyKind = kind;
 	key.separate = false;

@@ -22,7 +22,7 @@ KickItUp::~KickItUp(void)
 bool KickItUp::Initialize()
 {
 	// SDL 초기화
-	if( SDL_Init( SDL_INIT_VIDEO ) < 0 || !SDL_GetVideoInfo() )
+	if( SDL_Init( SDL_INIT_VIDEO ) < 0)
 		return false;
 
 	// initialize Surface.

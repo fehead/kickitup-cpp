@@ -8,9 +8,10 @@
 #include "SDLSurface.h"
 #include "../util/File.h"
 #include <iostream>
+#include <direct.h> // _getcwd
 
-SDLSurface::SDLSurface( SDL_Surface * pMainSurface )	: _pMainSurface( pMainSurface ) ,
-	_pSurface( 0 )
+SDLSurface::SDLSurface(SDL_Surface * pMainSurface)	: _pMainSurface(pMainSurface),
+	_pSurface(0)
 {
 }
 
@@ -30,19 +31,22 @@ bool SDLSurface::Load( const std::string & fileName )
 	pLoadedImage = SDL_LoadBMP( fileName.c_str() );
 
 	if( pLoadedImage == 0 ) {
+		char    buff[PATH_LEN + 1] = { 0, };
+		getcwd(buff, sizeof(buff));
+		
 		std::cerr << fileName << " Load Error" << std::endl;
 		assert( pLoadedImage );
 		return false;
 	}
 
 	//Create an optimized image
-	_pSurface = SDL_DisplayFormat( pLoadedImage );
-
-	if( !_pSurface )
-		return false;
+	_pSurface = SDL_ConvertSurface( pLoadedImage, _pMainSurface->format, 0);
 
 	//Free the old image
-	SDL_FreeSurface( pLoadedImage );
+	SDL_FreeSurface(pLoadedImage);
+
+	if (!_pSurface)
+		return false;	
 
 	return true;
 }
@@ -97,7 +101,7 @@ void SDLSurface::Blit( int x, int y, Surface & destination, SDL_Rect * clip /* =
 void SDLSurface::_blit( int x, int y, SDL_Surface * pDestination, SDL_Rect * clip /* = 0 */ )
 {
 	//Make a temporary rectangle to hold the offsets
-	SDL_Rect offset;
+	SDL_Rect offset = { 0, };
 
 	//Give the offsets to the rectangle
 	offset.x = x;
@@ -161,14 +165,15 @@ bool SDLSurface::FillRect( const SDL_Rect * dstrect, const unsigned long color )
 // Adjust the alpha properties of a surface
 bool SDLSurface::SetAlpha(const unsigned char alpha)
 {
-	return SDL_SetAlpha( _pSurface, SDL_SRCALPHA, alpha ) == 0;
+	return SDL_SetSurfaceAlphaMod(_pSurface, alpha) == 0;
+	// return SDL_SetAlpha( _pSurface, SDL_SRCALPHA, alpha ) == 0;
 }
 
 
 // Sets the color key (transparent pixel) in a blittable surface and RLE acceleration.
 bool SDLSurface::SetColorKey( unsigned long key )
 {
-	return SDL_SetColorKey( _pSurface, SDL_SRCCOLORKEY, key ) == 0;
+	return SDL_SetColorKey( _pSurface, SDL_TRUE, key ) == 0;
 }
 
 // Set the color key(0, 0 pixel)

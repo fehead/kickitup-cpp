@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <vector>
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 #ifdef _WIN32
 #	include <io.h>
@@ -108,9 +108,14 @@ bool SongMgr::Load( const string & dirName )
 	if ( !_getRealFileName( dirName, &songDir ) )
 		return false;
 
+	char    oldPath[PATH_LEN + 1] = { 0, };
+	if (getcwd(oldPath, sizeof(oldPath)) == NULL)
+		return false;
+
 	chdir ( songDir.c_str() );
 	vector<string> dirs;
 	if ( !_getDirs ( dirs ) ) {
+		chdir(oldPath);
 		return false;
 	}
 
@@ -121,7 +126,7 @@ bool SongMgr::Load( const string & dirName )
 		chdir ( ".." );
 	}
 
-	chdir ( ".." );
+	chdir (oldPath);
 	return true;
 }
 

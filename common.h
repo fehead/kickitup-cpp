@@ -1,7 +1,7 @@
 #ifndef _KICKITUP_COMMON_H_
 #define _KICKITUP_COMMON_H_
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <cassert>
 #include "./video/Coord.h"
 #include "./video/Dim.h"

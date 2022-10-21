@@ -7,15 +7,15 @@
 
 #include "KeyboardDevice.h"
 #include <cassert>
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 int		KeyboardDevice::GetState( const eKind kind, const uKey key )
 {
 	int	ret = 0;
-
+	
 	switch( kind ) {
-		case KeyState:{
-			Uint8 * keystates = SDL_GetKeyState( NULL );
+		case KeyState:{			
+			const Uint8 * keystates = SDL_GetKeyboardState( NULL );
 			if( keystates )
 				ret = static_cast<int>( keystates[key.key] );
 			break;
