@@ -8,7 +8,7 @@
 #ifndef FMODSOUNDSTORE_H_
 #define FMODSOUNDSTORE_H_
 
-#include <fmodex/fmod.h>
+#include <fmod.h>
 #include "SoundStore.h"
 
 class FmodSoundStore	: public SoundStore

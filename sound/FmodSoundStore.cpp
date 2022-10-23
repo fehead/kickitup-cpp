@@ -8,7 +8,7 @@
 #include "FmodSoundStore.h"
 #include "FmodSound.h"
 #include <cassert>
-#include <fmodex/fmod_errors.h>
+#include <fmod_errors.h>
 
 FmodSoundStore::FmodSoundStore(void)	:	m_system( 0 ) {
 }
@@ -21,7 +21,7 @@ FmodSoundStore::~FmodSoundStore(void)
 bool	FmodSoundStore::Initialize()
 {
 	// Create a System object and initialize.
-	if( _isErr( FMOD_System_Create(&m_system) ) )
+	if( _isErr( FMOD_System_Create(&m_system, FMOD_VERSION) ) )
 		return false;
 
 	unsigned int      version;

@@ -2,7 +2,7 @@
 #define _KICKITUP_TIMER_H
 
 #include "../common.h"
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 class Timer
 {

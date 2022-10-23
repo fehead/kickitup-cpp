@@ -8,7 +8,7 @@
 #include "SDLSurfaceStore.h"
 #include "SDLSurface.h"
 
-SDLSurfaceStore::SDLSurfaceStore(void)	:	_pSurface( 0 )
+SDLSurfaceStore::SDLSurfaceStore(void)	:	_pWindow( 0 ), _pSurface(0), _pRenderer(0)
 {
 }
 
@@ -19,14 +19,22 @@ SDLSurfaceStore::~SDLSurfaceStore(void)
 // initilze sdl.
 bool	SDLSurfaceStore::Initialize()
 {
-	// SDL_FULLSCREEN
-	_pSurface = SDL_SetVideoMode( 640, 480, SDL_GetVideoInfo()->vfmt->BitsPerPixel, SDL_HWSURFACE | SDL_DOUBLEBUF );
 
-	if( _pSurface == 0 )
+	_pWindow = SDL_CreateWindow("KickItUp ver 0.9",
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
+		640, 480,
+		SDL_WINDOW_ALWAYS_ON_TOP | SDL_WINDOW_OPENGL);	
+
+	if (_pWindow == 0)
 		return false;
 
-	// Set title Name
-	SDL_WM_SetCaption( "KickItUp ver 0.9", NULL );
+	// _pRenderer = SDL_CreateRenderer(_pWindow, -1, SDL_RENDERER_ACCELERATED);
+
+	_pSurface = SDL_GetWindowSurface(_pWindow);
+
+	if (_pSurface == 0)
+		return false;
 
 	return true;
 }
@@ -36,24 +44,26 @@ void	SDLSurfaceStore::Destroy()
 {
 	SurfaceStore::Destroy();
 
-	if( _pSurface == 0 )
-		return;
-
 	SDL_FreeSurface( _pSurface );
-	_pSurface = 0;
+
+	if (_pWindow != 0) {
+		SDL_DestroyWindow(_pWindow);
+	}
 }
 
 // create sdl surface.
 Surface *	SDLSurfaceStore::create()
 {
-	Surface * pSurface = new SDLSurface( _pSurface );
+	Surface * pSurface = new SDLSurface(_pSurface);
 	return pSurface;
 }
 
 // flip the main surface.
 bool	SDLSurfaceStore::Process( unsigned long delta )
-{
+{	
 	SurfaceStore::Process( delta );
-	SDL_Flip( _pSurface );
+	// SDL_Flip( _pSurface );	
+	// SDL_RenderPresent(_pRenderer);
+	SDL_UpdateWindowSurface(_pWindow);
 	return true;
 }

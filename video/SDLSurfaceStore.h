@@ -16,8 +16,10 @@ class Surface;
 /// @brief	SDLSurfaceStore class. (factory pattern)
 class SDLSurfaceStore :	public SurfaceStore
 {
-private:
-	SDL_Surface *	_pSurface;			///< SDL surface.
+private:	
+	SDL_Window* _pWindow;			///< SDL Window.
+	SDL_Surface* _pSurface;			///< SDL surface.
+	SDL_Renderer* _pRenderer;		///< SDL renderer.
 
 public:
 	SDLSurfaceStore(void);

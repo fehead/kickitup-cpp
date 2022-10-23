@@ -26,7 +26,7 @@ bool    FmodSound::Load( const std::string & musicFileName )
 		Free();
 
 	FMOD_RESULT ret;
-	ret = FMOD_System_CreateStream(m_pSystem, musicFileName.c_str(), FMOD_HARDWARE | FMOD_2D | FMOD_LOOP_NORMAL, 0, &m_pSound);
+	ret = FMOD_System_CreateStream(m_pSystem, musicFileName.c_str(), FMOD_2D | FMOD_LOOP_NORMAL, 0, &m_pSound);
 
 	assert( ret == FMOD_OK );
 
@@ -46,7 +46,7 @@ bool    FmodSound::Play( const bool loop /* = false */ )
 {
 	if( IsLoaded() ) {
 		if(FMOD_Sound_SetMode(m_pSound, loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF ) == FMOD_OK) {
-			if(FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, m_pSound, false, &m_pChannel) == FMOD_OK) {
+			if(FMOD_System_PlaySound(m_pSystem, m_pSound, NULL, false, &m_pChannel) == FMOD_OK) {
 				return true;
 			}
 		}
