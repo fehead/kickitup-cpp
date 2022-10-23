@@ -8,7 +8,11 @@
 #include "SDLSurface.h"
 #include "../util/File.h"
 #include <iostream>
-#include <direct.h> // _getcwd
+#ifdef _WIN32
+#	include <direct.h> // _getcwd
+#else
+#	include <unistd.h>
+#endif // _WIN32
 
 SDLSurface::SDLSurface(SDL_Surface * pMainSurface)	: _pMainSurface(pMainSurface),
 	_pSurface(0)

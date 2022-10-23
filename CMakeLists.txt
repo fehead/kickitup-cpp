@@ -26,7 +26,7 @@ target_link_libraries(kickitup PRIVATE data input sound stage util video)
 # )
 # add_executable(kickitup ${SRC_FILES})
 
-target_link_libraries(kickitup PUBLIC SDL fmodex)
+target_link_libraries(kickitup PUBLIC SDL2 fmod)
 target_compile_options(kickitup PUBLIC -Wall -Werror -g)
-
+target_include_directories(kickitup PUBLIC /usr/include/SDL2 /usr/local/include/fmod)
 # target_include_directories(kickitup PUBLIC ${CMAKE_SOURCE_DIR} data input sound video util stage)

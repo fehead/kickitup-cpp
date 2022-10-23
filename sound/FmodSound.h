@@ -9,12 +9,7 @@
 #define FMODSOUND_H_
 
 #include <string>
-#ifndef _WIN32
-#include <fmodex/fmod.h>
-#else
 #include <fmod.h>
-#endif // _WIN32
-
 
 #include "Sound.h"
 
