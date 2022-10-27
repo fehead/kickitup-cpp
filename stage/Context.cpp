@@ -2,6 +2,7 @@
 #include "Context.h"
 
 #include "StageTitle.h"
+#include "StageConfig.h"
 #include "StageSelect.h"
 #include "StageNormal.h"
 /*
@@ -12,7 +13,8 @@
 
 Context::Context( KickItUp & kickItUp ) : m_kickItUp( kickItUp ),
 	m_curPlayCnt( 4 ),
-	m_pStageTitle( 0 ),
+	m_pStageTitle(0),
+	m_pStageConfig( 0 ),
 	m_pStageSelect( 0 ),
 	m_pStageNormal( 0 ),
 	m_pStageDouble( 0 ),
@@ -32,6 +34,11 @@ bool	Context::Initialize()
 	m_pStageTitle = new StageTitle( *this );
 	if( !m_pStageTitle->Initialize() )
 		return false;
+
+	m_pStageConfig = new StageConfig(*this);
+	if (!m_pStageConfig->Initialize()) {
+		return false;
+	}
 
 	m_pStageSelect = new StageSelect( *this );
 	if( !m_pStageSelect->Initialize() )

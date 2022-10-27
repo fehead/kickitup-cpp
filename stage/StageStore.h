@@ -18,6 +18,7 @@ private:
 	int			_curPlayCnt;			///< 연속한 게임 횟수. 여기서는 4회를넘기면 게임이 끝난다.
 
 	Stage *		_pStageTitle;
+	Stage *		_pStageConfig;
 	Stage *		_pStageSelect;
 	Stage *		_pStageNormal;
 	Stage *		_pStageDouble;
@@ -42,6 +43,7 @@ public:
 	void		SetStageCnt( const int curPlayCnt )	{	_curPlayCnt = curPlayCnt;	}
 
 	Stage *		GetStateTitle() const		{	return _pStageTitle;	}
+	Stage *		GetStateConfig() const		{	return _pStageConfig;	}
 	Stage *		GetStateSelect() const		{	return _pStageSelect;	}
 	Stage *		GetStateNormal() const		{	return _pStageNormal;	}
 	Stage *		GetStateDouble() const		{	return _pStageDouble;	}

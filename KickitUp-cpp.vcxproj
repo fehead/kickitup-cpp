@@ -155,6 +155,7 @@
     <ClCompile Include="sound\FmodSoundStore.cpp" />
     <ClCompile Include="sound\SoundStore.cpp" />
     <ClCompile Include="stage\Context.cpp" />
+    <ClCompile Include="stage\StageConfig.cpp" />
     <ClCompile Include="stage\StageNormal.cpp" />
     <ClCompile Include="stage\StageSelect.cpp" />
     <ClCompile Include="stage\StageStore.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="sound\SoundStore.h" />
     <ClInclude Include="stage\Context.h" />
     <ClInclude Include="stage\Stage.h" />
+    <ClInclude Include="stage\StageConfig.h" />
     <ClInclude Include="stage\StageNormal.h" />
     <ClInclude Include="stage\StageSelect.h" />
     <ClInclude Include="stage\StageStore.h" />

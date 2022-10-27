@@ -11,6 +11,7 @@
 
 StageStore::StageStore() : _curPlayCnt( 4 ),
 	_pStageTitle( 0 ),
+	_pStageConfig( 0 ),
 	_pStageSelect( 0 ),
 	_pStageNormal( 0 ),
 	_pStageDouble( 0 ),

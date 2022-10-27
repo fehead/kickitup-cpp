@@ -18,6 +18,7 @@ private:
 	int			m_curPlayCnt;			///< ������ ���� Ƚ��. ���⼭�� 4ȸ���ѱ�� ������ ������.
 
 	Stage *		m_pStageTitle;
+	Stage *		m_pStageConfig;
 	Stage *		m_pStageSelect;
 	Stage *		m_pStageNormal;
 	Stage *		m_pStageDouble;
@@ -44,6 +45,7 @@ public:
 	void		SetStageCnt( const int curPlayCnt )	{	m_curPlayCnt = curPlayCnt;	}
 
 	Stage *		GetStateTitle() const		{	return m_pStageTitle;	}
+	Stage *		GetStateConfig() const		{	return m_pStageConfig;	}
 	Stage *		GetStateSelect() const		{	return m_pStageSelect;	}
 	Stage *		GetStateNormal() const		{	return m_pStageNormal;	}
 	Stage *		GetStateDouble() const		{	return m_pStageDouble;	}
