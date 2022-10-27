@@ -5,7 +5,4 @@ file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
 add_library(stage STATIC ${SRC_FILES})
 target_compile_options(stage PRIVATE -Wall -Werror -g)
 
-# target_link_libraries(stage PRIVATE fmodex)
-
-# target_include_directories(shape PUBLIC ${CMAKE_SOURCE_DIR}/includes)
-# target_link_libraries(shape PRIVATE pthread)
+target_include_directories(stage PUBLIC /usr/include/SDL2)

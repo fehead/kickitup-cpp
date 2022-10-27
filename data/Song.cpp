@@ -6,10 +6,10 @@
 // #include <dirent.h>
 #include <fstream>
 #include <sstream>
-#include <direct.h> // _getcwd
 
 #ifdef _WIN32
 #include <io.h>
+#include <direct.h> // _getcwd
 #else
 #include <unistd.h>
 #endif // _WIN32
@@ -66,10 +66,6 @@ string Song::GetBGImgPath() const
 {
     return m_BGImgPath;
 }
-
-
-
-#include <direct.h> // _getcwd
 
 // Get the Full file path.
 bool Song::_getFullPath( const string & inFileName, string & outFileName )
