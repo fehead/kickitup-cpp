@@ -55,6 +55,14 @@ bool SDLSurface::Load( const std::string & fileName )
 	return true;
 }
 
+bool SDLSurface::CreateRGB(const int red, const int green, const int blue, const int alpha)
+{	
+	_pSurface = SDL_CreateRGBSurface(0, _pMainSurface->w, _pMainSurface->h, 32, red, green, blue, alpha);
+	if (!_pSurface)
+		return false;
+	return true;
+}	
+
 Surface * SDLSurface::ZoomSurface( const double zoom, const double angle /* = 0.0 */ )
 {
 	/* TODO: zoom

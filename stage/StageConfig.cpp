@@ -17,7 +17,10 @@ StageConfig::~StageConfig(void)
 {
 }
 
-StageConfig::Initialize()
+bool StageConfig::Initialize()
 {
-
+	// loading image.
+	m_pBG = g_pSurfaceStore->Order("config_back");	
+	m_pBG->CreateRGB(0, 0, 0, 0);	// black background
+	return true;
 }

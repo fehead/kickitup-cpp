@@ -27,6 +27,10 @@ private:
 	int					_nameIndex;		// Order 호출시 이름이 없는 것을 만들때 사용.
 
 public:
+	static const int 	WINDOW_WIDTH = 640;		///< Window width.
+	static const int	WINDOW_HEIGHT = 480;	///< Window height.
+
+public:
 	virtual ~SurfaceStore(void);
 
 	virtual bool		Initialize() = 0;		///< Initialize.

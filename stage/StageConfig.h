@@ -17,6 +17,7 @@ class StageConfig	:	public Stage , public iInputHandler
 private:
 	Context &			m_context;
 
+	Surface*	m_pBG;          // background image.
 	Surface *	m_pGameTitle;
 	Surface *	m_pStateComment;
 	Sound *		m_pOpening;

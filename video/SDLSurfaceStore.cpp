@@ -8,7 +8,7 @@
 #include "SDLSurfaceStore.h"
 #include "SDLSurface.h"
 
-SDLSurfaceStore::SDLSurfaceStore(void)	:	_pWindow( 0 ), _pSurface(0), _pRenderer(0)
+SDLSurfaceStore::SDLSurfaceStore(void)	:	_pWindow( 0 ), _pSurface(0), _pRenderer(0)	
 {
 }
 
@@ -23,7 +23,7 @@ bool	SDLSurfaceStore::Initialize()
 	_pWindow = SDL_CreateWindow("KickItUp ver 0.9",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		640, 480,
+		WINDOW_WIDTH, WINDOW_HEIGHT,
 		SDL_WINDOW_ALWAYS_ON_TOP | SDL_WINDOW_OPENGL);	
 
 	if (_pWindow == 0)
