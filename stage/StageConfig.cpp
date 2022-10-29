@@ -24,3 +24,54 @@ bool StageConfig::Initialize()
 	m_pBG->CreateRGB(0, 0, 0, 0);	// black background
 	return true;
 }
+
+void StageConfig::Destroy()
+{
+	m_pBG->Free();
+}
+
+
+bool StageConfig::Render(unsigned long delta)
+{
+	m_pBG->Blit(0, 0);
+	return true;
+}
+
+void StageConfig::GetIn()
+{
+	g_Input.RegisterObserver("StageConfig", this);
+}
+
+void StageConfig::GetOut()
+{
+	g_Input.DeleteObserver("StageConfig");
+}
+
+void StageConfig::GoNextStage()
+{
+	m_context.SetState(m_context.GetStateTitle());
+}
+
+void StageConfig::GoPreStage()
+{
+	m_context.SetState(m_context.GetStateTitle());
+}
+
+bool StageConfig::InputHandleMessage(const eInputName name, const eInputState is)
+{
+	bool	ret = true;
+
+	if (is != eIS_PRESS)
+		return false;
+
+	switch (name)
+	{
+	case eIN_BACK:
+			GoPreStage();
+		break;
+	default:
+		ret = false;
+		break;
+	}
+	return ret;
+}

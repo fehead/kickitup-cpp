@@ -145,11 +145,20 @@ bool StageTitle::InputHandleMessage( const eInputName name, const eInputState is
 			g_GameConfig.SetStart( eP_2 );
 		break;
 
+	case eIN_CONFIG:
+		_goConfigStage();
+		break;
+		
 	default:
 		ret = false;
 		break;
 	}
 	return ret;
+}
+
+void StageTitle::_goConfigStage()
+{
+	m_context.SetState(m_context.GetStateConfig());
 }
 
 // ���� ���� ���������� �̵�.

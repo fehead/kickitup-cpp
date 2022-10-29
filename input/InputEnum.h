@@ -31,6 +31,7 @@ enum eInputName
 
 	eIN_BACK = 100,
 	eIN_GO,
+	eIN_CONFIG,
 };
 
 enum eInputState

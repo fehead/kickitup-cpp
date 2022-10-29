@@ -34,9 +34,12 @@ public:
 	virtual void		GetOut();
 
 	virtual void		GoNextStage();
-	virtual void		GoPreStage();
+	virtual void		GoPreStage();	
 
 	virtual bool	InputHandleMessage( const eInputName name, const eInputState is );
+
+private:
+	void	_goConfigStage();
 };
 
 #endif // _KICKITUP_STAGETITLE_H
