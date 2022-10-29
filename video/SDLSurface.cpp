@@ -117,8 +117,8 @@ void SDLSurface::_blit( int x, int y, SDL_Surface * pDestination, SDL_Rect * cli
 
 	//Give the offsets to the rectangle
 	offset.x = x;
-	offset.y = y;
-
+	offset.y = y;	
+	
 	//Blit the surface
 	SDL_BlitSurface( _pSurface, clip, pDestination, &offset );
 }

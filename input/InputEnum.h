@@ -30,7 +30,9 @@ enum eInputName
 	eIN_ARROW_2P_MAX,
 
 	eIN_BACK = 100,
-	eIN_GO,
+	eIN_UP,
+	eIN_DOWN,
+	eIN_GO,	
 	eIN_CONFIG,
 };
 

@@ -18,9 +18,11 @@ private:
 	Context &			m_context;
 
 	Surface*	m_pBG;          // background image.
-	Surface *	m_pGameTitle;
-	Surface *	m_pStateComment;
-	Sound *		m_pOpening;
+	Surface*	m_pSmallFont;     //< small font(s_font.bmp) image.
+
+	int			m_curSelect;		//< current selection.
+
+	const int	MAX_CUR_SELECT = 10;	//< max current selection.
 
 public:
 	StageConfig( Context & context );
@@ -38,6 +40,10 @@ public:
 	virtual void		GoPreStage();
 
 	virtual bool	InputHandleMessage( const eInputName name, const eInputState is );
+
+private:
+	bool	_drawMessage(const int x, const int y, const char* message);
+	void	_changeConfig();
 };
 
 #endif // _KICKITUP_STAGECONFIG_H

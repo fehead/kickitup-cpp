@@ -75,8 +75,9 @@ void InputManager::_registerKey()
 	_registerKey( eIN_GO, SDL_SCANCODE_RETURN);
 	_registerKey( eIN_GO, SDL_SCANCODE_KP_ENTER );
 	_registerKey( eIN_BACK, SDL_SCANCODE_ESCAPE );
+	_registerKey( eIN_UP, SDL_SCANCODE_UP);
+	_registerKey( eIN_DOWN, SDL_SCANCODE_DOWN);	
 	_registerKey( eIN_CONFIG, SDL_SCANCODE_F2 );
-
 
 	_registerKey( eIN_ARROW_1P_TOP_LEFT, SDL_SCANCODE_Q);
 	_registerKey( eIN_ARROW_1P_TOP_RIGHT, SDL_SCANCODE_E);
