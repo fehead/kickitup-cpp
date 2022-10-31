@@ -67,7 +67,7 @@ bool StageSelect::Initialize()
 	assert( m_pStateComment );	// �̹� Ÿ��Ʋ ������������ �ε������Ƿ� Load���� ����.
 
     for( int i = 0 ; i < 4 ; ++i ) {
-        m_buttonAni[i].setZoom( 1.0f, 1.5f );
+        m_buttonAni[i].setZoom( 1.0f, 1.15f );
         m_buttonAni[i].setFrameRate( 30 );
         m_buttonAni[i].setMaxFrames( 10 );
         m_buttonAni[i].setOscillate( true );

@@ -30,6 +30,12 @@ public:
         return *this;
     }
 
+    const Dim zoom(const float zoom) {
+        this->_w *= zoom;
+        this->_h *= zoom;
+        return Dim(this->_w * zoom, this->_h * zoom);        
+    }
+
     void    setW( const short & w )     {   this->_w = w;    }
     short   getW() const                {   return this->_w; }
     void    setH( const short & h )     {   this->_h = h;    }

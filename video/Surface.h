@@ -19,6 +19,7 @@ public:
 
 	virtual void    Blit( int x, int y, SDL_Rect * clip = 0 ) = 0;	///< Blit the surface to main surface.
 	virtual void    Blit( int x, int y, Surface & destination, SDL_Rect * clip = 0 ) = 0;	///< Blit the surface.
+	virtual void	BlitScaled(const Coord coord, const Dim dim) = 0;
 
 	virtual unsigned long
 					Getpixel( int x, int y ) = 0;					///< Getting the value of a pixel.

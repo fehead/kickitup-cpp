@@ -33,20 +33,17 @@ void    ZoomAnimation::OnAnimate( const unsigned long delta )
 
 void    ZoomAnimation::OnRender()
 {
-    std::unique_ptr<Surface> pSurface( getSurface()->ZoomSurface( m_curZoom ) );
-    if(pSurface.get() == 0) {
-    	return;
-    }
-
-    Dim destDim = pSurface->GetDim();
+    Surface * pSurface = getSurface();
+    
+    Dim zoomedDim = pSurface->GetDim().zoom(m_curZoom);    
     Dim srcDim = getSurface()->GetDim();
     Coord srcCoord = getCoord();
     
     // 그림이 확대, 축소되면 이미지 위치로 확대 축소된 값에 따라 변한다.
-    int x = srcCoord.getX() + (srcDim.getW() - destDim.getW() ) / 2;
-    int y = srcCoord.getY() + (srcDim.getH() - destDim.getH() ) / 2;
+    int x = srcCoord.getX() + (srcDim.getW() - zoomedDim.getW() ) / 2;
+    int y = srcCoord.getY() + (srcDim.getH() - zoomedDim.getH() ) / 2;
     
-    pSurface->SetColorKey();
-    pSurface->Blit( x, y );
-    pSurface->Free();
+    Coord dstCoord(x, y);    
+    pSurface->BlitScaled(dstCoord, zoomedDim);
+    
 }

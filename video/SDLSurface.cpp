@@ -109,6 +109,16 @@ void SDLSurface::Blit( int x, int y, Surface & destination, SDL_Rect * clip /* =
 //	_blit( x, y, pDestSurface, clip );
 }
 
+void SDLSurface::BlitScaled(const Coord coord, const Dim dim)
+{	
+	SDL_Rect	dstRect;
+	dstRect.x = coord.getX();
+	dstRect.y = coord.getY();
+	dstRect.w = dim.getW();
+	dstRect.h = dim.getH();
+	SDL_BlitScaled(_pSurface, NULL, _pMainSurface, &dstRect);
+}
+
 // Blit the surface.
 void SDLSurface::_blit( int x, int y, SDL_Surface * pDestination, SDL_Rect * clip /* = 0 */ )
 {
