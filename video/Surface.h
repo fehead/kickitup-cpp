@@ -11,8 +11,7 @@ public:
 	virtual ~Surface(void)	{}
 
 	virtual bool    Load( const std::string & fileName ) = 0;		///< Load imagefile.
-	virtual bool	CreateRGB(const int red, const int green, const int blue, const int alpha) = 0;	///< create RGBA Surface.
-    virtual Surface *   ZoomSurface( const double zoom, const double angle = 0.0 ) = 0;
+	virtual bool	CreateRGB(const int red, const int green, const int blue, const int alpha) = 0;	///< create RGBA Surface.    
 	virtual void    Free() = 0;										///< free surface.
 
 	virtual bool    IsLoaded() const = 0;							///< check loaded image.
