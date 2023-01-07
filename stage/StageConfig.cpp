@@ -27,12 +27,12 @@ bool StageConfig::Initialize()
 	if (!m_pSmallFont->Load("images/s_font.bmp")) {
 		return false;
 	}
-
+	
 	return true;
 }
 
 void StageConfig::Destroy()
-{
+{	
 	m_pBG->Free();
 }
 
@@ -99,11 +99,13 @@ bool StageConfig::Render(unsigned long delta)
 
 void StageConfig::GetIn()
 {
+	g_GameConfig.LoadFromFile();
 	g_Input.RegisterObserver("StageConfig", this);
 }
 
 void StageConfig::GetOut()
 {
+	g_GameConfig.SaveToFile();
 	g_Input.DeleteObserver("StageConfig");
 }
 

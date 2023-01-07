@@ -63,6 +63,9 @@ public:
 	void	SetStart( const ePlayer p, const bool bStart = true )	{	m_bStart[p] = bStart;	}
 	void	SetSpeed( const ePlayer p, const int spped )	{	m_StepSpped[p].set(spped);	}
 
+	bool SaveToFile();
+	bool LoadFromFile();
+
 	bool	TogleStageBreak() {
 		m_stageBreak = !m_stageBreak;
 		return m_stageBreak;
