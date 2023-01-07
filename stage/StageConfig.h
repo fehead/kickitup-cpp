@@ -22,7 +22,7 @@ private:
 
 	int			m_curSelect;		//< current selection.
 
-	const int	MAX_CUR_SELECT = 10;	//< max current selection.
+	const int	MAX_CUR_SELECT = 14;	//< max current selection.
 
 public:
 	StageConfig( Context & context );
