@@ -99,7 +99,7 @@ bool StageConfig::Render(unsigned long delta)
 
 void StageConfig::GetIn()
 {
-	g_GameConfig.LoadFromFile();
+	// g_GameConfig.LoadFromFile();
 	g_Input.RegisterObserver("StageConfig", this);
 }
 

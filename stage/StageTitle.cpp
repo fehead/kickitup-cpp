@@ -85,6 +85,9 @@ bool StageTitle::Render( unsigned long delta )
 // Ÿ��Ʋ �������� ����.
 void StageTitle::GetIn()
 {
+	// config load from file.
+	g_GameConfig.LoadFromFile();
+
 	// �÷��̾� 1p, 2p ���.
 	g_GameConfig.SetStart( eP_1, false );
 	g_GameConfig.SetStart( eP_2, false );
