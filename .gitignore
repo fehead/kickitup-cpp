@@ -82,3 +82,6 @@ build.ninja/*
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,c++,cmake
 /Debug
 /x64/Debug
+/.vs/kickitup-cpp/FileContentIndex
+/.vs/kickitup-cpp/v17
+/.vs

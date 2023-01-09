@@ -46,9 +46,9 @@ private:
     Surface *   m_pStepArrows;      // arrows.
     SDL_Rect    m_rtArrows[5][6];   // 화살표 조각.
     Song *      m_pSelectedSong;
-    Animation   m_aniPushArrows[5];     // 화살표 버튼을 누를때 버튼의 애니메이션.
-    Animation   m_AniStepArraws[5];     // Step 화살표.
-    Animation   m_aniCrashArrows[5];          // Crash 효과 애니메이션.
+    Animation   m_aniPushArrows[2][eBA_Max];     // 화살표 버튼을 누를때 버튼의 애니메이션.
+    Animation   m_AniStepArraws[2][eBA_Max];     // Step 화살표.
+    Animation   m_aniCrashArrows[2][eBA_Max];    // Crash 효과 애니메이션.
 
     int         m_start[3];
     int         m_tick;
