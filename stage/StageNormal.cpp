@@ -55,48 +55,47 @@ bool StageNormal::Initialize()
     m_pGauge->Load( "images/gauge.bmp" );
     m_pGauge->SetColorKey();
 
-    for (int p = 0; p < 2; ++p) {
-        for (int i = 0; i < eBA_Max; ++i) {
-            // 버튼이 눌러질때 나타나는 AniMation x 위치.
-            static const int    PUSHARROW_X_COORD[2][eBA_Max] = {
-                { 25, 75, 125, 175, 225 },
-                { 345, 395, 445, 495, 545 } };
+    
+    for (int i = 0; i < eBA_Max; ++i) {
+        // 버튼이 눌러질때 나타나는 AniMation x 위치.
+        static const int    PUSHARROW_X_COORD[2][eBA_Max] = {
+            { 25, 75, 125, 175, 225 },
+            { 345, 395, 445, 495, 545 } };
 
-            stringstream    tmp;
-            tmp << "images/p_arrow" << ARRAY_TO_BUTON[i] << ".bmp";
-            Surface* pSurface = g_pSurfaceStore->Order();
-            pSurface->Load(tmp.str());
-            pSurface->SetColorKey();
+        stringstream    tmp;
+        tmp << "images/p_arrow" << ARRAY_TO_BUTON[i] << ".bmp";
+        Surface* pSurface = g_pSurfaceStore->Order();
+        pSurface->Load(tmp.str());
+        pSurface->SetColorKey();
 
-            m_aniPushArrows[p][i].setMaxFrames(9);
-            m_aniPushArrows[p][i].setCurrentFrame(9);
-            m_aniPushArrows[p][i].setFrameRate(30);
-            m_aniPushArrows[p][i].setLoop(false);
-            m_aniPushArrows[p][i].setSurface(pSurface);
-            m_aniPushArrows[p][i].setCoord(Coord(PUSHARROW_X_COORD[p][i] + 2, 45));
-            SDL_Rect    rt;
-            rt.x = 72;
-            rt.y = 0; rt.w = 72; rt.h = 70;
-            m_aniPushArrows[p][i].setRect(rt);
+        m_aniPushArrows[0][i].setMaxFrames(9);
+        m_aniPushArrows[0][i].setCurrentFrame(9);
+        m_aniPushArrows[0][i].setFrameRate(30);
+        m_aniPushArrows[0][i].setLoop(false);
+        m_aniPushArrows[0][i].setSurface(pSurface);
+        m_aniPushArrows[0][i].setCoord(Coord(PUSHARROW_X_COORD[0][i] + 2, 45));
+        SDL_Rect    rt;
+        rt.x = 72;
+        rt.y = 0; rt.w = 72; rt.h = 70;
+        m_aniPushArrows[0][i].setRect(rt);
 
-            // Crash Animation
-            tmp.str("");
-            tmp << "images/c_arrow" << ARRAY_TO_BUTON[i] << ".bmp";
-            pSurface = g_pSurfaceStore->Order();
-            pSurface->Load(tmp.str());
-            pSurface->SetColorKey();
+        // Crash Animation
+        tmp.str("");
+        tmp << "images/c_arrow" << ARRAY_TO_BUTON[i] << ".bmp";
+        pSurface = g_pSurfaceStore->Order();
+        pSurface->Load(tmp.str());
+        pSurface->SetColorKey();
 
-            m_aniCrashArrows[p][i].setSurface(pSurface);
-            m_aniCrashArrows[p][i].setMaxFrames(8);
-            m_aniCrashArrows[p][i].setCurrentFrame(8);
-            m_aniCrashArrows[p][i].setFrameRate(30);
-            m_aniCrashArrows[p][i].setLoop(false);
-            m_aniCrashArrows[p][i].setCoord(Coord(PUSHARROW_X_COORD[p][i], 43));
-            rt.x = 80;
-            rt.y = 0; rt.w = 80; rt.h = 80;
-            m_aniCrashArrows[p][i].setRect(rt);
-        }
-    }
+        m_aniCrashArrows[0][i].setSurface(pSurface);
+        m_aniCrashArrows[0][i].setMaxFrames(8);
+        m_aniCrashArrows[0][i].setCurrentFrame(8);
+        m_aniCrashArrows[0][i].setFrameRate(30);
+        m_aniCrashArrows[0][i].setLoop(false);
+        m_aniCrashArrows[0][i].setCoord(Coord(PUSHARROW_X_COORD[0][i], 43));
+        rt.x = 80;
+        rt.y = 0; rt.w = 80; rt.h = 80;
+        m_aniCrashArrows[0][i].setRect(rt);
+    }    
 
     // 화살표 조각 구역 설정.
     // TODO: 2P
@@ -164,21 +163,19 @@ bool StageNormal::Render( unsigned long delta )
         SetQuitStage( true );
         return true;
     }
-    for (int p = 0; p < 2; ++p) {
-        Animation   * pAniPushArrows = m_aniPushArrows[p];
-        for (int i = 0; i < 5; ++i) {
-            if (pAniPushArrows[i].isLoopEnd() == false) {
-                pAniPushArrows[i].OnAnimate(delta);
-                pAniPushArrows[i].OnRender();
-            }
 
-            if (pAniPushArrows[i].isLoopEnd() == false) {
-                pAniPushArrows[i].OnAnimate(delta);
-                pAniPushArrows[i].OnRender();
-            }
-            pAniPushArrows[i].OnAnimate(delta);
+    // TODO: 2p    
+    for (int i = 0; i < 5; ++i) {
+        if (m_aniPushArrows[0][i].isLoopEnd() == false) {
+            m_aniPushArrows[0][i].OnAnimate(delta);
+            m_aniPushArrows[0][i].OnRender();
         }
-    }
+        if (m_aniCrashArrows[0][i].isLoopEnd() == false) {
+            m_aniCrashArrows[0][i].OnAnimate(delta);
+            m_aniCrashArrows[0][i].OnRender();
+        }
+        m_AniStepArraws[0][i].OnAnimate(delta);        
+    }    
 
     int stepIndex = m_nStepIdx - m_addedStep;
 	for( int i = 0 ;  i < 48 ; ++i ) {
