@@ -32,7 +32,7 @@ public:
 
     const Dim zoom(const float zoom) {
         this->_w = (short)(zoom * this->_w);
-        this->_h *= (short)(zoom * this->_h);
+        this->_h = (short)(zoom * this->_h);
         return Dim(this->_w, this->_h);        
     }
 
