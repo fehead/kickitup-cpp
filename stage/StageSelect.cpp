@@ -174,23 +174,27 @@ void StageSelect::GetIn()
 {
 	g_Input.RegisterObserver( "StageSelect", this );
 
-    // LeftSong ���.
+    // LeftSong
     m_pSongLeft = g_pSongMgr->GetLeftSong();
 
-    // RightSong ���.
+    // RightSong
     m_pSongRight = g_pSongMgr->GetRightSong();
 
     _resetSelectSong();
 
-	// ġƮŰ �ʱ�ȭ
+	// clear chat key.
 	m_chatkeys[0].clear();
 	m_chatkeys[1].clear();
+
+	// play background sound( music_select.wav )
+	m_pBGM->Play(true);
 }
 
 // get out the selectStage.
 void StageSelect::GetOut()
 {
 	m_pSoundIntro->Stop();
+	// stop background sound( music_select.wav )
 	m_pBGM->Stop();
 	g_Input.DeleteObserver( "StageSelect" );
 }
@@ -320,8 +324,7 @@ void StageSelect::_resetSelectSong()
     m_pSoundIntro->Stop();
     m_pSoundIntro->Free();
     m_pSongLeft = g_pSongMgr->GetLeftSong();
-    m_pSongRight = g_pSongMgr->GetRightSong();
-    m_pBGM->Play( true );
+    m_pSongRight = g_pSongMgr->GetRightSong();    
 
     for( int i = 0 ; i < 2 ; ++i ) {
         m_buttonAni[i].setCurZoom( 1.0f );

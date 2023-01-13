@@ -50,7 +50,7 @@ extern SongMgr * g_pSongMgr;
 inline Song *  SongMgr::GetLeftSong() const
 {
     Song *  pRet = 0;
-    if( m_leftSongIndex != -1 )
+    if( 0 <= m_leftSongIndex)
         pRet = m_songList[m_leftSongIndex];
     return pRet;
 }
