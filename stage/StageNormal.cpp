@@ -56,68 +56,69 @@ bool StageNormal::Initialize()
     m_pGauge->SetColorKey();
 
     
-    for (int i = 0; i < eBA_Max; ++i) {
-        // 버튼이 눌러질때 나타나는 AniMation x 위치.
-        static const int    PUSHARROW_X_COORD[2][eBA_Max] = {
-            { 25, 75, 125, 175, 225 },
-            { 345, 395, 445, 495, 545 } };
+    for (int p = 0; p < 2; ++p) {
+        for (int i = 0; i < eBA_Max; ++i) {
+            // 버튼이 눌러질때 나타나는 AniMation x 위치.
+            static const int    PUSHARROW_X_COORD[2][eBA_Max] = {
+                { 25, 75, 125, 175, 225 },
+                { 345, 395, 445, 495, 545 } };
 
-        stringstream    tmp;
-        tmp << "images/p_arrow" << ARRAY_TO_BUTON[i] << ".bmp";
-        Surface* pSurface = g_pSurfaceStore->Order();
-        pSurface->Load(tmp.str());
-        pSurface->SetColorKey();
+            stringstream    tmp;
+            tmp << "images/p_arrow" << ARRAY_TO_BUTON[i] << ".bmp";
+            Surface* pSurface = g_pSurfaceStore->Order();
+            pSurface->Load(tmp.str());
+            pSurface->SetColorKey();
 
-        m_aniPushArrows[0][i].setMaxFrames(9);
-        m_aniPushArrows[0][i].setCurrentFrame(9);
-        m_aniPushArrows[0][i].setFrameRate(30);
-        m_aniPushArrows[0][i].setLoop(false);
-        m_aniPushArrows[0][i].setSurface(pSurface);
-        m_aniPushArrows[0][i].setCoord(Coord(PUSHARROW_X_COORD[0][i] + 2, 45));
-        SDL_Rect    rt;
-        rt.x = 72;
-        rt.y = 0; rt.w = 72; rt.h = 70;
-        m_aniPushArrows[0][i].setRect(rt);
+            m_aniPushArrows[p][i].setMaxFrames(9);
+            m_aniPushArrows[p][i].setCurrentFrame(9);
+            m_aniPushArrows[p][i].setFrameRate(30);
+            m_aniPushArrows[p][i].setLoop(false);
+            m_aniPushArrows[p][i].setSurface(pSurface);
+            m_aniPushArrows[p][i].setCoord(Coord(PUSHARROW_X_COORD[p][i] + 2, 45));
+            SDL_Rect    rt;
+            rt.x = 72;
+            rt.y = 0; rt.w = 72; rt.h = 70;
+            m_aniPushArrows[p][i].setRect(rt);
 
-        // Crash Animation
-        tmp.str("");
-        tmp << "images/c_arrow" << ARRAY_TO_BUTON[i] << ".bmp";
-        pSurface = g_pSurfaceStore->Order();
-        pSurface->Load(tmp.str());
-        pSurface->SetColorKey();
+            // Crash Animation
+            tmp.str("");
+            tmp << "images/c_arrow" << ARRAY_TO_BUTON[i] << ".bmp";
+            pSurface = g_pSurfaceStore->Order();
+            pSurface->Load(tmp.str());
+            pSurface->SetColorKey();
 
-        m_aniCrashArrows[0][i].setSurface(pSurface);
-        m_aniCrashArrows[0][i].setMaxFrames(8);
-        m_aniCrashArrows[0][i].setCurrentFrame(8);
-        m_aniCrashArrows[0][i].setFrameRate(30);
-        m_aniCrashArrows[0][i].setLoop(false);
-        m_aniCrashArrows[0][i].setCoord(Coord(PUSHARROW_X_COORD[0][i], 43));
-        rt.x = 80;
-        rt.y = 0; rt.w = 80; rt.h = 80;
-        m_aniCrashArrows[0][i].setRect(rt);
-    }    
+            m_aniCrashArrows[p][i].setSurface(pSurface);
+            m_aniCrashArrows[p][i].setMaxFrames(8);
+            m_aniCrashArrows[p][i].setCurrentFrame(8);
+            m_aniCrashArrows[p][i].setFrameRate(30);
+            m_aniCrashArrows[p][i].setLoop(false);
+            m_aniCrashArrows[p][i].setCoord(Coord(PUSHARROW_X_COORD[0][i], 43));
+            rt.x = 80;
+            rt.y = 0; rt.w = 80; rt.h = 80;
+            m_aniCrashArrows[p][i].setRect(rt);
+        }
 
-    // 화살표 조각 구역 설정.
-    // TODO: 2P
-    for (int i = 0; i < eBA_Max; ++i) {
-        // arrow.bmp 그림과 arrow1.bmp 그림순서를 맞추기위한 임시 배열.
-        static const int arrawArray[5] = { 4, 0, 2, 1, 3 };
+        // 화살표 조각 구역 설정.
+        // TODO: 2P
+        for (int i = 0; i < eBA_Max; ++i) {
+            // arrow.bmp 그림과 arrow1.bmp 그림순서를 맞추기위한 임시 배열.
+            static const int arrawArray[5] = { 4, 0, 2, 1, 3 };
 
-        int yIndex = arrawArray[i];
-        SDL_Rect    rt = { 0, };
-        rt.x = 0;
-        rt.y = STEP_ARROW_SIZE * yIndex;
-        rt.w = STEP_ARROW_SIZE;
-        rt.h = STEP_ARROW_SIZE;
+            int yIndex = arrawArray[i];
+            SDL_Rect    rt = { 0, };
+            rt.x = 0;
+            rt.y = STEP_ARROW_SIZE * yIndex;
+            rt.w = STEP_ARROW_SIZE;
+            rt.h = STEP_ARROW_SIZE;
 
-        m_AniStepArraws[0][i].setSurface(m_pStepArrows);
-        m_AniStepArraws[0][i].setMaxFrames(6);
-        m_AniStepArraws[0][i].setCurrentFrame(0);
-        m_AniStepArraws[0][i].setFrameRate(100);
-        m_AniStepArraws[0][i].setLoop(true);
-        m_AniStepArraws[0][i].setRect(rt);
+            m_AniStepArraws[p][i].setSurface(m_pStepArrows);
+            m_AniStepArraws[p][i].setMaxFrames(6);
+            m_AniStepArraws[p][i].setCurrentFrame(0);
+            m_AniStepArraws[p][i].setFrameRate(100);
+            m_AniStepArraws[p][i].setLoop(true);
+            m_AniStepArraws[p][i].setRect(rt);
+        }
     }
-
 
     return true;
 }
@@ -149,7 +150,7 @@ bool StageNormal::Think( unsigned long delta )
     m_y -= static_cast<int>(BACK_ARROW_Y * m_addedStep * m_stepSpeed * 0.5);
 
     using std::fill;
-    fill( m_buttonState.begin(), m_buttonState.end(), false );
+    fill( m_buttonState.begin(), m_buttonState.end(), false );    
 
     return true;
 }
@@ -165,39 +166,45 @@ bool StageNormal::Render( unsigned long delta )
     }
 
     // TODO: 2p    
-    for (int i = 0; i < 5; ++i) {
-        if (m_aniPushArrows[0][i].isLoopEnd() == false) {
-            m_aniPushArrows[0][i].OnAnimate(delta);
-            m_aniPushArrows[0][i].OnRender();
-        }
-        if (m_aniCrashArrows[0][i].isLoopEnd() == false) {
-            m_aniCrashArrows[0][i].OnAnimate(delta);
-            m_aniCrashArrows[0][i].OnRender();
-        }
-        m_AniStepArraws[0][i].OnAnimate(delta);        
-    }    
-
-    int stepIndex = m_nStepIdx - m_addedStep;
-	for( int i = 0 ;  i < 48 ; ++i ) {
-        static const int arrowX[] = { 30, 80, 132, 185, 235};
-
-        if( m_pSelectedSong->m_ksf[0].isEndStep( i + stepIndex ) ) {
-            break;
+    for (int p = 0; p < 2; ++p) {
+        for (int i = 0; i < 5; ++i) {
+            if (m_aniPushArrows[p][i].isLoopEnd() == false) {
+                m_aniPushArrows[p][i].OnAnimate(delta);
+                m_aniPushArrows[p][i].OnRender();
+            }
+            if (m_aniCrashArrows[p][i].isLoopEnd() == false) {
+                m_aniCrashArrows[p][i].OnAnimate(delta);
+                m_aniCrashArrows[p][i].OnRender();
+            }
+            m_AniStepArraws[p][i].OnAnimate(delta);
         }
 
-		const char * pKsfData =  m_pSelectedSong->m_ksf[0].GetStep( i + stepIndex );
-        if( i == 0 && pKsfData[0] == '2' )
-            SetQuitStage( true );
+        int stepIndex = m_nStepIdx - m_addedStep;
+        for (int i = 0; i < 48; ++i) {
+            // static const int arrowX[] = { 30, 80, 132, 185, 235 };            
+            static const int arrowX[2][5] = {
+                { 30, 80, 132, 185, 235 },            
+                { 350, 400, 452, 505, 555 }
+            };
 
-        if( m_showStep[i + stepIndex] ) {            
-		    for( int j = 0 ; j < 5 ; ++j ) {
-			    if( pKsfData[j] == '1' ) {                
-                    m_AniStepArraws[0][j].setCoord( arrowX[j], m_y + static_cast<int>(i * m_distancePerStep) );
-                    m_AniStepArraws[0][j].OnRender();
-			    }
-		    }
+            if (m_pSelectedSong->m_ksf[0].isEndStep(i + stepIndex)) {
+                break;
+            }
+
+            const char* pKsfData = m_pSelectedSong->m_ksf[0].GetStep(i + stepIndex);
+            if (i == 0 && pKsfData[0] == '2')
+                SetQuitStage(true);
+
+            if (m_showStep[i + stepIndex]) {
+                for (int j = 0; j < 5; ++j) {
+                    if (pKsfData[5*p+j] == '1') {
+                        m_AniStepArraws[p][j].setCoord(arrowX[p][j], m_y + static_cast<int>(i * m_distancePerStep));
+                        m_AniStepArraws[p][j].OnRender();
+                    }
+                }
+            }
         }
-	}
+    }
 
     // 판정 관련 화면을 출력.
     _drawGauge();
@@ -405,9 +412,9 @@ void StageNormal::_judge()
 
 // 해당 버튼이 눌러 졌는지 검사.
 bool StageNormal::_isPress( const char * btnStr ) const
-{
+{    
     bool ret = false;
-    for( int i = 0 ; i < 5 ; ++i ) {
+    for( int i = 0 ; i < m_buttonState.size(); ++i ) {
         if( btnStr[i] == '1' ) {
             if( m_buttonState[i] ) {
                 ret = true;
