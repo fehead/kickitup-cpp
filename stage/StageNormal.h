@@ -5,6 +5,7 @@
 #include "Stage.h"
 #include "../input/iInputHandler.h"
 #include "../video/Animation.h"
+#include "../data/Ksf.h"
 #include <deque>
 #include <vector>
 
@@ -19,6 +20,7 @@ class InputStore;
 class Input;
 class Context;
 class Song;
+
 
 class StageNormal   :   public Stage , public iInputHandler
 {
@@ -67,6 +69,7 @@ private:
     vector<bool>    m_buttonState;              ///< 버튼이 눌러진 상태.
     int         m_judgedIdx;                    ///< 판정이 완료된 index
     vector<bool>    m_showStep;                 ///< 스탭을 화면에 뿌린것인지 아닌지.
+    vector<StepData_t *>  m_stepData;           ///< step data
     int         m_pointTimeZone[ePointZone_Max];    ///< 판정 점수시간
     int         m_judgePoint[ePointZone_Max];   ///< 각각의 판정 개수.
 
@@ -97,6 +100,8 @@ private:
     void    _judge();                           // 판정.
     bool    _isPress( const char * btnStr ) const;    // 해당 버튼이 눌러 졌는지 검사.
     ePointZone _getPoint( const double baseStepIndex, const int toJudgeStepIndex ) const;   // 점수판정
+    void    _setStepData( const Ksf * ksf);
+    void    _clearStepData();
 };
 
 #endif // _KICKITUP_STAGENORMAL_H

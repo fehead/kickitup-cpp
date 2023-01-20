@@ -6,6 +6,7 @@
 #include "../data/SongMgr.h"
 #include "../video/Surface.h"
 #include "../sound/Sound.h"
+#include "../GameConfig.h"
 #include <sstream>
 #include <cmath>
 
@@ -165,7 +166,6 @@ bool StageNormal::Render( unsigned long delta )
         return true;
     }
 
-    // TODO: 2p    
     for (int p = 0; p < 2; ++p) {
         for (int i = 0; i < 5; ++i) {
             if (m_aniPushArrows[p][i].isLoopEnd() == false) {
@@ -186,15 +186,16 @@ bool StageNormal::Render( unsigned long delta )
                 { 30, 80, 132, 185, 235 },            
                 { 350, 400, 452, 505, 555 }
             };
-
-            if (m_pSelectedSong->m_ksf[0].isEndStep(i + stepIndex)) {
+            
+            if (m_stepData.size() < (i + stepIndex)) {
                 break;
             }
 
-            const char* pKsfData = m_pSelectedSong->m_ksf[0].GetStep(i + stepIndex);
+            const char* pKsfData = m_stepData[i + stepIndex]->step;
             if (i == 0 && pKsfData[0] == '2')
                 SetQuitStage(true);
 
+            // drawing flowing steps.
             if (m_showStep[i + stepIndex]) {
                 for (int j = 0; j < 5; ++j) {
                     if (pKsfData[5*p+j] == '1') {
@@ -221,6 +222,9 @@ void StageNormal::GetIn()
 
     m_pSelectedSong = g_pSongMgr->GetSelectSong();
     m_showStep.assign( m_pSelectedSong->m_ksf[0].GetStepSize(), true );
+
+    // setting step data
+    _setStepData(&m_pSelectedSong->m_ksf[0]);
 
     // start time setting.
     for( int i = 0 ; i < 3 ; ++i )
@@ -267,6 +271,8 @@ void StageNormal::GetOut()
 {
     m_pBGM->Stop();
     
+    _clearStepData();
+
     g_Input.DeleteObserver( "StageNormal" );
 }
 
@@ -375,7 +381,7 @@ void StageNormal::_judge()
     for( int i = judgeStartIdx ; i <= judgeEndIdx ; ++i ) {
         // 검사할 index에 판정할 step이 있는지 검사한다.
         // 판정한 step이 있으면
-        const char * currentStep = m_pSelectedSong->m_ksf[0].GetStep( i );
+        const char * currentStep = m_stepData[i]->step;
         if( strncmp( currentStep, "00000", 5 ) != 0 ) {
             // 해당 버튼이 눌러졌는가?
             // 해당 버튼이 눌러져 있으면.
@@ -451,4 +457,44 @@ StageNormal::_getPoint( const double baseStepIndex, const int toJudgeStepIndex )
     }
 
     return ePointZone_Miss;
+}
+
+/** @brief  set stepdata for Normal stage
+*   @param  ksf step data
+*/
+void StageNormal::_setStepData(const Ksf* ksf)
+{
+    for (int i = 0; i < ksf->GetStepSize(); ++i) {
+        StepData_t * sd = new StepData_t();
+        const char * rawStepData = ksf->GetStep(i);
+ 
+        // set 1p step data
+        if (g_GameConfig.IsStarted(eP_1)) {            
+            memcpy_s(&sd->step[0], 5, rawStepData, 5);
+        }
+
+        // set 2p step data
+        if (g_GameConfig.IsStarted(eP_2)) {
+            memcpy_s(&sd->step[5], 5, rawStepData, 5);
+        }
+
+        // exit data setting.
+        if (sd->step[0] == '2') {
+            memset(sd->step, '2', sizeof(sd->step));
+        }
+
+        m_stepData.push_back(sd);
+    }
+}
+
+/** @brief  clear stepdata
+*/
+void StageNormal::_clearStepData()
+{
+    for (int i = 0; i < m_stepData.size(); ++i) {
+        StepData_t* sd = m_stepData.at(i);
+        delete sd;
+    }
+
+    m_stepData.clear();
 }
