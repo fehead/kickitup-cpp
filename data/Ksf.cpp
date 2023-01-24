@@ -72,15 +72,15 @@ bool Ksf::ReadFromStrem( istream & is )
             }
             // STARTTIME ���
             else if( _getValue( strLine, "#STARTTIME:", value ) ) {
-                m_start[0] = atoi( value.c_str() ) * 10;
+                m_start[0] = atoi( value.c_str() );
             }
             // STARTTIME2 ���
             else if( _getValue( strLine, "#STARTTIME2:", value ) ) {
-                m_start[1] = atoi( value.c_str() ) * 10;
+                m_start[1] = atoi( value.c_str() );
             }
             // STARTTIME3 ���
             else if( _getValue( strLine, "#STARTTIME2:", value ) ) {
-                m_start[2] = atoi( value.c_str() ) * 10;
+                m_start[2] = atoi( value.c_str() );
             }
             // STEP ���
             else if( strLine.find( "#STEP:" ) != string::npos ) {

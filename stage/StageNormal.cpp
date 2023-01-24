@@ -141,11 +141,11 @@ bool StageNormal::Think( unsigned long delta )
     if( m_playingTime < 0 )
         m_playingTime = 0;
 
-    m_dStepIdx = _getIndexByTime( m_playingTime );
-    m_nStepIdx = static_cast<int>( m_dStepIdx ) + 1;
+    m_detailCurStepIdx = _getIndexByTime( m_playingTime );
+    m_curStepIdx = static_cast<int>( m_detailCurStepIdx ) + 1;
 
     // 기준 y값 - back arrow 위에서 끝이 나게 되어있다.
-    m_y = static_cast<int>(BACK_ARROW_Y + (m_nStepIdx - m_dStepIdx) * m_distancePerStep );
+    m_y = static_cast<int>(BACK_ARROW_Y + (m_curStepIdx - m_detailCurStepIdx) * m_distancePerStep );
     
     // 화면 전체에 출력하기 위해 추가되는 Step개수만큼 화면에서 빼준다. 0.5를 곱한이유는 사실 1배속이 0.5배속이다.
     m_y -= static_cast<int>(BACK_ARROW_Y * m_addedStep * m_stepSpeed * 0.5);
@@ -161,7 +161,7 @@ bool StageNormal::Render( unsigned long delta )
     _drawBackGround( delta );
     _drawBackArrow( m_playingTime );
 
-    if( m_pSelectedSong->m_ksf[0].isEndStep( m_nStepIdx ) ) {
+    if( m_pSelectedSong->m_ksf[0].isEndStep( m_curStepIdx ) ) {
         SetQuitStage( true );
         return true;
     }
@@ -179,7 +179,7 @@ bool StageNormal::Render( unsigned long delta )
             m_AniStepArraws[p][i].OnAnimate(delta);
         }
 
-        int stepIndex = m_nStepIdx - m_addedStep;
+        int stepIndex = m_curStepIdx - m_addedStep;
         for (int i = 0; i < 48; ++i) {
             // static const int arrowX[] = { 30, 80, 132, 185, 235 };            
             static const int arrowX[2][5] = {
@@ -228,7 +228,7 @@ void StageNormal::GetIn()
 
     // start time setting.
     for( int i = 0 ; i < 3 ; ++i )
-        m_start[i] = m_pSelectedSong->m_ksf[0].GetStart( i );
+        m_start[i] = m_pSelectedSong->m_ksf[0].GetStart( i ) * 10;  // 1/100 to 1/1000
 
     // get tick
     m_tick = m_pSelectedSong->m_ksf[0].GetTick();
@@ -248,11 +248,11 @@ void StageNormal::GetIn()
     m_pBGM->Play();
 
     // 1step 시간(ms)
-    m_stepGapTime = 60000.0/(m_bpm * m_tick);
+    m_oneStepTime = 1.0/(m_bpm * m_tick) * 60 * 1000;  // 1/BPM * 1min(60000ms)
 
     // 판정 시간.
     for( int i = ePointZone_Min ; i < ePointZone_Miss ; ++i ) {
-        m_pointTimeZone[i] = static_cast<int>(m_stepGapTime / BACK_ARROW_Y * (i+1) * 10);
+        m_pointTimeZone[i] = static_cast<int>(m_oneStepTime / BACK_ARROW_Y * (i+1) * 10);
     }
 
     m_distancePerStep = BACK_ARROW_Y * m_stepSpeed * 0.5;  // 0.5를 곱한 이유는 1배속이 프로그램상 0.5배속이기 때문이다.
@@ -350,7 +350,7 @@ double StageNormal::_getIndexByTime( unsigned int playTime ) const
 {
 	if( playTime <= 0)
 		return 0;
-    return playTime / m_stepGapTime;
+    return playTime / m_oneStepTime;
 }
 
 // 음악시간으로 현재 index값을 찾는다.
@@ -358,7 +358,7 @@ int StageNormal::_getTimeByIndex( int stepIndex ) const
 {
     if( m_playingTime <= 0)
         return 0;
-    return static_cast<int>( stepIndex  * m_stepGapTime );
+    return static_cast<int>( stepIndex  * m_oneStepTime );
 }
 
 void StageNormal::_judge()
@@ -387,7 +387,7 @@ void StageNormal::_judge()
             // 해당 버튼이 눌러져 있으면.
             if( _isPress( currentStep ) ) {
                 // 시간에 따라 판정을한다.
-                ePointZone point = _getPoint( m_dStepIdx, i );
+                ePointZone point = _getPoint( m_detailCurStepIdx, i );
                 
                 ++m_judgePoint[point];
 
@@ -436,19 +436,20 @@ bool StageNormal::_isPress( const char * btnStr ) const
 }
 
 
-/** @brief  index 값으로 점수를 판정한다.
+/** @brief  score by index value.
+        index 값으로 점수를 판정한다.
     @param  baseStepIndex       판정 기준 StepIndex
     @param  toJudgeStepIndex    판정할 stepIndex
 */
 StageNormal::ePointZone
 StageNormal::_getPoint( const double baseStepIndex, const int toJudgeStepIndex ) const
 {
-    double gapOfStep = abs( (m_nStepIdx - m_dStepIdx) + (toJudgeStepIndex - m_nStepIdx) );
+    double gapOfStep = abs( (m_curStepIdx - m_detailCurStepIdx) + (toJudgeStepIndex - m_curStepIdx) );
     if( 1 < gapOfStep )  {
         return ePointZone_Miss;
     }
 
-    double gapTime = gapOfStep * m_stepGapTime;
+    double gapTime = gapOfStep * m_oneStepTime;
 
     for( int i = ePointZone_Min ; i < ePointZone_Miss ; ++i ) {
         if( gapTime <= m_pointTimeZone[i] ) {

@@ -55,14 +55,14 @@ private:
     int         m_start[3];
     int         m_tick;
     double      m_bpm;
-    double      m_stepGapTime;                  ///< 1step 시간(ms).
+    double      m_oneStepTime;                  ///< 1step time(ms).
 
     int         m_y;                            ///< 화살표를 출력할 y 기준.
     int         m_playingTime;                  ///< 현재 재생중인 음악 시간.
-    int         m_nStepIdx;                     ///< 현재 스탭 index
-    double      m_dStepIdx;                     ///< 현재 스탭 index - 세밀한.
+    int         m_curStepIdx;                   ///< current step index (int)(m_detailCurStepIdx + 1)
+    double      m_detailCurStepIdx;             ///< detail current step index
 
-    double      m_stepSpeed;                    ///< 배속
+    double      m_stepSpeed;                    ///< 1x, 2x, 4x speed
     double      m_distancePerStep;              ///< 1 Step당 Step화살표가 움직이는 거리(Pixel)
     int         m_addedStep;                    ///< 화면 위까지 Step Arrow가 추가되는 step개수
 
