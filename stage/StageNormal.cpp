@@ -9,6 +9,7 @@
 #include "../GameConfig.h"
 #include <sstream>
 #include <cmath>
+#include "../Log.h"
 
 using std::stringstream;
 using std::abs;
@@ -213,7 +214,6 @@ bool StageNormal::Render( unsigned long delta )
     return true;
 }
 
-
 void StageNormal::GetIn()
 {
     g_Input.RegisterObserver( "StageNormal", this );
@@ -251,9 +251,10 @@ void StageNormal::GetIn()
     m_oneStepTime = 1.0/(m_bpm * m_tick) * 60 * 1000;  // 1/BPM * 1min(60000ms)
 
     // 판정 시간.
-    for( int i = ePointZone_Min ; i < ePointZone_Miss ; ++i ) {
-        m_pointTimeZone[i] = static_cast<int>(m_oneStepTime / BACK_ARROW_Y * (i+1) * 10);
-    }
+	m_pointTimeZone[ePointZone_Perfect] = m_oneStepTime * 0.2;
+	m_pointTimeZone[ePointZone_Great] = m_oneStepTime * 0.4;
+	m_pointTimeZone[ePointZone_Good] = m_oneStepTime * 0.6;
+	m_pointTimeZone[ePointZone_Bad] = m_oneStepTime * 0.8;
 
     m_distancePerStep = BACK_ARROW_Y * m_stepSpeed * 0.5;  // 0.5를 곱한 이유는 1배속이 프로그램상 0.5배속이기 때문이다.
 
@@ -363,31 +364,38 @@ int StageNormal::_getTimeByIndex( int stepIndex ) const
 
 void StageNormal::_judge()
 {
-
-    if( m_playingTime == 0 )
+    
+    if( m_playingTime == 0 || m_playingTime < m_oneStepTime)
         return;
 
     // 1. 검사할 index구간을 구한다.
     int judgeStartIdx = m_judgedIdx;
-    int judgeEndIdx = static_cast<int>( _getIndexByTime( m_playingTime + m_pointTimeZone[ePointZone_Bad] ) );
+    int judgeEndIdx = static_cast<int>( _getIndexByTime( m_playingTime + m_oneStepTime ) );
     
+    Log::log("m_playingTime : %d, s:%d, e:%d", m_playingTime, judgeStartIdx, judgeEndIdx);
+
     // 판정할것이 없으면 끝.
-    if( judgeEndIdx <= judgeStartIdx)
+    if( judgeEndIdx < judgeStartIdx)
         return;
 
-    int lastJudgeIdx = m_judgedIdx;
+    int lastJudgeIdx = judgeStartIdx;
 
     // 검사할 index의 구간을 판정
     for( int i = judgeStartIdx ; i <= judgeEndIdx ; ++i ) {
         // 검사할 index에 판정할 step이 있는지 검사한다.
         // 판정한 step이 있으면
         const char * currentStep = m_stepData[i]->step;
-        if( strncmp( currentStep, "00000", 5 ) != 0 ) {
+        if( strncmp( currentStep, "00000", 5 ) != 0 ) {            
+            Log::log( "detailCurStepIdx : %lf, step : %s", m_detailCurStepIdx, currentStep );
+
+
             // 해당 버튼이 눌러졌는가?
             // 해당 버튼이 눌러져 있으면.
             if( _isPress( currentStep ) ) {
                 // 시간에 따라 판정을한다.
                 ePointZone point = _getPoint( m_detailCurStepIdx, i );
+                if (point == ePointZone_None)
+					continue;
                 
                 ++m_judgePoint[point];
 
@@ -426,8 +434,7 @@ bool StageNormal::_isPress( const char * btnStr ) const
                 ret = true;
             }
             else {
-                ret = false;
-                break;
+                return false;                
             }
         }
     }
@@ -446,7 +453,7 @@ StageNormal::_getPoint( const double baseStepIndex, const int toJudgeStepIndex )
 {
     double gapOfStep = abs( (m_curStepIdx - m_detailCurStepIdx) + (toJudgeStepIndex - m_curStepIdx) );
     if( 1 < gapOfStep )  {
-        return ePointZone_Miss;
+        return ePointZone_None;
     }
 
     double gapTime = gapOfStep * m_oneStepTime;

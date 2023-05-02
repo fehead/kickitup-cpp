@@ -36,6 +36,8 @@ private:
         ePointZone_Max,
     };
 
+    
+
     static const int    BACK_ARROW_Y    = 55;
     static const int    STEP_ARROW_SIZE = 60;
     Context &   m_context;
@@ -70,7 +72,7 @@ private:
     int         m_judgedIdx;                    ///< 판정이 완료된 index
     vector<bool>    m_showStep;                 ///< 스탭을 화면에 뿌린것인지 아닌지.
     vector<StepData_t *>  m_stepData;           ///< step data
-    int         m_pointTimeZone[ePointZone_Max];    ///< 판정 점수시간
+    double      m_pointTimeZone[ePointZone_Max];    ///< 판정 점수시간
     int         m_judgePoint[ePointZone_Max];   ///< 각각의 판정 개수.
 
 public:
