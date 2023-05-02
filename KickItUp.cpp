@@ -15,7 +15,7 @@ KickItUp::KickItUp(void)	:   m_bQuit( false )
 }
 
 KickItUp::~KickItUp(void)
-{
+{	
 }
 
 // Initialize kickitup.
@@ -24,6 +24,9 @@ bool KickItUp::Initialize()
 	// SDL 초기화
 	if( SDL_Init( SDL_INIT_VIDEO ) < 0)
 		return false;
+
+	// SDL 로그 초기화
+	SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 
 	// initialize Surface.
 	g_pSurfaceStore = new SDLSurfaceStore();
@@ -59,12 +62,11 @@ bool KickItUp::Initialize()
 bool KickItUp::Run()
 {
 	Timer fps;
-	fps.Start();
-
 	m_bQuit = false;
 	while( !m_bQuit ) {
 		SDL_Event	event;
-		
+
+		fps.Start();
 		while( SDL_PollEvent( &event ) ) {
 			switch( event.type ) {
 				case SDL_QUIT:
@@ -80,8 +82,6 @@ bool KickItUp::Run()
 		}
 
 		Process( fps.GetTicks() );
-
-		fps.Start();
 	}
 	return true;
 }
