@@ -10,20 +10,20 @@
 */
 
 #include <stdio.h>
-#include <windows.h>
-#include <direct.h>
-#include <string.h>
-#include <io.h>
-#include <time.h>
-#include <dsound.h>
+/* windows.h */
+/* direct.h */
+#include <cstring>
+#include <cstdio>
+#include <ctime>
+/* dsound.h */
 
-#include "media.h"
-#include "main.h"
-#include "input.h"
-#include "select.h"
-#include "result.h"
+#include "Media.h"
+#include "Main.h"
+#include "Input.h"
+#include "SELECT.H"
+#include "Result.h"
 
-#include "song.h"
+#include "Song.h"
 //#include "sound.h"
 #include "dsutil.h"
 
@@ -162,7 +162,7 @@ void Read()
 			else if(access("Double.ksf",04)==0)CSONG[Count].ReadDouble_KSF("Double.ksf");
 
 			//if(CSONG[Count].bpm!=0)Count++;
-			SetCurrentDirectory("..\\");
+			SetCurrentDirectory("../");
 		}
 
 		for(;;)
@@ -196,11 +196,11 @@ void Read()
 					else if(access("Double.ksf",04)==0)CSONG[Count].ReadDouble_KSF("Double.ksf"),Count++;
 				
 					//if(CSONG[Count].bpm!=0)Count++;
-					SetCurrentDirectory("..\\");
+					SetCurrentDirectory("../");
 				}
 			}
 		}
-		SetCurrentDirectory("..\\");
+		SetCurrentDirectory("../");
 	}
 	FindClose(hFind);
 
@@ -698,11 +698,11 @@ void SelectSong(void)
 			if(SongTitle)
 				SongBack=DDLoadBitmap(g_pDD,CSONG[SelectCurrent].TitleImgPath,0,0);
 			else	// default background image.
-				SongBack=DDLoadBitmap(g_pDD, "Images\\Back.bmp",0,0);
+				SongBack=DDLoadBitmap(g_pDD, "IMAGES/back.png",0,0);
 		}
 		if(SongTitle == NULL)
 		{
-			SongTitle=DDLoadBitmap(g_pDD,"Images\\NoTitle.bmp",0,0);
+			SongTitle=DDLoadBitmap(g_pDD,"IMAGES/noDisc.png",0,0);
 		}
 
 		// draw title image.

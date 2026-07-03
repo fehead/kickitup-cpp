@@ -3,10 +3,10 @@
 	          Copyright (c) Hyung-seok Choi, the Graphics Designer. All rights reserved.
 */
 
-#include <ddraw.h>
-#include "modeslct.h"
-#include "input.h"
-#include "main.h"
+/* ddraw.h via sdl3_kick.h */
+#include "MODESLCT.H"
+#include "Input.h"
+#include "Main.h"
 
 extern	LPDIRECTDRAWSURFACE	g_pDDSBack;
 extern	LPDIRECTDRAWSURFACE	ModeEasy;

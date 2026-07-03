@@ -1,30 +1,40 @@
-/*==========================================================================
+/*
+ * ddutil.h - SDL3 Port: Bitmap loading compatibility
  *
- *  Copyright (C) 1998 Microsoft Corporation. All Rights Reserved.
- *
- *  File:       ddutil.cpp
- *  Content:    Routines for loading bitmap and palettes from resources
- *
- ***************************************************************************/
+ * Original: DirectDraw bitmap/palette loading
+ * Ported:   Forwarders to KIU_* functions in sdl3_kick.cpp
+ */
+
 #ifndef __DDUTIL_INCLUDED__
 #define __DDUTIL_INCLUDED__
 
-#include <ddraw.h>
+#include "sdl3_kick.h"
 
 #ifdef __cplusplus
-extern "C" {            /* Assume C declarations for C++ */
-#endif	/* __cplusplus */
+extern "C" {
+#endif
 
-extern IDirectDrawPalette  *DDLoadPalette(IDirectDraw *pdd, LPCSTR szBitmap);
-extern IDirectDrawSurface  *DDLoadBitmap(IDirectDraw *pdd, LPCSTR szBitmap, int dx, int dy);
-extern HRESULT              DDReLoadBitmap(IDirectDrawSurface *pdds, LPCSTR szBitmap);
-extern HRESULT              DDCopyBitmap(IDirectDrawSurface *pdds,HBITMAP hbm/*LPCSTR szBitmap*/, int x, int y, int dx, int dy);
-extern DWORD                DDColorMatch(IDirectDrawSurface *pdds, COLORREF rgb);
-extern HRESULT              DDSetColorKey(IDirectDrawSurface *pdds, COLORREF rgb);
-extern void DDFillSurface(LPDIRECTDRAWSURFACE g_pDDs, WORD color);
+/* These forward to SDL3 implementations */
+#define DDLoadBitmap(pdd, szBitmap, dx, dy) \
+    IDirectDrawSurface::LoadBitmap(szBitmap, dx, dy)
+
+#define DDReLoadBitmap(pdds, szBitmap) \
+    KIU_ReloadSurface(pdds, szBitmap)
+
+#define DDSetColorKey(pdds, rgb) \
+    ((IDirectDrawSurface*)(pdds))->SetColorKey(0, nullptr)
+
+#define DDColorMatch(pdds, rgb) \
+    KIU_ColorMatch(pdds, rgb)
+
+#define DDFillSurface(pdds, color) \
+    KIU_FillSurface(pdds, color)
+
+/* IDirectDrawPalette stub */
+#define DDLoadPalette(pdd, szBitmap)  ((IDirectDrawPalette*)1)
 
 #ifdef __cplusplus
 }
-#endif	/* __cplusplus */
+#endif
 
 #endif

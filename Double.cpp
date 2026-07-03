@@ -11,19 +11,19 @@
 			- Bpm changing bug fixed (bpm change was incorrected.)
 */
 
-#include <ddraw.h>
+/* ddraw.h via main.h */
 #include <stdio.h>
 #include <time.h>
 
-#include "select.h"
-#include "double.h"
-#include "main.h"
+#include "SELECT.H"
+#include "Double.h"
+#include "Main.h"
 //#include "sound.h"
-#include <dsound.h>
+/* dsound.h via main.h */
 #include "dsutil.h"
 
-#include "input.h"
-#include "config.h"
+#include "Input.h"
+#include "Config.h"
 
 #define LP1DB1_X		62
 #define LP7DB1_X		62+PUMP_SPRITE

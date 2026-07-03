@@ -1,26 +1,32 @@
+/*
+ * Input.h - SDL3 Port: Keyboard/Joystick input
+ *
+ * Original: DirectInput keyboard/joystick
+ * Ported:   SDL3 keyboard via KIU_ReadKeyboard/rgKeyData
+ */
+
 #ifndef __INPUT_INCLUDED__
-#define __INPUT_INCLDUED__
+#define __INPUT_INCLUDED__
 
-#include <dinput.h>
+#include "sdl3_kick.h"
 
-#define KEYBUFSIZE		256
-
-#define	IDC_DEVICES		200
-
-extern void (*ReadGameInput)(void);//=ReadKeyboardInput;
+/* Input function pointers */
+extern void (*ReadGameInput)(void);
 extern void (*ReadJoystickInput2)(void);
 
-void	ReadKeyboardInput(void);
-void	ReadFusionInput(void);
-void	ReadKoinsInput(void);
-void	ReadDDRInput(void);
+void ReadKeyboardInput(void);
+void ReadFusionInput(void);
+void ReadKoinsInput(void);
+void ReadDDRInput(void);
 
-BOOL	PickInputDevice(int N);
-BOOL InitKeyboard(LPDIRECTINPUT pdi);
-HRESULT	InitDI(HINSTANCE hInstance);
-void CleanupInput(void); 
-BOOL	ReacquireInput(void);
-BOOL	PickInputDevice2(int N);
-BOOL	ReacquireInput2(void);
+BOOL PickInputDevice(int N);
+BOOL PickInputDevice2(int N);
+
+/* Now just stubs that use KIU_ReadKeyboard */
+#define InitKeyboard(pdi)          TRUE
+#define InitDI(hInstance)          TRUE
+#define CleanupInput()             KIU_CleanupInput()
+#define ReacquireInput()           TRUE
+#define ReacquireInput2()          TRUE
 
 #endif

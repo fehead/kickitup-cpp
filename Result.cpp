@@ -4,10 +4,10 @@
 
 */
 
-#include <ddraw.h>
+/* ddraw.h via main.h */
 
-#include "main.h"
-#include "input.h"
+#include "Main.h"
+#include "Input.h"
 #include <stdio.h>
 #include "ddutil.h"
 

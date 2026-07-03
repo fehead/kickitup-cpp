@@ -12,7 +12,7 @@
 #include "ddutil.h"
 //#include "sound.h"
 #include "dsutil.h"
-#include "main.h"
+#include "Main.h"
 
 extern LPDIRECTDRAWSURFACE NoDISC;
 

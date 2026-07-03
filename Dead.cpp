@@ -4,11 +4,11 @@
 
 */
 
-#include <ddraw.h>
-#include <mmsystem.h>
-#include <dsound.h>
-#include "dead.h"
-#include "main.h"
+/* ddraw.h via main.h */
+/* mmsystem.h replaced */
+/* dsound.h via main.h */
+#include "DEAD.H"
+#include "Main.h"
 //#include "sound.h"
 #include "dsutil.h"
 

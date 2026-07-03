@@ -10,39 +10,46 @@
 	2000/07/23 'Patching'
 			- Bpm changing bug fixed (bpm change was incorrected.)
 */
-#include "main.h"
+#include "Main.h"
 
 // Dshow ..
 #include "Media.h"
 
 // Dshow ..
 
-#include <windows.h>
-#include <ddraw.h>
+/* windows.h replaced by sdl3_kick.h */
+/* ddraw.h replaced by sdl3_kick.h */
 #include <stdio.h>
-#include <dsound.h>
-#include <mmsystem.h>
+/* dsound.h replaced by sdl3_kick.h */
+/* mmsystem.h replaced by SDL */
 #include <time.h>
-#include <io.h>
+#include <cstdio>
 
-#include "result.h"
-#include "config.h"
-#include "dead.h"
+#include "Result.h"
+#include "Config.h"
+#include "DEAD.H"
 #include "Double.h"
 #include "ddutil.h"
 #include "dsutil.h"
-#include "song.h"
-#include "select.h"
+#include "Song.h"
+#include "SELECT.H"
 //#include "sound.h"
-#include "input.h"
-#include "resource.h"
+#include "Input.h"
+#include "RESOURCE.H"
 
 #define VER_NUM	"0.4b"
 char	TITLE[MAX_PATH];
 
+/* MODESLCT stubs â€” mode selection images */
+LPDIRECTDRAWSURFACE	ModeEasy   = NULL;
+LPDIRECTDRAWSURFACE	ModeHard   = NULL;
+LPDIRECTDRAWSURFACE	ModeDouble = NULL;
+LPDIRECTDRAWSURFACE	ModeNonstop = NULL;
+DWORD				PressedKey[10] = {0};
+
 #define	PRGNAME		"Kick It UP!"
 
-// ÀÏ¹Ý ÇÏµå µ¥ÀÌÅÍ ºÎºÐ
+// ï¿½Ï¹ï¿½ ï¿½Ïµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½
 char				Data[MAX_DATA+1][14];
 char				Data_Judge[MAX_DATA+1][14];
 double				Data_y[MAX_DATA+1];
@@ -50,13 +57,13 @@ double				Data_y[MAX_DATA+1];
 char				Data1[MAX_DATA+1][14];
 char				Data_Judge1[MAX_DATA+1][14];
 double				Data_y1[MAX_DATA+1];
-// ¿©±â±îÁö
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-// ´õºí µ¥ÀÌÅÍ ½ÃÀÛ
+// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 char				Data_Double[MAX_DATA+1][14];
 char				Data_Double_Judge[MAX_DATA+1][14];
-double				Data_Double_y[MAX_DATA+1];//Á·º¸ µ¥ÀÌÅÍÀÇ Y°ªÀ» °¡Áö°í ÀÖ´Â ¹è¿­
-// ´õºí µ¥ÀÌÅÍ ³¡
+double				Data_Double_y[MAX_DATA+1];//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Yï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½è¿­
+// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 
 
 char				SongName[MAX_PATH+1];
@@ -111,8 +118,8 @@ int start1;
 BOOL				Start1p;
 BOOL				Start2p;
 
-HWND hWnd;
-HINSTANCE	g_hInst;
+void *hWnd;
+void *g_hInst;
 
 LPDIRECTDRAW g_pDD                = NULL;
 LPDIRECTDRAWSURFACE	g_pDDSPrimary = NULL;
@@ -371,7 +378,7 @@ void DrawScore1p(void)
 		cRect.top=0;
 		cRect.bottom=35;
 		g_pDDSBack->BltFast(20+Loop*22,444,Score,&cRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-	}/* ¿©±â±îÁö */
+	}/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 }
 
 void DrawScore2p(void)
@@ -391,7 +398,7 @@ void DrawScore2p(void)
 		cRect.top=0;
 		cRect.bottom=35;
 		g_pDDSBack->BltFast(463+Loop*22,444,Score,&cRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-	}/* ¿©±â±îÁö */
+	}/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 }
 
 void DrawGauge1p(void)
@@ -788,7 +795,7 @@ void KIU_STAGE(void)
 	delta=cur-last;
 	last=cur;
 
-	if(Start1p)DrawArrow1p(i); //È¸»ö È­»ìÇ¥¸¦ ¸»ÇÕ´Ï´Ù.
+	if(Start1p)DrawArrow1p(i); //È¸ï¿½ï¿½ È­ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 	if(Start2p)DrawArrow2p(i);
 
 	start-=delta;
@@ -828,7 +835,7 @@ void KIU_STAGE(void)
 			else delta=(DWORD)curtime;
 		}
 
-		//1000 Tick´ç 180/60 -> 1ÃÊ¿¡ 64*(180/60)  Áï 1 tick ´ç 64*(bpm/60)/1000
+		//1000 Tickï¿½ï¿½ 180/60 -> 1ï¿½Ê¿ï¿½ 64*(180/60)  ï¿½ï¿½ 1 tick ï¿½ï¿½ 64*(bpm/60)/1000
 		temp-=(int)(delta*bpmpix);
 		tail+=(double)((double)(delta*bpmpix)-(int)(delta*bpmpix));
 
@@ -1412,13 +1419,13 @@ void KIU_STAGE(void)
 
 void WaveSet_Loading(void)
 {
-	g_dsOpening=DSLoadSoundBuffer(lpds, "wave\\Opening.wav");
-	g_dsDead=DSLoadSoundBuffer(lpds,"wave\\Dead.wav");
-	g_dsMode=DSLoadSoundBuffer(lpds,"wave\\Mode.wav");
-	g_dsCancel=DSLoadSoundBuffer(lpds,"wave\\Cancel.wav");
-	g_dsMove=DSLoadSoundBuffer(lpds,"wave\\Move.wav");
-	g_dsBeat=DSLoadSoundBuffer(lpds,"wave\\Beat.wav");
-	g_dsSelectSong=DSLoadSoundBuffer(lpds, "wave\\MusicSelect.wav");
+	g_dsOpening=DSLoadSoundBuffer(lpds, "WAVE/opening.mp3");
+	g_dsDead=DSLoadSoundBuffer(lpds,"WAVE/dead.mp3");
+	g_dsMode=DSLoadSoundBuffer(lpds,"WAVE/mode.mp3");
+	g_dsCancel=DSLoadSoundBuffer(lpds,"WAVE/cancel.mp3");
+	g_dsMove=DSLoadSoundBuffer(lpds,"WAVE/move.mp3");
+	g_dsBeat=DSLoadSoundBuffer(lpds,"WAVE/beat.mp3");
+	g_dsSelectSong=DSLoadSoundBuffer(lpds, "WAVE/musicSelect.mp3");
 }
 
 void DisplayMessage(int x, int y, char * message)
@@ -1763,7 +1770,7 @@ void DrawJudge1p(void)
 		
 		g_pDDSBack->Blt(&destRect, JudgeFont, &rRect,DDBLT_WAIT | DDBLT_KEYSRC , NULL);
 
-		/* ÄÞº¸ Ãâ·ÂºÎ ÀÔ´Ï´Ù. */
+		/* ï¿½Þºï¿½ ï¿½ï¿½Âºï¿½ ï¿½Ô´Ï´ï¿½. */
 		if((Judgement1p==PERFECT || Judgement1p==GREAT) && Combo1p>3)
 		{
 			sprintf(chCombo1p,"%03d",Combo1p);
@@ -1786,7 +1793,7 @@ void DrawJudge1p(void)
 				
 				if(dwState>10)g_pDDSBack->BltFast(80,320+dwState*2-dwState*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
 				else g_pDDSBack->BltFast(80,320+dwState*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
-			}/* ¿©±â±îÁö */
+			}/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 		}
 	}
 
@@ -1898,7 +1905,7 @@ void DrawJudge2p(void)
 
 		g_pDDSBack->Blt(&destRect, JudgeFont, &rRect,DDBLT_WAIT | DDBLT_KEYSRC , NULL);
 
-		/* ÄÞº¸ Ãâ·ÂºÎ ÀÔ´Ï´Ù. */
+		/* ï¿½Þºï¿½ ï¿½ï¿½Âºï¿½ ï¿½Ô´Ï´ï¿½. */
 		if((Judgement2p==PERFECT || Judgement2p==GREAT) && Combo2p>3)
 		{
 			sprintf(chCombo2p,"%03d",Combo2p);
@@ -1922,7 +1929,7 @@ void DrawJudge2p(void)
 				
 				if(dwState2>10)g_pDDSBack->BltFast(400,320+dwState2*2-dwState2*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
 				else g_pDDSBack->BltFast(400,320+dwState2*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
-			}/* ¿©±â±îÁö */
+			}/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 		}
 	}
 
@@ -1969,7 +1976,7 @@ void DrawArrow1p(DWORD cur)
 	}
 
 	ReadGameInput();
-// ¿ÀÅä ¹öÆ° Áö¿ø ºÎºÐ 
+// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½ 
 	if(KCFG.auto1_1p==TRUE)
 	{
 		for(count=0;count<10;count++)
@@ -2496,7 +2503,7 @@ void DrawArrow1p(DWORD cur)
 	
 	Judgement1p=JudgeTemp;
 	
-	// ¹Ì½ºÃ³¸®ÀÔ´Ï´Ù.
+	// ï¿½Ì½ï¿½Ã³ï¿½ï¿½ï¿½Ô´Ï´ï¿½.
 	for(count=0;count<10;count++)
 	if(Data_y[cur+count] < ZONE_U
 		&& (Data_Judge[cur+count][0]!='0' || Data_Judge[cur+count][1]!='0' || Data_Judge[cur+count][2]!='0' || Data_Judge[cur+count][3]!='0' || Data_Judge[cur+count][4]!='0')
@@ -2758,7 +2765,7 @@ void DrawArrow2p(DWORD cur)
 		beat--;
 		if(beat<=0)beat=0;
 	}
-// ¿ÀÅä ¹öÆ° Áö¿ø ºÎºÐ 
+// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½ 
 	if(KCFG.auto1_2p==TRUE)
 	{
 		for(count=0;count<10;count++)
@@ -3286,7 +3293,7 @@ void DrawArrow2p(DWORD cur)
 	
 	Judgement2p=JudgeTemp;
 	
-	// ¹Ì½ºÃ³¸®ÀÔ´Ï´Ù.
+	// ï¿½Ì½ï¿½Ã³ï¿½ï¿½ï¿½Ô´Ï´ï¿½.
 	for(count=0;count<10;count++)
 	if(Data_y1[cur+count] < 40
 		&& (Data_Judge1[cur+count][5]!='0' || Data_Judge1[cur+count][6]!='0' || Data_Judge1[cur+count][7]!='0' || Data_Judge1[cur+count][8]!='0' || Data_Judge1[cur+count][9]!='0')
@@ -3519,50 +3526,15 @@ HRESULT	RestoreAll(void)
 
 void Flipp(void)
 {
-	HRESULT hRet;
-
-	while(TRUE)
-	{
-		if(g_fullscreen)
-			hRet=g_pDDSPrimary->Flip(NULL,DDFLIP_WAIT);
-		else
-			hRet = g_pDDSPrimary->Blt(&g_rcScreen, g_pDDSBack,
-                                                  &g_rcViewport, DDBLT_WAIT,
-                                                  NULL);
-
-		if(hRet==DD_OK)
-			break;
-
-		if(hRet == DDERR_SURFACELOST)
-		{
-			hRet=RestoreAll();
-			if(hRet != DD_OK)
-				break;
-		}
-		if(hRet != DDERR_WASSTILLDRAWING)
-			break;
-	}
+	KIU_Present();
 }
 
 
-BOOL InitDSound(HWND hWnd, int Samples, int Bits, int nChannels)
+BOOL InitDSound(void *hWnd, int Samples, int Bits, int nChannels)
 {
-	HRESULT			hRet;
-
-	hRet=DirectSoundCreate(NULL,&lpds,NULL);
-
-	if(hRet != DD_OK)
-		InitFail(hWnd,hRet,"Cannot create Dsound");
-
-	hRet=lpds->SetCooperativeLevel(hWnd,DSSCL_NORMAL);
-
-	if(hRet != DD_OK)
-		InitFail(hWnd,hRet,"Cannot cooperative (sound)");
-
+	(void)hWnd; (void)Samples; (void)Bits; (void)nChannels;
 	DisplayMessage(0,16,"Loading Music Intro File.. please Wait...");
-
 	return TRUE;
-
 }
 
 void ReleaseDSound(void)
@@ -3896,7 +3868,7 @@ void UpdateFrame(void)
 			GameOver1();
 			break;
 		case END:
-			PostMessage(hWnd, WM_CLOSE, 0, 0);
+			g_quitRequested = 1;
 			break;
 		default:
 			break;
@@ -3904,7 +3876,7 @@ void UpdateFrame(void)
 
 }
 
-long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+long WindowProc(void *hWnd, UINT message, unsigned long wParam, long lParam)
 {
 	switch (message)
     {
@@ -3930,10 +3902,10 @@ long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
             switch (wParam)
             {
 				case VK_F12:
-					PostMessage(hWnd, WM_CLOSE, 0, 0);
+					g_quitRequested = 1;
 					return 0L;
-/* SelectSong, StageTitle¿¡¼­ ÂüÁ¶ÇÕ´Ï´Ù.
-   ÃßÈÄ¿¡ ¹Ù²ãÁÖ¾î¾ß ÇÕ´Ï´Ù.
+/* SelectSong, StageTitleï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
+   ï¿½ï¿½ï¿½Ä¿ï¿½ ï¿½Ù²ï¿½ï¿½Ö¾ï¿½ï¿½ ï¿½Õ´Ï´ï¿½.
    */
 				case VK_F2:
 					First=0;
@@ -4049,7 +4021,7 @@ long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 					}
 					break;
 
-/* ¿©±â±îÁö ÀÔ´Ï´Ù. */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô´Ï´ï¿½. */
 
 				case VK_ESCAPE:
 				{
@@ -4057,7 +4029,7 @@ long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 					{
 						case GAMETITLE:
 							CFGWrite();
-							PostMessage(hWnd, WM_CLOSE, 0, 0);
+							g_quitRequested = 1;
 							return 0L;
 							break;
 
@@ -4126,7 +4098,7 @@ long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
     return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-HRESULT InitFail(HWND hWnd, HRESULT hRet, LPCTSTR szError,...)
+HRESULT InitFail(void *hWnd, HRESULT hRet, const char *szError, ...)
 {
 	char                        szBuff[128];
 	va_list                     vl;
@@ -4139,177 +4111,41 @@ HRESULT InitFail(HWND hWnd, HRESULT hRet, LPCTSTR szError,...)
 	va_end(vl);
 	return hRet;
 }
-
-HRESULT	InitWin(HINSTANCE hInstance, DWORD Width, DWORD Height, int nCmdShow)
+HRESULT InitWin(void *hInstance, DWORD Width, DWORD Height, int nCmdShow)
 {
-	WNDCLASS	wc;
-
-	DWORD		dwExStyle;				// Window Extended Style
-	DWORD		dwStyle;				// Window Style
-
-	RECT		WindowRect;				// Grabs Rectangle Upper Left / Lower Right Values
-	WindowRect.left=(long)0;			// Set Left Value To 0
-	WindowRect.right=(long)Width;		// Set Right Value To Requested Width
-	WindowRect.top=(long)0;				// Set Top Value To 0
-	WindowRect.bottom=(long)Height;		// Set Bottom Value To Requested Height
-
-// Detect os version (for title bar)
-	OSVERSIONINFO osver;
-
-	osver.dwOSVersionInfoSize=sizeof(osver);
-	GetVersionEx(&osver);
-// Os ver detect finished.
-
-	// Set up and register window class
-    wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = WindowProc;
-    wc.cbClsExtra = 0;
-    wc.cbWndExtra = 0;
-    wc.hInstance = hInstance;
-    wc.hIcon = LoadIcon(0, MAKEINTRESOURCE(IDI_ICON));
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = (HBRUSH )GetStockObject(BLACK_BRUSH);
-    wc.lpszMenuName = PRGNAME;
-    wc.lpszClassName = PRGNAME;
-
-    RegisterClass(&wc);
-
-	if (g_fullscreen)												// Are We Still In Fullscreen Mode?
-	{
-		dwExStyle=WS_EX_APPWINDOW;								// Window Extended Style
-		dwStyle=WS_POPUP;										// Windows Style
-		ShowCursor(FALSE);										// Hide Mouse Pointer
-	}
-	else
-	{
-		dwExStyle=WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
-		dwStyle=WS_POPUP | WS_SYSMENU | WS_CAPTION;							// Windows Style
-	}
-
-	AdjustWindowRectEx(&WindowRect, dwStyle, FALSE, dwExStyle);		// Adjust Window To True Requested Size
-
-	sprintf(TITLE, "KICK IT UP! beta version v%s - Minor release / Compiled at %s / %s / Windows %d.%d.%d" ,VER_NUM, __DATE__, __TIME__, osver.dwMajorVersion, osver.dwMinorVersion, LOWORD(osver.dwBuildNumber));
-
-    // Create a window
-    hWnd = CreateWindowEx(dwExStyle ,	
-							PRGNAME,
-							TITLE,
-							dwStyle,
-							0, 0,								// Window Position
-							WindowRect.right-WindowRect.left,	// Calculate Window Width
-							WindowRect.bottom-WindowRect.top,	// Calculate Window Height
-							NULL,
-							NULL,
-							hInstance,
-							NULL);
-    if (!hWnd)
-        return FALSE;
-    ShowWindow(hWnd, nCmdShow);
-    UpdateWindow(hWnd);
-    SetFocus(hWnd);
-
-	g_hInst=hInstance;
+	(void)hInstance; (void)Width; (void)Height; (void)nCmdShow;
+	if (!KIU_Init("Kick It UP! SDL3", 640, 480, g_fullscreen ? 1 : 0))
+		return E_FAIL;
+	hWnd = (void*)g_sdlWindow;
 	return DD_OK;
-
 }
+
 
 HRESULT InitDD(void)
 {
-	DDSURFACEDESC			ddsd;
-	DDSCAPS					ddscaps;
+	DDSURFACEDESC ddsd;
+	HRESULT hRet;
 
-	HRESULT					hRet;
+	g_pDD = new IDirectDraw();
 
-	LPDIRECTDRAWCLIPPER		pClipper;
+	memset(&ddsd, 0, sizeof(ddsd));
+	ddsd.dwSize = sizeof(ddsd);
+	ddsd.dwFlags = DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
+	ddsd.dwWidth = 640;
+	ddsd.dwHeight = 480;
+	ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
 
-	hRet=DirectDrawCreate(NULL,&g_pDD,NULL);
-	if(hRet !=DD_OK)
-		return	InitFail(hWnd,hRet,"Cannot Creat DirectDraw");
-
-	if(g_fullscreen)
-	{
-		hRet=g_pDD->SetCooperativeLevel(hWnd,DDSCL_EXCLUSIVE|DDSCL_FULLSCREEN|DDSCL_ALLOWREBOOT);
-		if(hRet !=DD_OK)
-			return InitFail(hWnd,hRet,"Cannot set cooperative");
-
-		hRet=g_pDD->SetDisplayMode(640,480,16);
-		if(hRet !=DD_OK)
-			return InitFail(hWnd,hRet,"Cannot set display mode");
-
-		// Create the primary surface
-		memset(&ddsd, 0, sizeof(ddsd));
-		ddsd.dwSize = sizeof(ddsd);
-		ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT; 
-		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE |
-							  DDSCAPS_FLIP |
-							  DDSCAPS_COMPLEX;
-		ddsd.dwBackBufferCount = 2;
-
-		g_pDD->CreateSurface(&ddsd,&g_pDDSPrimary,NULL);
-
-		ddsd.ddsCaps.dwCaps=DDSCAPS_OFFSCREENPLAIN;
-
-		// Get a pointer to the back buffer
-		ddscaps.dwCaps = DDSCAPS_BACKBUFFER;
-		hRet=g_pDDSPrimary->GetAttachedSurface(&ddscaps, &g_pDDSBack);
-		if(hRet != DD_OK)
-		{
-			return InitFail(hWnd,hRet,"Cannot Attached surface");
-		}
-	}
-	else
-	{
-		hRet=g_pDD->SetCooperativeLevel(hWnd,DDSCL_NORMAL);
-		if(hRet !=DD_OK)
-			return InitFail(hWnd,hRet,"Cannot set cooperative");
-
-    	GetClientRect(hWnd, &g_rcViewport);
-    	GetClientRect(hWnd, &g_rcScreen);
-    	ClientToScreen(hWnd, (POINT*)&g_rcScreen.left);
-    	ClientToScreen(hWnd, (POINT*)&g_rcScreen.right);
-
-		// Create the primary surface
-		memset(&ddsd, 0, sizeof(ddsd));
-		ddsd.dwSize = sizeof(ddsd);
-		ddsd.dwFlags = DDSD_CAPS ; 
-		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-
-		g_pDD->CreateSurface(&ddsd,&g_pDDSPrimary,NULL);
-
-		hRet=g_pDD->CreateClipper(0, &pClipper, NULL);
-		
-		if(hRet != DD_OK)
-		return InitFail(hWnd,hRet,"CreateClipper() : FAILED");
-
-		pClipper->SetHWnd(0, hWnd);
-//	MessageBox(hWnd, "hi","hi", MB_OK);
-
-		g_pDDSPrimary->SetClipper(pClipper);
-
-		pClipper->Release();
-		pClipper=NULL;
-
-        ddsd.dwFlags        = DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
-        ddsd.dwWidth        = 640;
-        ddsd.dwHeight       = 480;
-		ddsd.ddsCaps.dwCaps=DDSCAPS_OFFSCREENPLAIN;
-
-		// Get a pointer to the back buffer
-		//ddscaps.dwCaps = DDSCAPS_BACKBUFFER;
-        hRet = g_pDD->CreateSurface(&ddsd, &g_pDDSBack, NULL);
-		if(hRet != DD_OK)
-		{
-			return InitFail(hWnd,hRet,"Cannot Attached surface");
-		}
-	}
-	return	hRet;
+	hRet = g_pDD->CreateSurface(&ddsd, &g_pDDSBack, NULL);
+	g_pDDSPrimary = g_pDDSBack;
+	return hRet;
 }
+
 
 HRESULT KLoadImage(void)
 {
 	// Loading image here
 	
-	SmallFont=DDLoadBitmap(g_pDD,"images\\sfont.bmp",0,0);
+	SmallFont=DDLoadBitmap(g_pDD,"IMAGES/sFont.png",0,0);
 	if(SmallFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Font.","ERROR",0);
@@ -4319,28 +4155,28 @@ HRESULT KLoadImage(void)
 
 	DisplayMessage(0,0,"Loading Image");
 
-	GameTITLE = DDLoadBitmap(g_pDD,"images\\Title.bmp",0,0);
+	GameTITLE = DDLoadBitmap(g_pDD,"IMAGES/title.png",0,0);
 	if(GameTITLE == NULL)
 	{
 		MessageBox(hWnd,"Cannot Load GAMETITLE","ERROR",0);
 		return FALSE;
 	}
 
-	Background = DDLoadBitmap(g_pDD,"images\\back.bmp",0,0);
+	Background = DDLoadBitmap(g_pDD,"IMAGES/back.png",0,0);
 	if(Background==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Background.","ERROR",0);
 		return FALSE;
 	}
 
-	SelectBack = DDLoadBitmap(g_pDD,"images\\SelectBack.bmp",0,0);
+	SelectBack = DDLoadBitmap(g_pDD,"IMAGES/selectBack.png",0,0);
 	if(SelectBack==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Select Background.","ERROR",0);
 		return FALSE;
 	}
 
-	JudgeFont = DDLoadBitmap(g_pDD,"images\\Judgement.bmp",0,0);
+	JudgeFont = DDLoadBitmap(g_pDD,"IMAGES/judgement.png",0,0);
 	if(JudgeFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Judgement Font.","ERROR",0);
@@ -4348,7 +4184,7 @@ HRESULT KLoadImage(void)
 	}
 	DDSetColorKey(JudgeFont,CLR_INVALID);
 	
-	NumberFont = DDLoadBitmap(g_pDD,"images\\Number.bmp",0,0);
+	NumberFont = DDLoadBitmap(g_pDD,"IMAGES/number.png",0,0);
 	if(NumberFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Number Font.","ERROR",0);
@@ -4356,7 +4192,7 @@ HRESULT KLoadImage(void)
 	}
 	DDSetColorKey(NumberFont,CLR_INVALID);
 
-	ComboFont = DDLoadBitmap(g_pDD,"images\\Combo.bmp",0,0);
+	ComboFont = DDLoadBitmap(g_pDD,"IMAGES/combo.png",0,0);
 	if(ComboFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Combo Font.","ERROR",0);
@@ -4364,42 +4200,42 @@ HRESULT KLoadImage(void)
 	}
 	DDSetColorKey(ComboFont,CLR_INVALID);
 
-	NoDISC=DDLoadBitmap(g_pDD,"images\\nodisc.bmp",0,0);
+	NoDISC=DDLoadBitmap(g_pDD,"IMAGES/noDisc.png",0,0);
 	if(NoDISC==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load NoDISC.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load NoDISC.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(NoDISC,CLR_INVALID);
 
-	ShiftLeft=DDLoadBitmap(g_pDD,"images\\Shiftl.bmp",0,0);
+	ShiftLeft=DDLoadBitmap(g_pDD,"IMAGES/shiftL.png",0,0);
 	if(ShiftLeft==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load Shiftl.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load Shiftl.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(ShiftLeft,CLR_INVALID);
 
-	ShiftRight=DDLoadBitmap(g_pDD,"images\\Shiftr.bmp",0,0);
+	ShiftRight=DDLoadBitmap(g_pDD,"IMAGES/shiftR.png",0,0);
 	if(ShiftRight==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load Shiftr.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load Shiftr.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(ShiftRight,CLR_INVALID);
 
-	GaugeWaku=DDLoadBitmap(g_pDD,"images\\GaugeWaku.bmp",0,0);
+	GaugeWaku=DDLoadBitmap(g_pDD,"IMAGES/gaugeWaku.png",0,0);
 	if(GaugeWaku==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load GaugeWaku.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load gaugeWaku.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(GaugeWaku,CLR_INVALID);
 
-	Gauge=DDLoadBitmap(g_pDD,"images\\Gauge.bmp",0,0);
+	Gauge=DDLoadBitmap(g_pDD,"IMAGES/gauge.png",0,0);
 	if(Gauge==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load Gauge.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load gauge.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(Gauge,CLR_INVALID);
@@ -4407,14 +4243,14 @@ HRESULT KLoadImage(void)
 	Arrow1=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_ARROW1),0,0);
 	if(Arrow1==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load Arrow1.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load Arrow1.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(Arrow1,CLR_INVALID);
 	Arrow2=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_ARROW2),0,0);
 	if(Arrow2==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load arrow2.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load arrow2.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(Arrow2,CLR_INVALID);
@@ -4422,7 +4258,7 @@ HRESULT KLoadImage(void)
 	wArrow=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(ID_ARROW),0,0);
 	if(wArrow==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load arrow.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load arrow.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(wArrow,CLR_INVALID);
@@ -4431,7 +4267,7 @@ HRESULT KLoadImage(void)
 	pArrow1=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_PARROW1),0,0);
 	if(pArrow1==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load pArrow.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load pArrow.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(pArrow1,CLR_INVALID);
@@ -4439,7 +4275,7 @@ HRESULT KLoadImage(void)
 	pArrow3=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_PARROW3),0,0);
 	if(pArrow3==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load pArrow.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load pArrow.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(pArrow3,CLR_INVALID);
@@ -4447,7 +4283,7 @@ HRESULT KLoadImage(void)
 	pArrow5=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_PARROW5),0,0);
 	if(pArrow5==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load pArrow5.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load pArrow5.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(pArrow5,CLR_INVALID);
@@ -4455,14 +4291,14 @@ HRESULT KLoadImage(void)
 	pArrow7=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_PARROW7),0,0);
 	if(pArrow7==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load pArrow7.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load pArrow7.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(pArrow7,CLR_INVALID);
 	pArrow9=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_PARROW9),0,0);
 	if(pArrow9==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load pArrow9.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load pArrow9.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(pArrow9,CLR_INVALID);
@@ -4470,14 +4306,14 @@ HRESULT KLoadImage(void)
 	cArrow1=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_CARROW1),0,0);
 	if(cArrow1==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load cArrow.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load cArrow.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(cArrow1,CLR_INVALID);
 	cArrow3=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_CARROW3),0,0);
 	if(cArrow3==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load cArrow.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load cArrow.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(cArrow3,CLR_INVALID);
@@ -4485,7 +4321,7 @@ HRESULT KLoadImage(void)
 	cArrow5=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_CARROW5),0,0);
 	if(cArrow5==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load cArrow5.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load cArrow5.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(cArrow5,CLR_INVALID);
@@ -4493,113 +4329,113 @@ HRESULT KLoadImage(void)
 	cArrow7=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_CARROW7),0,0);
 	if(cArrow7==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load cArrow7.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load cArrow7.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(cArrow7,CLR_INVALID);
 	cArrow9=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_CARROW9),0,0);
 	if(cArrow9==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load cArrow9.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load cArrow9.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(cArrow9,CLR_INVALID);
-	ModeIcon=DDLoadBitmap(g_pDD, "images\\ModeIcon.bmp",0,0);
+	ModeIcon=DDLoadBitmap(g_pDD, "IMAGES/modeIcon.png",0,0);
 	if(ModeIcon==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load ModeIcon.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load modeIcon.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(ModeIcon, CLR_INVALID);
-	g_cFont=DDLoadBitmap(g_pDD, "images\\CFont.bmp",0,0);
+	g_cFont=DDLoadBitmap(g_pDD, "IMAGES/cFont.png",0,0);
 	if(g_cFont==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load CFont.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load CFont.png",0,0);
 		return	FALSE;
 	}
 	DDSetColorKey(g_cFont, CLR_INVALID);
 	CKey_CFont=DDColorMatch(g_cFont,CLR_INVALID);
 
-	ResultFont=DDLoadBitmap(g_pDD, "images\\ResFont.bmp",0,0);
+	ResultFont=DDLoadBitmap(g_pDD, "IMAGES/resFont.png",0,0);
 	if(ResultFont==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load ResFont.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load resFont.png",0,0);
 		return	FALSE;
 	}
 	DDSetColorKey(ResultFont, CLR_INVALID);
-	ResultBack=DDLoadBitmap(g_pDD, "images\\ResBack.bmp",0,0);
+	ResultBack=DDLoadBitmap(g_pDD, "IMAGES/resBack.png",0,0);
 	if(ResultBack==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load ResBack.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load Resback.png",0,0);
 		return FALSE;
 	}
-	StageCount=DDLoadBitmap(g_pDD, "images\\StageCount.bmp",0,0);
+	StageCount=DDLoadBitmap(g_pDD, "IMAGES/stageCount.png",0,0);
 	if(StageCount==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load StageCount.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load stageCount.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(StageCount, CLR_INVALID);
 
-	Score=DDLoadBitmap(g_pDD,"images\\Score.bmp",0,0);
+	Score=DDLoadBitmap(g_pDD,"IMAGES/score.png",0,0);
 	if(Score==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load Score.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load score.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(Score,CLR_INVALID);
 
-	DeadScreen=DDLoadBitmap(g_pDD,"images\\Dead.bmp",0,0);
+	DeadScreen=DDLoadBitmap(g_pDD,"IMAGES/dead.png",0,0);
 	if(DeadScreen==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load DeadScreen.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load DeadScreen.png",0,0);
 		return FALSE;
 	}
-	GameOver=DDLoadBitmap(g_pDD,"images\\GameOver.bmp",0,0);
+	GameOver=DDLoadBitmap(g_pDD,"IMAGES/gameOver.png",0,0);
 	if(GameOver==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load GameOver.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load GameOver.png",0,0);
 		return FALSE;
 	}
-	Logo=DDLoadBitmap(g_pDD,"images\\Logo.bmp",0,0);
+	Logo=DDLoadBitmap(g_pDD,"IMAGES/logo.png",0,0);
 	if(Logo==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load Logo.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load logo.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(Logo,CLR_INVALID);
-	Diff=DDLoadBitmap(g_pDD,"images\\Diff.bmp",0,0);
+	Diff=DDLoadBitmap(g_pDD,"IMAGES/diff.png",0,0);
 	if(Diff==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load Diff.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load diff.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(Diff,CLR_INVALID);
-	DoubleIcon=DDLoadBitmap(g_pDD,"images\\DoubleIcon.bmp",0,0);
+	DoubleIcon=DDLoadBitmap(g_pDD,"IMAGES/doubleIcon.png",0,0);
 	if(DoubleIcon==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load DoubleIcon.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load doubleIcon.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(DoubleIcon,CLR_INVALID);
-	CrazyIcon=DDLoadBitmap(g_pDD,"images\\CrazyIcon.bmp",0,0);
+	CrazyIcon=DDLoadBitmap(g_pDD,"IMAGES/crazyIcon.png",0,0);
 	if(CrazyIcon==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load CrazyIcon.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load crazyIcon.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(CrazyIcon,CLR_INVALID);
-	EasyIcon=DDLoadBitmap(g_pDD,"images\\EasyIcon.bmp",0,0);
+	EasyIcon=DDLoadBitmap(g_pDD,"IMAGES/easyIcon.png",0,0);
 	if(EasyIcon==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load EasyIcon.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load easyIcon.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(EasyIcon,CLR_INVALID);
-	HardIcon=DDLoadBitmap(g_pDD,"images\\HardIcon.bmp",0,0);
+	HardIcon=DDLoadBitmap(g_pDD,"IMAGES/hardIcon.png",0,0);
 	if(HardIcon==NULL)
 	{
-		MessageBox(hWnd,"Cannot Load HardIcon.bmp",0,0);
+		MessageBox(hWnd,"Cannot Load hardIcon.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(HardIcon,CLR_INVALID);
@@ -4607,407 +4443,44 @@ HRESULT KLoadImage(void)
 	return DD_OK;
 }
 
-int PASCAL WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance, LPSTR lpCmdLine,int nCmdShow)
+int main(int argc, char *argv[])
 {
-    MSG							msg;
+	(void)argc; (void)argv;
 
-// Debug File name definition
-	time_t	ltime;
-	struct tm *today;
+	g_bActive = TRUE;
 
-	time(&ltime);
-	today=localtime(&ltime);
-	sprintf(g_szDebugName,"%d%d%d.txt",today->tm_year+1900, today->tm_mon+1, today->tm_mday);
-// define end :)
-
-	CoInitialize(NULL);
-	
-	if(FAILED(InitWin(hInstance, 640, 480, nCmdShow)))return FALSE;
+	if(FAILED(InitWin(NULL, 640, 480, 0)))return FALSE;
 
 	if(FAILED(InitDD()))return FALSE;
 	if(FAILED(KLoadImage()))return FALSE;
 
 	Read();
- 	if(FAILED(InitDSound(hWnd,22050,8,2)))return FALSE;
+ 	if(FAILED(InitDSound(NULL,22050,8,2)))return FALSE;
 	
 	WaveSet_Loading();
- 	if(FAILED(InitDI(hInstance)))return FALSE;
+ 	if(FAILED(InitDI(NULL)))return FALSE;
 
 	CFGInitialize();
 
-	while (TRUE)
-    {
-        if (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
-        {
-            if (!GetMessage(&msg, NULL, 0, 0))
-                return msg.wParam;
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-        else if (g_bActive)
-        {
-            UpdateFrame();
-        }
-        else
-        {
-            // Make sure we go to sleep if we have nothing else to do
-            WaitMessage();
-        }
-    }
+	while (!g_quitRequested)
+	{
+		KIU_PollEvents();
+		if (g_quitRequested) break;
+		UpdateFrame();
+	}
 
+	KIU_Quit();
+	return 0;
 }
+
 
 HRESULT TransAlphaImproved(LPDIRECTDRAWSURFACE src, LPDIRECTDRAWSURFACE dest, 
 				   LONG lDestX, LONG lDestY, RECT srcRect, WORD ALPHA, DWORD ColorKey, WORD BPP)
 {
-	int register i,j;
-	int height,width;
-	BYTE* lpSprite;
-	BYTE* lpDest;
-	WORD dPitch, SpritePitch;
-	DWORD sColorKey;
-	DWORD sTemp,dTemp;
-	DWORD sr,sg,sb,dr,dg,db;
-	WORD sbuf,dbuf;
-	DWORD Result;
-	BOOL oddWidth = FALSE;
-	DDSURFACEDESC srcDDSD, destDDSD;
-	DWORD REDC,GREENC, BLUEC;
-	DWORD PLUS64;
-	DWORD ALPHABY4;
-	DWORD doubleColorKey;
-
-
-	// Check the ALPHA value
-	if (ALPHA < 0)
-		ALPHA = 0;
-	else if (ALPHA > 256)
-		ALPHA = 256;
-
-	// Set height and width of SPRITE
-    height = srcRect.bottom - srcRect.top;
-    width = srcRect.right - srcRect.left; 
-
-	// Lock down both surfaces for read and write
-	memset(&srcDDSD, 0, sizeof(srcDDSD));
-	srcDDSD.dwSize = sizeof(srcDDSD);
-	src->Lock(NULL, &srcDDSD, DDLOCK_WAIT, NULL);
-    
-	memset(&destDDSD, 0, sizeof(destDDSD));
-	destDDSD.dwSize = sizeof(destDDSD);
-	dest->Lock(NULL, &destDDSD, DDLOCK_WAIT, NULL);
-
-    // Get the color key for sprite surface
-    sColorKey = ColorKey;
-
-	// Set the pitch for both surfaces
-    SpritePitch = (WORD)srcDDSD.lPitch;
-    dPitch      = (WORD)destDDSD.lPitch;
-
-    // Initialize the pointers to the upper left hand corner of surface
-    lpSprite = (BYTE*)srcDDSD.lpSurface;
-    lpDest   = (BYTE*)destDDSD.lpSurface;
-
-	// Do some work outside of the loop
-	PLUS64         = 64 | (64 << 16);
-	ALPHABY4      = (ALPHA / 4) | ((ALPHA / 4) << 16);
-	doubleColorKey = ColorKey | (ColorKey << 16);
-
-	switch(BPP)
-	{
-	case 8:
-		// IMHO paletized modes are a thing of the past please feel free to 
-		// implement this if you so desire.
-		break;
-
-	case 15:  ////////////////////////////////////////////////////////////////////////
-		      //
-		      //  WARNING!!!: I do not have a video card that uses the 5-5-5 format 
-		      //              this barnch of code has not be tested.
-		      //
-		      ////////////////////////////////////////////////////////////////////////
-		
-		// Initialize the pointers to the first pixel in the rectangle
-		lpSprite += (srcRect.top * SpritePitch) + (srcRect.left * 2);
-		lpDest   += (lDestY * dPitch) + (lDestX * 2);
-
-		// Set the horizontal padding
-		sbuf = (WORD)(SpritePitch - (2 * width));
-		dbuf = (WORD)(dPitch - (2 * width));
-
-		// Is the Sprite width odd or even?
-		if (width % 2 == 1)
-		{
-			oddWidth = TRUE;
-			width = (width - 1) / 2; //div by 2, processing 2 pixels at a time.
-		}
-		else
-			width = width / 2;  //div by 2, processing 2 pixels at a time.
-
-		i = height;
-		do
-		{
-			if (oddWidth)
-			{
-				sTemp = *((WORD*)lpSprite);
-
-				if (sTemp != sColorKey)
-				{
-					dTemp = *((WORD*)lpDest);
-					sb = sTemp & 0x1f;
-					db = dTemp & 0x1f;
-					sg = (sTemp >> 5) & 0x1f;
-					dg = (dTemp >> 5) & 0x1f;
-					sr = (sTemp >> 10) & 0x1f;
-					dr = (dTemp >> 10) & 0x1f;
-
-					*((WORD*)lpDest) = (WORD)((ALPHA * (db - sb) >> 8) + sb |
-						((ALPHA * (dg - sg) >> 8) + sg) << 5 |
-						((ALPHA * (dr - sr) >> 8) + sr) << 10);
-				}
-
-				lpDest += 2;
-				lpSprite += 2;
-			}
-			j = width;
-			do
-			{
-				sTemp = *((DWORD*)lpSprite);
-
-				if ( sTemp != doubleColorKey )
-				{
-					dTemp = *((DWORD*)lpDest);
-
-					sb = sTemp & 0x001F001F;
-					db = dTemp & 0x001F001F;
-					sg = (sTemp >> 5)  & 0x001F001F;
-					dg = (dTemp >> 5)  & 0x001F001F;
-					sr = (sTemp >> 10) & 0x001F001F;
-					dr = (dTemp >> 10) & 0x001F001F;
-
-					BLUEC  = ((((ALPHA * ((sb + PLUS64) - db)) >> 8) + db) - ALPHABY4) & 0x001F001F;
-					GREENC = (((((ALPHA * ((sg + PLUS64) - dg)) >> 8) + dg) - ALPHABY4) & 0x001F001F) << 5;
-					REDC   = (((((ALPHA * ((sr + PLUS64) - dr)) >> 8) + dr) - ALPHABY4) & 0x001F001F) << 10;
-
-					Result = BLUEC | GREENC | REDC;
-
-					if ( (sTemp >> 16) == ColorKey )
-							Result = (Result & 0xFFFF) | (dTemp & 0xFFFF0000);
-					else if ( (sTemp & 0xFFFF) == ColorKey )
-							Result = (Result & 0xFFFF0000) | (dTemp & 0xFFFF);
-
-					*((DWORD*)lpDest) = Result;
-				}
-				lpDest    += 4;
-				lpSprite  += 4;
-
-			}while (--j > 0);
-
-			lpDest   += dbuf;
-			lpSprite += sbuf;
-
-		}while (--i > 0);
-
-		break;
-
-	case 16:
-
-		// Initialize the pointers to the first pixel in the rectangle
-		lpSprite += (srcRect.top * SpritePitch) + (srcRect.left * 2);
-		lpDest   += (lDestY * dPitch) + (lDestX * 2);
-
-		// Set the horizontal padding
-		sbuf = (WORD)(SpritePitch - (2 * width));
-		dbuf = (WORD)(dPitch - (2 * width));
-
-		// Is the Sprite width odd or even?
-		if (width % 2 == 1)
-		{
-			oddWidth = TRUE;
-			width = (width - 1) / 2; //div by 2, processing 2 pixels at a time.
-		}
-		else
-			width = width / 2;  //div by 2, processing 2 pixels at a time.
-
-
-		i = height;
-		do
-		{
-			if (oddWidth)
-			{
-				sTemp = *((WORD*)lpSprite);
-
-				if (sTemp != ColorKey)
-				{
-					dTemp = *((WORD*)lpDest);
-					sb = sTemp & 0x1f;
-					db = dTemp & 0x1f;
-					sg = (sTemp >> 5) & 0x3f;
-					dg = (dTemp >> 5) & 0x3f;
-					sr = (sTemp >> 11) & 0x1f;
-					dr = (dTemp >> 11) & 0x1f;
-
-					*((WORD*)lpDest) = (WORD)((ALPHA * (sb - db) >> 8) + db |
-						((ALPHA * (sg - dg) >> 8) + dg) << 5 |
-						((ALPHA * (sr - dr) >> 8) + dr) << 11);
-				}
-
-				lpDest   += 2;
-				lpSprite += 2;
-			}
-			j = width;
-			do
-			{
-				sTemp = *((DWORD*)lpSprite);
-
-				if ( sTemp != doubleColorKey )
-				{
-					dTemp = *((DWORD*)lpDest);
-
-					sb = sTemp & 0x001F001F;
-					db = dTemp & 0x001F001F;
-					sg = (sTemp >> 5)  & 0x003F003F;
-					dg = (dTemp >> 5)  & 0x003F003F;
-					sr = (sTemp >> 11) & 0x001F001F;
-					dr = (dTemp >> 11) & 0x001F001F;
-
-					BLUEC  = ((((ALPHA * ((sb + PLUS64) - db)) >> 8) + db) - ALPHABY4) & 0x001F001F;
-					GREENC = (((((ALPHA * ((sg + PLUS64) - dg)) >> 8) + dg) - ALPHABY4) & 0x003F003F) << 5;
-					REDC   = (((((ALPHA * ((sr + PLUS64) - dr)) >> 8) + dr) - ALPHABY4) & 0x001F001F) << 11;
-
-					Result = BLUEC | GREENC | REDC;
-
-					if ( (sTemp >> 16) == ColorKey )
-							Result = (Result & 0xFFFF) | (dTemp & 0xFFFF0000);
-					else if ( (sTemp & 0xFFFF) == ColorKey )
-							Result = (Result & 0xFFFF0000) | (dTemp & 0xFFFF);
-
-					*((DWORD*)lpDest) = Result;
-				}
-				lpDest    += 4;
-				lpSprite  += 4;
-
-			}while (--j > 0);
-
-			lpDest   += dbuf;
-			lpSprite += sbuf;
-
-		}while (--i > 0);
-
-		break;
-
-	case 24:  ////////////////////////////////////////////////////////////////////////
-		      //
-		      //  WARNING!!!: I do not have a video card capable of 24bit rendering 
-		      //              this barnch of code has not be tested.
-		      //
-		      ////////////////////////////////////////////////////////////////////////
-
-		// Initialize the pointers to the first pixel in the rectangle
-		lpSprite += (srcRect.top * SpritePitch) + (srcRect.left * 3);
-		lpDest   += (lDestY * dPitch) + (lDestX * 3);
-
-		// Set the horizontal padding
-		sbuf = (WORD)(SpritePitch - (3 * width));
-		dbuf = (WORD)(dPitch - (3 * width));
-
-		i = height;
-		do
-		{
-			j = width;
-			do
-			{
-				sTemp = *((DWORD*)lpSprite);
-
-				if ((sTemp & 0xFFFFFF) != sColorKey)
-				{
-					dTemp = *((DWORD*)lpDest);
-					sb = sTemp & 0xFF;
-					db = dTemp & 0xFF;
-					sg = (sTemp >> 8) & 0xFF;
-					dg = (dTemp >> 8) & 0xFF;
-					sr = (sTemp >> 16) & 0xFF;
-					dr = (dTemp >> 16) & 0xFF;
-
-					Result = (DWORD)((ALPHA * (db - sb) >> 8) + sb |
-						((ALPHA * (dg - sg) >> 8) + sg) << 8 |
-						((ALPHA * (dr - sr) >> 8) + sr) << 16);
-
-					*((WORD*)lpDest) = (WORD)(Result & 0xFFFF);
-					lpDest += 2;
-					*lpDest = (BYTE)(Result >> 16);
-					lpDest++;
-				}
-				else
-				{
-					lpDest += 3;
-				}
-
-				lpSprite += 3;
-
-			}while (--j > 0);
-			lpDest   += dbuf;
-			lpSprite += sbuf;
-
-		}while (--i > 0);
-		break;
-
-	case 32:
-
-		// Initialize the pointers to the first pixel in the rectangle
-		lpSprite += (srcRect.top * SpritePitch) + (srcRect.left * 4);
-		lpDest   += (lDestY * dPitch) + (lDestX * 4);
-
-		// Set the horizontal padding
-		sbuf = (WORD)(SpritePitch - (4 * width));
-		dbuf = (WORD)(dPitch - (4 * width));
-
-		i = height;
-		do
-		{
-			j = width;
-			do
-			{
-				sTemp = *((DWORD*)lpSprite);
-
-				if ((sTemp & 0xFFFFFF) != sColorKey)
-				{
-					dTemp = *((DWORD*)lpDest);
-					sb = sTemp & 0xFF;
-					db = dTemp & 0xFF;
-					sg = (sTemp >> 8) & 0xFF;
-					dg = (dTemp >> 8) & 0xFF;
-					sr = (sTemp >> 16) & 0xFF;
-					dr = (dTemp >> 16) & 0xFF;
-
-					Result = (DWORD)((ALPHA * (db - sb) >> 8) + sb |
-						((ALPHA * (dg - sg) >> 8) + sg) << 8 |
-						((ALPHA * (dr - sr) >> 8) + sr) << 16);
-
-					*((WORD*)lpDest) = (WORD)(Result & 0xFFFF);
-					lpDest += 2;
-					*lpDest = (BYTE)(Result >> 16);
-					lpDest += 2;
-				}
-				else
-				{
-					lpDest += 4;
-				}
-
-				lpSprite += 4;
-
-			}while (--j > 0);
-			lpDest   += dbuf;
-			lpSprite += sbuf;
-
-		}while (--i > 0);
-		break;
-	} // End RGB Format switch statement
-
-
-	src->Unlock(NULL);
-	dest->Unlock(NULL);
-
-	return DD_OK;
-}
-
+	/* SDL3 port: Direct surface locking not supported.
+	   Fall back to a simple opaque blit. */
+	(void)ALPHA; (void)ColorKey; (void)BPP;
+	if (!src || !dest) return E_FAIL;
+	return dest->BltFast((int)lDestX, (int)lDestY, src, &srcRect,
+	                      DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
+} 

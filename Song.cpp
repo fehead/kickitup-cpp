@@ -10,11 +10,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include <dsound.h>
-#include "SONG.h"
+/* dsound.h via main.h */
+#include "Song.h"
 #include <stdio.h>
-#include <io.h>
-#include <windows.h>
+#include <cstdio>
+/* windows.h via sdl3_kick.h */
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -347,14 +347,14 @@ void SONG::ReadCrazy_1_STF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Crazy,&STP.step,sizeof(STP.step));
 
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }
@@ -383,14 +383,14 @@ void SONG::ReadCrazy_1_KSF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Crazy,&STP.step,sizeof(STP.step));
 
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }
@@ -411,14 +411,14 @@ void SONG::ReadCrazy_2_STF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Crazy1,&STP.step,sizeof(STP.step));
 
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }
@@ -447,14 +447,14 @@ void SONG::ReadCrazy_2_KSF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Crazy1,&STP.step,sizeof(STP.step));
 
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }
@@ -475,14 +475,14 @@ void SONG::ReadHard_1_STF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Hard,&STP.step,sizeof(STP.step));
 
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }
@@ -511,14 +511,14 @@ void SONG::ReadHard_1_KSF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Hard,&STP.step,sizeof(STP.step));
 
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }
@@ -539,14 +539,14 @@ void SONG::ReadHard_2_STF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Hard1,&STP.step,sizeof(STP.step));
 
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }
@@ -575,14 +575,14 @@ void SONG::ReadHard_2_KSF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Hard1,&STP.step,sizeof(STP.step));
 
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }
@@ -603,14 +603,14 @@ void SONG::ReadEasy_1_STF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Easy,&STP.step,sizeof(STP.step));
 
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }
@@ -639,14 +639,14 @@ void SONG::ReadEasy_1_KSF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Easy,&STP.step,sizeof(STP.step));
 
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 
@@ -668,14 +668,14 @@ void SONG::ReadEasy_2_STF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Easy1,&STP.step,sizeof(STP.step));
 
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }
@@ -704,14 +704,14 @@ void SONG::ReadEasy_2_KSF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Easy1,&STP.step,sizeof(STP.step));
 	
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }
@@ -733,14 +733,14 @@ void SONG::ReadDouble_STF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Double,&STP.step,sizeof(STP.step));
 
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }
@@ -769,14 +769,14 @@ void SONG::ReadDouble_KSF(char *Filename)
 	sprintf(SongTitle,"%s",STP.name);
 	memcpy(&Data_Double,&STP.step,sizeof(STP.step));
 	
-	GetFullPathName("Title.bmp",MAX_PATH,TitleImgPath,&lpPart);
-	GetFullPathName("Back.bmp",MAX_PATH,BgImgPath,&lpPart);
+	GetFullPathName("title.png",MAX_PATH,TitleImgPath,&lpPart);
+	GetFullPathName("back.png",MAX_PATH,BgImgPath,&lpPart);
 	GetFullPathName("Song.wav",MAX_PATH,PlayWavPath,&lpPart);
 	GetFullPathName("Song.mp3",MAX_PATH,PlayMp3Path,&lpPart);
 	GetFullPathName("Song.mpg",MAX_PATH,PlayMpgPath,&lpPart);
 	GetFullPathName("Intro.wav",MAX_PATH,IntroWavPath,&lpPart);
 	GetFullPathName("Intro.mp3",MAX_PATH,IntroMp3Path,&lpPart);
-	DiskImage=DDLoadBitmap(g_pDD,"Disc.bmp",0,0);
+	DiskImage=DDLoadBitmap(g_pDD,"disc.png",0,0);
 	if(DiskImage!=NULL)DDSetColorKey(DiskImage,CLR_INVALID);
 	else DiskImage=NoDISC;
 }

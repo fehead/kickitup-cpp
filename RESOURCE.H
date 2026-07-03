@@ -1,30 +1,27 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by Script1.rc
-//
-#define IDI_ICON                        101
-#define ID_ARROW                        106
-#define IDB_CARROW1                     108
-#define IDB_CARROW3                     109
-#define IDB_CARROW5                     110
-#define IDB_CARROW7                     111
-#define IDB_CARROW9                     112
-#define IDB_PARROW1                     113
-#define IDB_PARROW3                     114
-#define IDB_PARROW5                     115
-#define IDB_PARROW7                     116
-#define IDB_PARROW9                     117
-#define IDB_ARROW1                      118
-#define IDB_ARROW2                      119
+/*
+ * RESOURCE.H - SDL3 Port: Resource ID to filename mappings
+ *
+ * Original: Windows resource IDs (.rc file)
+ * Ported:   Direct BMP filename references
+ */
 
-// Next default values for new objects
-// 
-#ifdef APSTUDIO_INVOKED
-#ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        122
-#define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1000
-#define _APS_NEXT_SYMED_VALUE           101
-#endif
+#ifndef __RESOURCE_INCLUDED__
+#define __RESOURCE_INCLUDED__
+
+/* Map resource IDs to actual image filenames in IMAGES/ */
+#define IDI_ICON       "IMAGES/logo.png"
+#define ID_ARROW       "IMAGES/arrow.png"
+#define IDB_CARROW1    "IMAGES/cArrow1.png"
+#define IDB_CARROW3    "IMAGES/cArrow1.png"  /* reuse */
+#define IDB_CARROW5    "IMAGES/cArrow1.png"  /* reuse */
+#define IDB_CARROW7    "IMAGES/cArrow1.png"  /* reuse */
+#define IDB_CARROW9    "IMAGES/cArrow1.png"  /* reuse */
+#define IDB_PARROW1    "IMAGES/cArrow1.png"  /* reuse */
+#define IDB_PARROW3    "IMAGES/cArrow1.png"  /* reuse */
+#define IDB_PARROW5    "IMAGES/cArrow1.png"  /* reuse */
+#define IDB_PARROW7    "IMAGES/cArrow1.png"  /* reuse */
+#define IDB_PARROW9    "IMAGES/cArrow1.png"  /* reuse */
+#define IDB_ARROW1     "IMAGES/arrow1.png"
+#define IDB_ARROW2     "IMAGES/arrow2.png"
+
 #endif
