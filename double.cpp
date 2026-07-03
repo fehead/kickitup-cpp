@@ -15,15 +15,15 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "SELECT.H"
-#include "Double.h"
-#include "Main.h"
+#include "select.h"
+#include "double.h"
+#include "main.h"
 //#include "sound.h"
 /* dsound.h via main.h */
 #include "dsutil.h"
 
-#include "Input.h"
-#include "Config.h"
+#include "input.h"
+#include "config.h"
 
 #define LP1DB1_X		62
 #define LP7DB1_X		62+PUMP_SPRITE
@@ -39,7 +39,7 @@
 
 
 extern	int					start,start2,start3,tick;
-extern	DWORD				bunki,bunki2;
+extern	uint32_t				bunki,bunki2;
 extern	int					start1;
 extern	char				Title[MAX_PATH+1];
 extern	double				bpm;
@@ -47,33 +47,33 @@ extern	double				bpm2;
 extern	double				bpm3;
 extern	char				SongName[MAX_PATH+1];
 
-extern	LPDIRECTDRAWSURFACE	wArrow;
+extern	Surface*	wArrow;
 
-extern	LPDIRECTDRAWSURFACE	cArrow1;
-extern	LPDIRECTDRAWSURFACE	cArrow3;
-extern	LPDIRECTDRAWSURFACE	cArrow5;
-extern	LPDIRECTDRAWSURFACE	cArrow7;
-extern	LPDIRECTDRAWSURFACE	cArrow9;
+extern	Surface*	cArrow1;
+extern	Surface*	cArrow3;
+extern	Surface*	cArrow5;
+extern	Surface*	cArrow7;
+extern	Surface*	cArrow9;
 
-extern	LPDIRECTDRAWSURFACE	pArrow1;
-extern	LPDIRECTDRAWSURFACE	pArrow3;
-extern	LPDIRECTDRAWSURFACE	pArrow5;
-extern	LPDIRECTDRAWSURFACE	pArrow7;
-extern	LPDIRECTDRAWSURFACE	pArrow9;
+extern	Surface*	pArrow1;
+extern	Surface*	pArrow3;
+extern	Surface*	pArrow5;
+extern	Surface*	pArrow7;
+extern	Surface*	pArrow9;
 
-extern	LPDIRECTDRAWSURFACE	Arrow1;
-extern	LPDIRECTDRAWSURFACE	Arrow2;
+extern	Surface*	Arrow1;
+extern	Surface*	Arrow2;
 
-extern	LPDIRECTDRAWSURFACE	SongBack;
-//extern	LPDIRECTDRAWSURFACE	g_pDDSBack;
-extern	LPDIRECTDRAWSURFACE	GaugeWaku;
-extern	LPDIRECTDRAWSURFACE	JudgeFont;
-extern	LPDIRECTDRAWSURFACE	NumberFont;
-extern	LPDIRECTDRAWSURFACE	ComboFont;
-extern	LPDIRECTDRAWSURFACE	Gauge;
-extern	LPDIRECTDRAWSURFACE	StageCount;
+extern	Surface*	SongBack;
+//extern	Surface*	g_pDDSBack;
+extern	Surface*	GaugeWaku;
+extern	Surface*	JudgeFont;
+extern	Surface*	NumberFont;
+extern	Surface*	ComboFont;
+extern	Surface*	Gauge;
+extern	Surface*	StageCount;
 
-extern	LPDIRECTSOUNDBUFFER	g_dsBeat;
+extern	Sound*	g_dsBeat;
 
 //extern	CWAVE				*WavePrimary;
 
@@ -92,16 +92,16 @@ BOOL	bModeRandom;
 BOOL	b4dMix;
 BOOL	bModeVanish;
 
-extern DWORD	dwGameCount;
+extern uint32_t	dwGameCount;
 extern	KIUCONFIG	KCFG;
 
 void DrawGaugeDB_1p(void)
 {
 	int CurG;
 	int i;
-	RECT sRect;
+	Rect sRect;
 
-	CurG=Gauge1p;
+	CurG=g_p1.gauge;
 	
 	if(CurG<0)CurG=0;
 
@@ -146,9 +146,9 @@ void DrawGaugeDB_2p(void)
 {
 	int CurG;
 	int i;
-	RECT sRect;
+	Rect sRect;
 
-	CurG=Gauge1p;
+	CurG=g_p1.gauge;
 	
 	if(CurG<0)CurG=0;
 
@@ -190,42 +190,42 @@ void DrawGaugeDB_2p(void)
 }
 void DrawJudgeDB(void)
 {
-	static DWORD cur, last;
+	static uint32_t cur, last;
 	static char LastJudge;
 
 	char chCombo1p[255];
 
-	static DWORD sec,delta;
+	static uint32_t sec,delta;
 
-	RECT rRect, cRect, destRect;
+	Rect rRect, cRect, destRect;
 	int Loop;
 
-	if(Judgement1p)
+	if(g_p1.judgement)
 	{
-		dwState=0;
+		g_p1.state=0;
 	}
-	else if(dwState)
+	else if(g_p1.state)
 	{
-		Judgement1p=LastJudge;
+		g_p1.judgement=LastJudge;
 
 		delta=timeGetTime()-sec;
 		if(delta>16)
 		{
 			sec=timeGetTime();
-			if(dwState>=40)
+			if(g_p1.state>=40)
 			{
-				dwState=0;
-				Judgement1p=NONE;
+				g_p1.state=0;
+				g_p1.judgement=NONE;
 			}
 			else
 			{
-				if(delta >16 && delta <32)dwState+=2;
-				else if(delta >=32)dwState+=4;
+				if(delta >16 && delta <32)g_p1.state+=2;
+				else if(delta >=32)g_p1.state+=4;
 			}
 		}
 	}
 
-	switch(Judgement1p)
+	switch(g_p1.judgement)
 	{
 		case NONE:LastJudge=NONE;
 			break;
@@ -235,7 +235,7 @@ void DrawJudgeDB(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y;
-			if(dwState==0)dwState++;
+			if(g_p1.state==0)g_p1.state++;
 			break;
 		case GREAT:
 			LastJudge=GREAT;
@@ -243,7 +243,7 @@ void DrawJudgeDB(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y*2;
-			if(dwState==0)dwState++;
+			if(g_p1.state==0)g_p1.state++;
 			break;
 		case GOOD:
 			LastJudge=GOOD;
@@ -251,7 +251,7 @@ void DrawJudgeDB(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y*3;
-			if(dwState==0)dwState++;
+			if(g_p1.state==0)g_p1.state++;
 			break;
 		case BAD:
 			LastJudge=BAD;
@@ -259,7 +259,7 @@ void DrawJudgeDB(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y*4;
-			if(dwState==0)dwState++;
+			if(g_p1.state==0)g_p1.state++;
 			break;
 		case MISS:
 			LastJudge=MISS;
@@ -267,11 +267,11 @@ void DrawJudgeDB(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y*5;
-			if(dwState==0)dwState++;
+			if(g_p1.state==0)g_p1.state++;
 			break;
 	}
 
-	if(dwState>15)
+	if(g_p1.state>15)
 	{
 		destRect.top=200;
 		destRect.left=200;
@@ -280,22 +280,22 @@ void DrawJudgeDB(void)
 	}
 	else
 	{
-		destRect.top=200-30+(dwState*2);
-		destRect.left=200-60+(dwState*4);
-		destRect.right=200+JUDGE_SIZE_X+60-(dwState*4);
-		destRect.bottom=200+JUDGE_SIZE_Y+30-(dwState*2);
+		destRect.top=200-30+(g_p1.state*2);
+		destRect.left=200-60+(g_p1.state*4);
+		destRect.right=200+JUDGE_SIZE_X+60-(g_p1.state*4);
+		destRect.bottom=200+JUDGE_SIZE_Y+30-(g_p1.state*2);
 	}
 
-	if(Judgement1p)
+	if(g_p1.judgement)
 	{
-		//g_pDDSBack->BltFast(40,200+dwState/2,JudgeFont,&rRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
+		//g_pDDSBack->BltFast(40,200+g_p1.state/2,JudgeFont,&rRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
 		
 		g_pDDSBack->Blt(&destRect, JudgeFont, &rRect,DDBLT_WAIT | DDBLT_KEYSRC , NULL);
 
 		/* 콤보 출력부 입니다. */
-		if((Judgement1p==PERFECT || Judgement1p==GREAT) && Combo1p>3)
+		if((g_p1.judgement==PERFECT || g_p1.judgement==GREAT) && g_p1.combo>3)
 		{
-			sprintf(chCombo1p,"%03d",Combo1p);
+			sprintf(chCombo1p,"%03d",g_p1.combo);
 			
 			for(Loop=0;;Loop++)
 			{
@@ -306,24 +306,24 @@ void DrawJudgeDB(void)
 				cRect.top=0;
 				cRect.bottom=65;
 
-//				g_pDDSBack->BltFast(60+Loop*30+dwState*2,250,ComboFont,&cRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-				if(dwState>10)g_pDDSBack->BltFast(250+Loop*50,250+dwState*2-dwState*2,ComboFont,&cRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-				else g_pDDSBack->BltFast(250+Loop*50,250+dwState*2,ComboFont,&cRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
+//				g_pDDSBack->BltFast(60+Loop*30+g_p1.state*2,250,ComboFont,&cRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
+				if(g_p1.state>10)g_pDDSBack->BltFast(250+Loop*50,250+g_p1.state*2-g_p1.state*2,ComboFont,&cRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
+				else g_pDDSBack->BltFast(250+Loop*50,250+g_p1.state*2,ComboFont,&cRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
 
 				cRect.left=0;
 				cRect.right=150;
 				cRect.top=65;
 				cRect.bottom=100;
-				if(dwState>10)g_pDDSBack->BltFast(250,320+dwState*2-dwState*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
-				else g_pDDSBack->BltFast(250,320+dwState*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
+				if(g_p1.state>10)g_pDDSBack->BltFast(250,320+g_p1.state*2-g_p1.state*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
+				else g_pDDSBack->BltFast(250,320+g_p1.state*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
 			}/* 여기까지 */
 		}
 	}
 
-	Judgement1p=NONE;
+	g_p1.judgement=NONE;
 }
 
-void DrawArrow_DB(DWORD cur)
+void DrawArrow_DB(uint32_t cur)
 {
 	static int arrow_l[20]={0,0,72,72,144,144,216,216,288,288,360,360,432,432,504,504,576,576,648,648};
 	static int arrow_r[20]={72,72,144,144,216,216,288,288,360,360,432,432,504,504,576,576,648,648,720,720};
@@ -331,34 +331,34 @@ void DrawArrow_DB(DWORD cur)
 	static int cArrow_l[20]={0,0,80,80,160,160,240,240,320,320,400,400,480,480,560,560,640,640};
 	static int cArrow_r[20]={80,80,160,160,240,240,320,320,400,400,480,480,560,560,640,640,720,720};
 
-	static BYTE sl1,sl3,sl5,sl7,sl9;
-	static BYTE sr1,sr3,sr5,sr7,sr9;
+	static uint8_t sl1,sl3,sl5,sl7,sl9;
+	static uint8_t sr1,sr3,sr5,sr7,sr9;
 
-	static DWORD statl1,statl3,statl5,statl7,statl9;
-	static DWORD statr1,statr3,statr5,statr7,statr9;
+	static uint32_t statl1,statl3,statl5,statl7,statl9;
+	static uint32_t statr1,statr3,statr5,statr7,statr9;
 
 	static BOOL	Onl1, Onl3, Onl5, Onl7, Onl9;
 	static BOOL	Onr1, Onr3, Onr5, Onr7, Onr9;
 
-	static DWORD cur2;
+	static uint32_t cur2;
 	static int beat;
 
 	static BOOL Crashl1, Crashl3, Crashl5, Crashl7, Crashl9;
 	static BOOL Crashr1, Crashr3, Crashr5, Crashr7, Crashr9;
 
-	static RECT pArrl1,pArrl3,pArrl5,pArrl7,pArrl9;
-	static RECT cArrl1,cArrl3,cArrl5,cArrl7,cArrl9;
+	static Rect pArrl1,pArrl3,pArrl5,pArrl7,pArrl9;
+	static Rect cArrl1,cArrl3,cArrl5,cArrl7,cArrl9;
 
-	static RECT pArrr1,pArrr3,pArrr5,pArrr7,pArrr9;
-	static RECT cArrr1,cArrr3,cArrr5,cArrr7,cArrr9;
+	static Rect pArrr1,pArrr3,pArrr5,pArrr7,pArrr9;
+	static Rect cArrr1,cArrr3,cArrr5,cArrr7,cArrr9;
 
 //	KCFG.auto1_2p = KCFG.auto3_2p = KCFG.auto5_2p = KCFG.auto7_2p = KCFG.auto9_2p = TRUE;
 
 /*	int KCFG.auto1,KCFG.auto3,KCFG.auto5,KCFG.auto7,KCFG.auto9;
 		KCFG.auto1=KCFG.auto3=KCFG.auto5=KCFG.auto7=KCFG.auto9=FALSE;
 */
-	BYTE JudgeTemp=0;
-	BYTE	count;
+	uint8_t JudgeTemp=0;
+	uint8_t	count;
 
 	if(cur2!=cur)
 	{
@@ -563,7 +563,7 @@ void DrawArrow_DB(DWORD cur)
 		}
 	}
 
-	if(sl1 || (PressedKey1p[1]==TRUE) )
+	if(sl1 || (g_p1.pressedKey[1]==TRUE) )
 	{
 		if(sl1==20)
 		{
@@ -574,7 +574,7 @@ void DrawArrow_DB(DWORD cur)
 		{
 			sl1++;
 		}
-		if(PressedKey1p[1]==TRUE)
+		if(g_p1.pressedKey[1]==TRUE)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*HighSpeed_1<Data_Double_y[cur+count] &&
@@ -652,7 +652,7 @@ void DrawArrow_DB(DWORD cur)
 		}
 	}
 
-	if(sl7 || (PressedKey1p[7]==TRUE) )
+	if(sl7 || (g_p1.pressedKey[7]==TRUE) )
 	{
 		if(sl7==20)
 		{
@@ -663,7 +663,7 @@ void DrawArrow_DB(DWORD cur)
 		{
 			sl7++;
 		}
-		if(PressedKey1p[7]==TRUE)
+		if(g_p1.pressedKey[7]==TRUE)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*HighSpeed_7<Data_Double_y[cur+count] &&
@@ -741,7 +741,7 @@ void DrawArrow_DB(DWORD cur)
 		}
 	}
 
-	if(sl5 || (PressedKey1p[5]==TRUE) )
+	if(sl5 || (g_p1.pressedKey[5]==TRUE) )
 	{
 		if(sl5==20)
 		{
@@ -752,7 +752,7 @@ void DrawArrow_DB(DWORD cur)
 		{
 			sl5++;
 		}
-		if(PressedKey1p[5]==TRUE)
+		if(g_p1.pressedKey[5]==TRUE)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*HighSpeed_5<Data_Double_y[cur+count] &&
@@ -830,7 +830,7 @@ void DrawArrow_DB(DWORD cur)
 		}
 	}
 
-	if(sl9 || (PressedKey1p[9]==TRUE) )
+	if(sl9 || (g_p1.pressedKey[9]==TRUE) )
 	{
 		if(sl9==20)
 		{
@@ -841,7 +841,7 @@ void DrawArrow_DB(DWORD cur)
 		{
 			sl9++;
 		}
-		if(PressedKey1p[9]==TRUE)
+		if(g_p1.pressedKey[9]==TRUE)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*HighSpeed_9<Data_Double_y[cur+count] &&
@@ -919,7 +919,7 @@ void DrawArrow_DB(DWORD cur)
 		}
 	}
 
-	if(sl3 || (PressedKey1p[3]==TRUE) )
+	if(sl3 || (g_p1.pressedKey[3]==TRUE) )
 	{
 		if(sl3==20)
 		{
@@ -930,7 +930,7 @@ void DrawArrow_DB(DWORD cur)
 		{
 			sl3++;
 		}
-		if(PressedKey1p[3]==TRUE)
+		if(g_p1.pressedKey[3]==TRUE)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*HighSpeed_3<Data_Double_y[cur+count] &&
@@ -1009,7 +1009,7 @@ void DrawArrow_DB(DWORD cur)
 	}
 
 	// 2 player
-	if(sr1 || (PressedKey2p[1]==TRUE) )
+	if(sr1 || (g_p2.pressedKey[1]==TRUE) )
 	{
 		if(sr1==20)
 		{
@@ -1020,7 +1020,7 @@ void DrawArrow_DB(DWORD cur)
 		{
 			sr1++;
 		}
-		if(PressedKey2p[1]==TRUE)
+		if(g_p2.pressedKey[1]==TRUE)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*HighSpeed_1<Data_Double_y[cur+count] &&
@@ -1098,7 +1098,7 @@ void DrawArrow_DB(DWORD cur)
 		}
 	}
 
-	if(sr7 || (PressedKey2p[7]==TRUE) )
+	if(sr7 || (g_p2.pressedKey[7]==TRUE) )
 	{
 		if(sr7==20)
 		{
@@ -1109,7 +1109,7 @@ void DrawArrow_DB(DWORD cur)
 		{
 			sr7++;
 		}
-		if(PressedKey2p[7]==TRUE)
+		if(g_p2.pressedKey[7]==TRUE)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*HighSpeed_7<Data_Double_y[cur+count] &&
@@ -1187,7 +1187,7 @@ void DrawArrow_DB(DWORD cur)
 		}
 	}
 
-	if(sr5 || (PressedKey2p[5]==TRUE) )
+	if(sr5 || (g_p2.pressedKey[5]==TRUE) )
 	{
 		if(sr5==20)
 		{
@@ -1198,7 +1198,7 @@ void DrawArrow_DB(DWORD cur)
 		{
 			sr5++;
 		}
-		if(PressedKey2p[5]==TRUE)
+		if(g_p2.pressedKey[5]==TRUE)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*HighSpeed_5<Data_Double_y[cur+count] &&
@@ -1276,7 +1276,7 @@ void DrawArrow_DB(DWORD cur)
 		}
 	}
 
-	if(sr9 || (PressedKey2p[9]==TRUE) )
+	if(sr9 || (g_p2.pressedKey[9]==TRUE) )
 	{
 		if(sr9==20)
 		{
@@ -1287,7 +1287,7 @@ void DrawArrow_DB(DWORD cur)
 		{
 			sr9++;
 		}
-		if(PressedKey2p[9]==TRUE)
+		if(g_p2.pressedKey[9]==TRUE)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*HighSpeed_9<Data_Double_y[cur+count] &&
@@ -1365,7 +1365,7 @@ void DrawArrow_DB(DWORD cur)
 		}
 	}
 
-	if(sr3 || (PressedKey2p[3]==TRUE) )
+	if(sr3 || (g_p2.pressedKey[3]==TRUE) )
 	{
 		if(sr3==20)
 		{
@@ -1376,7 +1376,7 @@ void DrawArrow_DB(DWORD cur)
 		{
 			sr3++;
 		}
-		if(PressedKey2p[3]==TRUE)
+		if(g_p2.pressedKey[3]==TRUE)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*HighSpeed_3<Data_Double_y[cur+count] &&
@@ -1455,7 +1455,7 @@ void DrawArrow_DB(DWORD cur)
 	}
 // 2 player routine end
 
-	Judgement1p=JudgeTemp;
+	g_p1.judgement=JudgeTemp;
 	
 	// 미스처리입니다.
 	for(count=0;count<10;count++)
@@ -1465,8 +1465,8 @@ void DrawArrow_DB(DWORD cur)
 	{
 		if(Data_Double[cur+count][0]=='2')break;
 		Data_Double_Judge[cur+count][0]=Data_Double_Judge[cur+count][1]=Data_Double_Judge[cur+count][2]=Data_Double_Judge[cur+count][3]=Data_Double_Judge[cur+count][4]=Data_Double_Judge[cur+count][5]=Data_Double_Judge[cur+count][6]=Data_Double_Judge[cur+count][7]=Data_Double_Judge[cur+count][8]=Data_Double_Judge[cur+count][9]='0';
-		Judgement1p=MISS;
-		Combo1p=0;
+		g_p1.judgement=MISS;
+		g_p1.combo=0;
 	}
 
 	if(Crashl1)
@@ -1474,45 +1474,45 @@ void DrawArrow_DB(DWORD cur)
 		if(sl1==2)if(Data_Double_Judge[statl1][0]=='0' && Data_Double_Judge[statl1][1]=='0' && Data_Double_Judge[statl1][2]=='0' && Data_Double_Judge[statl1][3]=='0' && Data_Double_Judge[statl1][4]=='0' && Data_Double_Judge[statl1][5]=='0' && Data_Double_Judge[statl1][6]=='0' && Data_Double_Judge[statl1][7]=='0' && Data_Double_Judge[statl1][8]=='0' && Data_Double_Judge[statl1][9]=='0')
 		{
 			Data_Double[statl1][0]=Data_Double[statl1][1]=Data_Double[statl1][2]=Data_Double[statl1][3]=Data_Double[statl1][4]=Data_Double[statl1][5]=Data_Double[statl1][6]=Data_Double[statl1][7]=Data_Double[statl1][8]=Data_Double[statl1][9]='0';
-			Judgement1p=JudgeTemp;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 	if(Crashl7)
 	{
 		if(sl7==2)if(Data_Double_Judge[statl7][0]=='0' && Data_Double_Judge[statl7][1]=='0' && Data_Double_Judge[statl7][2]=='0' && Data_Double_Judge[statl7][3]=='0' && Data_Double_Judge[statl7][4]=='0' && Data_Double_Judge[statl7][5]=='0' && Data_Double_Judge[statl7][6]=='0' && Data_Double_Judge[statl7][7]=='0' && Data_Double_Judge[statl7][8]=='0' && Data_Double_Judge[statl7][9]=='0')
 		{
 			Data_Double[statl7][0]=Data_Double[statl7][1]=Data_Double[statl7][2]=Data_Double[statl7][3]=Data_Double[statl7][4]=Data_Double[statl7][5]=Data_Double[statl7][6]=Data_Double[statl7][7]=Data_Double[statl7][8]=Data_Double[statl7][9]='0';
-			Judgement1p=JudgeTemp;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 	if(Crashl5)
 	{
 		if(sl5==2)if(Data_Double_Judge[statl5][0]=='0' && Data_Double_Judge[statl5][1]=='0' && Data_Double_Judge[statl5][2]=='0' && Data_Double_Judge[statl5][3]=='0' && Data_Double_Judge[statl5][4]=='0' && Data_Double_Judge[statl5][5]=='0' && Data_Double_Judge[statl5][6]=='0' && Data_Double_Judge[statl5][7]=='0' && Data_Double_Judge[statl5][8]=='0' && Data_Double_Judge[statl5][9]=='0')
 		{
 			Data_Double[statl5][0]=Data_Double[statl5][1]=Data_Double[statl5][2]=Data_Double[statl5][3]=Data_Double[statl5][4]=Data_Double[statl5][5]=Data_Double[statl5][6]=Data_Double[statl5][7]=Data_Double[statl5][8]=Data_Double[statl5][9]='0';
-			Judgement1p=JudgeTemp;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 	if(Crashl9)
 	{
 		if(sl9==2)if(Data_Double_Judge[statl9][0]=='0' && Data_Double_Judge[statl9][1]=='0' && Data_Double_Judge[statl9][2]=='0' && Data_Double_Judge[statl9][3]=='0' && Data_Double_Judge[statl9][4]=='0' && Data_Double_Judge[statl9][5]=='0' && Data_Double_Judge[statl9][6]=='0' && Data_Double_Judge[statl9][7]=='0' && Data_Double_Judge[statl9][8]=='0' && Data_Double_Judge[statl9][9]=='0')
 		{
 			Data_Double[statl9][0]=Data_Double[statl9][1]=Data_Double[statl9][2]=Data_Double[statl9][3]=Data_Double[statl9][4]=Data_Double[statl9][5]=Data_Double[statl9][6]=Data_Double[statl9][7]=Data_Double[statl9][8]=Data_Double[statl9][9]='0';
-			Judgement1p=JudgeTemp;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 	if(Crashl3)
 	{
 		if(sl3==2)if(Data_Double_Judge[statl3][0]=='0' && Data_Double_Judge[statl3][1]=='0' && Data_Double_Judge[statl3][2]=='0' && Data_Double_Judge[statl3][3]=='0' && Data_Double_Judge[statl3][4]=='0' && Data_Double_Judge[statl3][5]=='0' && Data_Double_Judge[statl3][6]=='0' && Data_Double_Judge[statl3][7]=='0' && Data_Double_Judge[statl3][8]=='0' && Data_Double_Judge[statl3][9]=='0')
 		{
 			Data_Double[statl3][0]=Data_Double[statl3][1]=Data_Double[statl3][2]=Data_Double[statl3][3]=Data_Double[statl3][4]=Data_Double[statl3][5]=Data_Double[statl3][6]=Data_Double[statl3][7]=Data_Double[statl3][8]=Data_Double[statl3][9]='0';
-			Judgement1p=JudgeTemp;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 // 2 player
 	if(Crashr1)
@@ -1520,48 +1520,48 @@ void DrawArrow_DB(DWORD cur)
 		if(sr1==2)if(Data_Double_Judge[statr1][0]=='0' && Data_Double_Judge[statr1][1]=='0' && Data_Double_Judge[statr1][2]=='0' && Data_Double_Judge[statr1][3]=='0' && Data_Double_Judge[statr1][4]=='0' && Data_Double_Judge[statr1][5]=='0' && Data_Double_Judge[statr1][6]=='0' && Data_Double_Judge[statr1][7]=='0' && Data_Double_Judge[statr1][8]=='0' && Data_Double_Judge[statr1][9]=='0')
 		{
 			Data_Double[statr1][0]=Data_Double[statr1][1]=Data_Double[statr1][2]=Data_Double[statr1][3]=Data_Double[statr1][4]=Data_Double[statr1][5]=Data_Double[statr1][6]=Data_Double[statr1][7]=Data_Double[statr1][8]=Data_Double[statr1][9]='0';
-			Judgement1p=JudgeTemp;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 	if(Crashr7)
 	{
 		if(sr7==2)if(Data_Double_Judge[statr7][0]=='0' && Data_Double_Judge[statr7][1]=='0' && Data_Double_Judge[statr7][2]=='0' && Data_Double_Judge[statr7][3]=='0' && Data_Double_Judge[statr7][4]=='0' && Data_Double_Judge[statr7][5]=='0' && Data_Double_Judge[statr7][6]=='0' && Data_Double_Judge[statr7][7]=='0' && Data_Double_Judge[statr7][8]=='0' && Data_Double_Judge[statr7][9]=='0')
 		{
 			Data_Double[statr7][0]=Data_Double[statr7][1]=Data_Double[statr7][2]=Data_Double[statr7][3]=Data_Double[statr7][4]=Data_Double[statr7][5]=Data_Double[statr7][6]=Data_Double[statr7][7]=Data_Double[statr7][8]=Data_Double[statr7][9]='0';
-			Judgement1p=JudgeTemp;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 	if(Crashr5)
 	{
 		if(sr5==2)if(Data_Double_Judge[statr5][0]=='0' && Data_Double_Judge[statr5][1]=='0' && Data_Double_Judge[statr5][2]=='0' && Data_Double_Judge[statr5][3]=='0' && Data_Double_Judge[statr5][4]=='0' && Data_Double_Judge[statr5][5]=='0' && Data_Double_Judge[statr5][6]=='0' && Data_Double_Judge[statr5][7]=='0' && Data_Double_Judge[statr5][8]=='0' && Data_Double_Judge[statr5][9]=='0')
 		{
 			Data_Double[statr5][0]=Data_Double[statr5][1]=Data_Double[statr5][2]=Data_Double[statr5][3]=Data_Double[statr5][4]=Data_Double[statr5][5]=Data_Double[statr5][6]=Data_Double[statr5][7]=Data_Double[statr5][8]=Data_Double[statr5][9]='0';
-			Judgement1p=JudgeTemp;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 	if(Crashr9)
 	{
 		if(sr9==2)if(Data_Double_Judge[statr9][0]=='0' && Data_Double_Judge[statr9][1]=='0' && Data_Double_Judge[statr9][2]=='0' && Data_Double_Judge[statr9][3]=='0' && Data_Double_Judge[statr9][4]=='0' && Data_Double_Judge[statr9][5]=='0' && Data_Double_Judge[statr9][6]=='0' && Data_Double_Judge[statr9][7]=='0' && Data_Double_Judge[statr5][8]=='0' && Data_Double_Judge[statr9][9]=='0')
 		{
 			Data_Double[statr9][0]=Data_Double[statr9][1]=Data_Double[statr9][2]=Data_Double[statr9][3]=Data_Double[statr9][4]=Data_Double[statr9][5]=Data_Double[statr9][6]=Data_Double[statr9][7]=Data_Double[statr9][8]=Data_Double[statr9][9]='0';
-			Judgement1p=JudgeTemp;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 	if(Crashr3)
 	{
 		if(sr3==2)if(Data_Double_Judge[statr3][0]=='0' && Data_Double_Judge[statr3][1]=='0' && Data_Double_Judge[statr3][2]=='0' && Data_Double_Judge[statr3][3]=='0' && Data_Double_Judge[statr3][4]=='0' && Data_Double_Judge[statr3][5]=='0' && Data_Double_Judge[statr3][6]=='0' && Data_Double_Judge[statr3][7]=='0' && Data_Double_Judge[statr3][8]=='0' && Data_Double_Judge[statr3][9]=='0')
 		{
 			Data_Double[statr3][0]=Data_Double[statr3][1]=Data_Double[statr3][2]=Data_Double[statr3][3]=Data_Double[statr3][4]=Data_Double[statr3][5]=Data_Double[statr3][6]=Data_Double[statr3][7]=Data_Double[statr3][8]=Data_Double[statr3][9]='0';
-			Judgement1p=JudgeTemp;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 
-	if(Judgement1p==PERFECT || Judgement1p==GREAT)
+	if(g_p1.judgement==PERFECT || g_p1.judgement==GREAT)
 	{
 		if(g_dsBeat)
 		{
@@ -1569,25 +1569,25 @@ void DrawArrow_DB(DWORD cur)
 			g_dsBeat->SetCurrentPosition(0);
 			g_dsBeat->Play(0,0,0);
 		}
-		Combo1p++;
-		if(Start1p)
+		g_p1.combo++;
+		if(g_p1.started)
 		{
-			if(Judgement1p==PERFECT)cPerfect1p++;
-			if(Judgement1p==GREAT)cGreat1p++;
-			if(Combo1p>cMaxCombo1p)cMaxCombo1p=Combo1p;
+			if(g_p1.judgement==PERFECT)g_p1.perfect++;
+			if(g_p1.judgement==GREAT)g_p1.great++;
+			if(g_p1.combo>g_p1.maxCombo)g_p1.maxCombo=g_p1.combo;
 		}
-		if(Start2p)
+		if(g_p2.started)
 		{
-			if(Judgement1p==PERFECT)cPerfect2p++;
-			if(Judgement1p==GREAT)cGreat2p++;
-			if(Combo1p>cMaxCombo2p)cMaxCombo2p=Combo1p;
+			if(g_p1.judgement==PERFECT)g_p2.perfect++;
+			if(g_p1.judgement==GREAT)g_p2.great++;
+			if(g_p1.combo>g_p2.maxCombo)g_p2.maxCombo=g_p1.combo;
 		}
 
-		if(Combo1p>10)
+		if(g_p1.combo>10)
 		{
-			if(Gauge1p<0)Gauge1p=1;
-			else Gauge1p++;
-			if(Gauge1p>42)Gauge1p=41;
+			if(g_p1.gauge<0)g_p1.gauge=1;
+			else g_p1.gauge++;
+			if(g_p1.gauge>42)g_p1.gauge=41;
 		}
 		Crashl1=Onl1;
 		Crashl3=Onl3;
@@ -1603,71 +1603,71 @@ void DrawArrow_DB(DWORD cur)
 
 		Onl1=Onl3=Onl5=Onl7=Onl9=Onr1=Onr3=Onr5=Onr7=Onr9=FALSE;
 	}
-	else if(Judgement1p==GOOD || Judgement1p==BAD || Judgement1p==MISS)
+	else if(g_p1.judgement==GOOD || g_p1.judgement==BAD || g_p1.judgement==MISS)
 	{
-		if(Start1p)
+		if(g_p1.started)
 		{
-			if(Judgement1p==GOOD)cGood1p++;
-			if(Judgement1p==BAD)cBad1p++;
-			if(Judgement1p==MISS)cMiss1p++;
+			if(g_p1.judgement==GOOD)g_p1.good++;
+			if(g_p1.judgement==BAD)g_p1.bad++;
+			if(g_p1.judgement==MISS)g_p1.miss++;
 		}
-		if(Start2p)
+		if(g_p2.started)
 		{
-			if(Judgement1p==GOOD)cGood2p++;
-			if(Judgement1p==BAD)cBad2p++;
-			if(Judgement1p==MISS)cMiss2p++;
+			if(g_p1.judgement==GOOD)g_p2.good++;
+			if(g_p1.judgement==BAD)g_p2.bad++;
+			if(g_p1.judgement==MISS)g_p2.miss++;
 		}
-		Combo1p=0;
+		g_p1.combo=0;
 	}
 
-	if(Combo1p)
+	if(g_p1.combo)
 	{
-		if(Judgement1p==PERFECT)
+		if(g_p1.judgement==PERFECT)
 		{
-			if(Start1p)Score1p+=2000;
-			if(Start2p)Score2p+=2000;
+			if(g_p1.started)g_p1.score+=2000;
+			if(g_p2.started)g_p2.score+=2000;
 		}
-		else if(Judgement1p==GREAT)
+		else if(g_p1.judgement==GREAT)
 		{
-			if(Start1p)Score1p+=1500;
-			if(Start2p)Score2p+=1500;
+			if(g_p1.started)g_p1.score+=1500;
+			if(g_p2.started)g_p2.score+=1500;
 		}
 	}
 	else
 	{
-		if(Judgement1p==PERFECT)
+		if(g_p1.judgement==PERFECT)
 		{
-			if(Start1p)Score1p+=1000;
-			if(Start2p)Score2p+=1000;
+			if(g_p1.started)g_p1.score+=1000;
+			if(g_p2.started)g_p2.score+=1000;
 		}
-		else if(Judgement1p==GREAT)
+		else if(g_p1.judgement==GREAT)
 		{
-			if(Start1p)Score1p+=500;
-			if(Start2p)Score2p+=500;
+			if(g_p1.started)g_p1.score+=500;
+			if(g_p2.started)g_p2.score+=500;
 		}
 	}
 
-	if(Judgement1p==GOOD)
+	if(g_p1.judgement==GOOD)
 	{
-		if(Start1p)Score1p+=100;
-		if(Start2p)Score2p+=100;
+		if(g_p1.started)g_p1.score+=100;
+		if(g_p2.started)g_p2.score+=100;
 	}
-	else if(Judgement1p==BAD)
+	else if(g_p1.judgement==BAD)
 	{
-		if(Start1p)Score1p-=700;
-		if(Start2p)Score2p-=700;
-		Gauge1p-=2;
+		if(g_p1.started)g_p1.score-=700;
+		if(g_p2.started)g_p2.score-=700;
+		g_p1.gauge-=2;
 	}
-	else if(Judgement1p==MISS)
+	else if(g_p1.judgement==MISS)
 	{
-		if(Start1p)Score1p-=1000;
-		if(Start2p)Score2p-=1000;
-		Gauge1p-=5;
+		if(g_p1.started)g_p1.score-=1000;
+		if(g_p2.started)g_p2.score-=1000;
+		g_p1.gauge-=5;
 	}
 
 	if(KCFG.bcDead)
 	{
-		if(Gauge1p<-40)
+		if(g_p1.gauge<-40)
 		{
 			if(SongFlag)
 			{
@@ -1679,8 +1679,8 @@ void DrawArrow_DB(DWORD cur)
 		}
 	}
 
-	if(Start1p)if(Score1p<0)Score1p=0;
-	if(Start2p)if(Score2p<0)Score2p=0;
+	if(g_p1.started)if(g_p1.score<0)g_p1.score=0;
+	if(g_p2.started)if(g_p2.score<0)g_p2.score=0;
 
 	if(beat)
 	{
@@ -1829,14 +1829,14 @@ void DrawArrow_DB(DWORD cur)
 void KIU_STAGE_DOUBLE(void)
 {
 	static int temp;
-	static DWORD i;
-	static DWORD cur,last,sec;
-	static DWORD starttime, curtime;
+	static uint32_t i;
+	static uint32_t cur,last,sec;
+	static uint32_t starttime, curtime;
 
 	int k;
-	static RECT rect1[7],rect3[7],rect5[7],rect7[7],rect9[7];
+	static Rect rect1[7],rect3[7],rect5[7],rect7[7],rect9[7];
 	
-	DWORD delta;
+	uint32_t delta;
 
 	static int sta;
 
@@ -1851,37 +1851,37 @@ void KIU_STAGE_DOUBLE(void)
 
 	if(start1==0)
 	{
-		if(Start1p)
+		if(g_p1.started)
 		{
-			HighSpeed=HighSpeed1p;
-			HighSpeed_1=HighSpeed1p_1;
-			HighSpeed_3=HighSpeed1p_3;
-			HighSpeed_5=HighSpeed1p_5;
-			HighSpeed_7=HighSpeed1p_7;
-			HighSpeed_9=HighSpeed1p_9;
+			HighSpeed=g_p1.speedBase;
+			HighSpeed_1=g_p1.speed1;
+			HighSpeed_3=g_p1.speed3;
+			HighSpeed_5=g_p1.speed5;
+			HighSpeed_7=g_p1.speed7;
+			HighSpeed_9=g_p1.speed9;
 
-			bModeMirror=bModeMirror1p;
-			bModeNonstep=bModeNonstep1p;
-			bModeUnion=bModeUnion1p;
-			bModeRandom=bModeRandom1p;
-			b4dMix=b4dMix1p;
+			bModeMirror=g_p1.mirror;
+			bModeNonstep=g_p1.nonstep;
+			bModeUnion=g_p1.union_;
+			bModeRandom=g_p1.random;
+			b4dMix=g_p1.dMix;
 			bModeVanish=bModeVanish;
 		}
 
-		else if(Start2p)
+		else if(g_p2.started)
 		{
-			HighSpeed=HighSpeed2p;
-			HighSpeed_1=HighSpeed2p_1;
-			HighSpeed_3=HighSpeed2p_3;
-			HighSpeed_5=HighSpeed2p_5;
-			HighSpeed_7=HighSpeed2p_7;
-			HighSpeed_9=HighSpeed2p_9;
+			HighSpeed=g_p2.speedBase;
+			HighSpeed_1=g_p2.speed1;
+			HighSpeed_3=g_p2.speed3;
+			HighSpeed_5=g_p2.speed5;
+			HighSpeed_7=g_p2.speed7;
+			HighSpeed_9=g_p2.speed9;
 
-			bModeMirror=bModeMirror2p;
-			bModeNonstep=bModeNonstep2p;
-			bModeUnion=bModeUnion2p;
-			bModeRandom=bModeRandom2p;
-			b4dMix=b4dMix2p;
+			bModeMirror=g_p2.mirror;
+			bModeNonstep=g_p2.nonstep;
+			bModeUnion=g_p2.union_;
+			bModeRandom=g_p2.random;
+			b4dMix=g_p2.dMix;
 			bModeVanish=bModeVanish;
 		}
 
@@ -2084,7 +2084,7 @@ void KIU_STAGE_DOUBLE(void)
 
 		i=0;
 		
-		Gauge1p=10;
+		g_p1.gauge=10;
 		temp=0;
 		start1++;
 		temp+=55;
@@ -2129,11 +2129,11 @@ void KIU_STAGE_DOUBLE(void)
 			temp=+55;
 			tail=0;
 
-			curtime=(DWORD)(song->GetCurrentPosition()*1000);
+			curtime=(uint32_t)(song->GetCurrentPosition()*1000);
 
 			if(curtime > starttime) 
-			delta=(DWORD)curtime-starttime;
-			else delta=(DWORD)curtime;
+			delta=(uint32_t)curtime-starttime;
+			else delta=(uint32_t)curtime;
 		}
 
 		//1000 Tick당 180/60 -> 1초에 64*(180/60)  즉 1 tick 당 64*(bpm/60)/1000
@@ -2184,7 +2184,7 @@ void KIU_STAGE_DOUBLE(void)
 
 		if(tick==2)
 		{
-			if(bModeSuddenR1p || bModeSuddenR2p)
+			if(g_p1.suddenR || g_p2.suddenR)
 			{
 				if(Data_Double_y[i+k]>240 && Data_Double_y[i+k]<290)
 				{
@@ -2294,7 +2294,7 @@ void KIU_STAGE_DOUBLE(void)
 		}	
 		else if(tick==4)
 		{
-			if(bModeSuddenR1p || bModeSuddenR2p)
+			if(g_p1.suddenR || g_p2.suddenR)
 			{
 				if(Data_Double_y[i+k]>240 && Data_Double_y[i+k]<290)
 				{
@@ -2594,29 +2594,29 @@ void KIU_STAGE_DOUBLE(void)
 		}
 
 	}
-	if(Start1p)
+	if(g_p1.started)
 	{
-		if(bModeMirror1p)DrawMode(0,200,HMODE_MIRROR);
-		if(bModeNonstep1p)DrawMode(0,240,HMODE_NONSTEP);
-		if(bModeSynchro)DrawMode(0,280,HMODE_SYNCHRO);
-		if(bModeUnion1p)DrawMode(0,320,HMODE_UNION);
-		if(bModeRandom1p)DrawMode(0,360,HMODE_RANDOM);
-		if(bModeVanish1p)DrawMode(0,400,HMODE_VANISH);
+		if(g_p1.mirror)DrawMode(0,200,HMODE_MIRROR);
+		if(g_p1.nonstep)DrawMode(0,240,HMODE_NONSTEP);
+		if(g_p1.synchro)DrawMode(0,280,HMODE_SYNCHRO);
+		if(g_p1.union_)DrawMode(0,320,HMODE_UNION);
+		if(g_p1.random)DrawMode(0,360,HMODE_RANDOM);
+		if(g_p1.vanish)DrawMode(0,400,HMODE_VANISH);
 
-		if(HighSpeed1p>1)DrawMode(0,160,HMODE_2X);
+		if(g_p1.speedBase>1)DrawMode(0,160,HMODE_2X);
 
 		DrawGaugeDB_1p();
 		DrawScore1p();
 	}
-	else if(Start2p)
+	else if(g_p2.started)
 	{
-		if(bModeMirror2p)DrawMode(600,200,HMODE_MIRROR);
-		if(bModeNonstep2p)DrawMode(600,240,HMODE_NONSTEP);
-		if(bModeUnion2p)DrawMode(600,320,HMODE_UNION);
-		if(bModeRandom2p)DrawMode(600,360,HMODE_RANDOM);
-		if(bModeVanish2p)DrawMode(600,400,HMODE_VANISH);
+		if(g_p2.mirror)DrawMode(600,200,HMODE_MIRROR);
+		if(g_p2.nonstep)DrawMode(600,240,HMODE_NONSTEP);
+		if(g_p2.union_)DrawMode(600,320,HMODE_UNION);
+		if(g_p2.random)DrawMode(600,360,HMODE_RANDOM);
+		if(g_p2.vanish)DrawMode(600,400,HMODE_VANISH);
 
-		if(HighSpeed2p>1)DrawMode(600,160,HMODE_2X);
+		if(g_p2.speedBase>1)DrawMode(600,160,HMODE_2X);
 
 		DrawGaugeDB_2p();
 		DrawScore2p();

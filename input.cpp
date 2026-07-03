@@ -2,15 +2,15 @@
  * Input.cpp - SDL3 Port: Keyboard input processing
  *
  * Reads from the global rgKeyData[] buffer (filled by KIU_ReadKeyboard)
- * and populates PressedKey1p[] / PressedKey2p[] arrays.
+ * and populates g_p1.pressedKey[] / g_p2.pressedKey[] arrays.
  *
  * Key mapping (Pump It Up layout):
  *   1P: Q(7) W(9) S(5) Z(1) E(3)  —  up-left, up-right, center, down-left, down-right
  *   2P: KP7(7) KP9(9) KP5(5) KP1(1) KP3(3) — same layout on numpad
  */
 
-#include "Input.h"
-#include "Main.h"
+#include "input.h"
+#include "main.h"
 
 /* Function pointers */
 static void ReadKbd(void);
@@ -33,9 +33,9 @@ static void ReadKbd(void)
     /* ── 2 Player (numpad) ── */
 #define READ_KEY2P(idx, dik) do { \
     if (rgKeyData[dik] & 0x80) { \
-        if (ArrowState2p[idx] == PRESS) PressedKey2p[idx] = FALSE; \
-        else { PressedKey2p[idx] = TRUE; ArrowState2p[idx] = PRESS; } \
-    } else { ArrowState2p[idx] = NORMAL; PressedKey2p[idx] = FALSE; } \
+        if (g_p2.arrowState[idx] == PRESS) g_p2.pressedKey[idx] = FALSE; \
+        else { g_p2.pressedKey[idx] = TRUE; g_p2.arrowState[idx] = PRESS; } \
+    } else { g_p2.arrowState[idx] = NORMAL; g_p2.pressedKey[idx] = FALSE; } \
 } while(0)
 
     READ_KEY2P(1, DIK_NUMPAD1);
@@ -49,9 +49,9 @@ static void ReadKbd(void)
     /* ── 1 Player (QWESZC) ── */
 #define READ_KEY1P(idx, dik) do { \
     if (rgKeyData[dik] & 0x80) { \
-        if (ArrowState1p[idx] == PRESS) PressedKey1p[idx] = FALSE; \
-        else { PressedKey1p[idx] = TRUE; ArrowState1p[idx] = PRESS; } \
-    } else { ArrowState1p[idx] = NORMAL; PressedKey1p[idx] = FALSE; } \
+        if (g_p1.arrowState[idx] == PRESS) g_p1.pressedKey[idx] = FALSE; \
+        else { g_p1.pressedKey[idx] = TRUE; g_p1.arrowState[idx] = PRESS; } \
+    } else { g_p1.arrowState[idx] = NORMAL; g_p1.pressedKey[idx] = FALSE; } \
 } while(0)
 
     READ_KEY1P(1, DIK_Z);

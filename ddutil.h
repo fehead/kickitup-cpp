@@ -16,13 +16,13 @@ extern "C" {
 
 /* These forward to SDL3 implementations */
 #define DDLoadBitmap(pdd, szBitmap, dx, dy) \
-    IDirectDrawSurface::LoadBitmap(szBitmap, dx, dy)
+    Surface::LoadBitmap(szBitmap, dx, dy)
 
 #define DDReLoadBitmap(pdds, szBitmap) \
     KIU_ReloadSurface(pdds, szBitmap)
 
 #define DDSetColorKey(pdds, rgb) \
-    ((IDirectDrawSurface*)(pdds))->SetColorKey(0, nullptr)
+    ((Surface*)(pdds))->SetColorKey(0, nullptr)
 
 #define DDColorMatch(pdds, rgb) \
     KIU_ColorMatch(pdds, rgb)
@@ -30,8 +30,8 @@ extern "C" {
 #define DDFillSurface(pdds, color) \
     KIU_FillSurface(pdds, color)
 
-/* IDirectDrawPalette stub */
-#define DDLoadPalette(pdd, szBitmap)  ((IDirectDrawPalette*)1)
+/* Palette stub */
+#define DDLoadPalette(pdd, szBitmap)  ((Palette*)1)
 
 #ifdef __cplusplus
 }

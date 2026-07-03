@@ -13,6 +13,7 @@
 #define __SDL3_KICK_INCLUDED__
 
 #include <SDL3/SDL.h>
+#include <cstdint>
 #include <SDL3_image/SDL_image.h>
 #include <mpg123.h>
 #include <cstdio>
@@ -37,22 +38,17 @@ typedef int   BOOL;
 #define FALSE  0
 #endif
 
-typedef unsigned long  DWORD;
-typedef unsigned short WORD;
-typedef unsigned char  BYTE;
-typedef long           LONG;
-typedef unsigned int   UINT;
-typedef long           HRESULT;
+typedef unsigned UINT;
 
-typedef DWORD COLORREF;
-#define CLR_INVALID   ((COLORREF)0xFFFFFFFF)
-#define RGB(r,g,b)    ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
+typedef uint32_t Color;
+#define CLR_INVALID   ((Color)0xFFFFFFFF)
+#define RGB(r,g,b)    ((Color)(((uint8_t)(r)|((uint16_t)((uint8_t)(g))<<8))|(((uint32_t)(uint8_t)(b))<<16)))
 
 typedef struct {
-    LONG left, top, right, bottom;
-} RECT;
+    int32_t left, top, right, bottom;
+} Rect;
 
-typedef RECT* LPRECT;
+typedef Rect* LPRECT;
 
 /* ── Blit flags ── */
 #define DDBLTFAST_NOCOLORKEY   0x0000
@@ -62,45 +58,45 @@ typedef RECT* LPRECT;
 #define DDBLT_KEYSRC           0x00010000
 #define DDBLT_COLORFILL        0x00000400
 
-struct DDBLTFX {
-    DWORD dwSize;
-    DWORD dwFillColor;
+struct BlitFx {
+    uint32_t dwSize;
+    uint32_t dwFillColor;
 };
 
-typedef DWORD DDCOLORKEY;
+typedef uint32_t ColorKey;
 #define DDCKEY_SRCBLT  0
 #define DD_OK          0
-#define E_FAIL         ((HRESULT)0x80004005L)
-#define SUCCEEDED(hr)  (((HRESULT)(hr)) >= 0)
-#define FAILED(hr)     (((HRESULT)(hr)) < 0)
+#define E_FAIL         ((int)0x80004005L)
+#define SUCCEEDED(hr)  (((int)(hr)) >= 0)
+#define FAILED(hr)     (((int)(hr)) < 0)
 
 /* ── Wave format ── */
 typedef struct {
-    WORD  wFormatTag;
-    WORD  nChannels;
-    DWORD nSamplesPerSec;
-    DWORD nAvgBytesPerSec;
-    WORD  nBlockAlign;
-    WORD  wBitsPerSample;
-    WORD  cbSize;
-} WAVEFORMATEX;
+    uint16_t  wFormatTag;
+    uint16_t  nChannels;
+    uint32_t nSamplesPerSec;
+    uint32_t nAvgBytesPerSec;
+    uint16_t  nBlockAlign;
+    uint16_t  wBitsPerSample;
+    uint16_t  cbSize;
+} WaveFmt;
 
 /* ── mmioFOURCC ── */
 #define mmioFOURCC(a,b,c,d) \
-    ((DWORD)(BYTE)(a) | ((DWORD)(BYTE)(b) << 8) | \
-     ((DWORD)(BYTE)(c) << 16) | ((DWORD)(BYTE)(d) << 24))
+    ((uint32_t)(uint8_t)(a) | ((uint32_t)(uint8_t)(b) << 8) | \
+     ((uint32_t)(uint8_t)(c) << 16) | ((uint32_t)(uint8_t)(d) << 24))
 
 /* ═══════════════════════════════════════════════════════════════════════
- * C++ Wrapper: IDirectDrawSurface (replaces LPDIRECTDRAWSURFACE)
+ * C++ Wrapper: Surface (replaces Surface*)
  * ═══════════════════════════════════════════════════════════════════════ */
 
 /* Forward declarations */
-struct DDSURFACEDESC {
-    DWORD dwSize, dwFlags;
-    DWORD dwWidth, dwHeight;
-    LONG  lPitch;
-    struct { DWORD dwCaps; } ddsCaps;
-    struct { DWORD dwRGBBitCount; } ddpfPixelFormat;
+struct SurfaceDesc {
+    uint32_t dwSize, dwFlags;
+    uint32_t dwWidth, dwHeight;
+    int32_t  lPitch;
+    struct { uint32_t dwCaps; } ddsCaps;
+    struct { uint32_t dwRGBBitCount; } ddpfPixelFormat;
     void *lpSurface;
 };
 #define DDSD_CAPS    0x1
@@ -109,107 +105,103 @@ struct DDSURFACEDESC {
 #define DDSCAPS_OFFSCREENPLAIN  0x40
 #define HDC void*
 
-class IDirectDrawPalette {
+class GfxDevicePalette {
 public:
-    HRESULT SetEntries(DWORD f, DWORD s, DWORD c, void *e) { return DD_OK; }
+    int SetEntries(uint32_t f, uint32_t s, uint32_t c, void *e) { return DD_OK; }
 };
-typedef IDirectDrawPalette* LPDIRECTDRAWPALETTE;
+
 #define DDPCAPS_8BIT  0x4
 
-class IDirectDrawSurface {
+class Surface {
 public:
     SDL_Texture *tex;
     int w, h;
-    COLORREF colorKey;
+    Color colorKey;
     bool hasColorKey;
 
-    IDirectDrawSurface() : tex(nullptr), w(0), h(0),
+    Surface() : tex(nullptr), w(0), h(0),
         colorKey(RGB(255,0,255)), hasColorKey(true) {}
 
-    ~IDirectDrawSurface() { if (tex) SDL_DestroyTexture(tex); }
+    ~Surface() { if (tex) SDL_DestroyTexture(tex); }
 
     /* BltFast(x, y, srcSurface, srcRect, flags) */
-    HRESULT BltFast(int x, int y, IDirectDrawSurface *src,
-                    const RECT *srcrect, DWORD flags);
+    int BltFast(int x, int y, Surface *src,
+                    const Rect *srcrect, uint32_t flags);
 
     /* Blt(destRect, srcSurface, srcRect, flags) */
-    HRESULT Blt(const RECT *destRect, IDirectDrawSurface *src,
-                const RECT *srcRect, DWORD flags, DDBLTFX *fx = nullptr);
+    int Blt(const Rect *destRect, Surface *src,
+                const Rect *srcRect, uint32_t flags, BlitFx *fx = nullptr);
 
     /* Color key */
-    HRESULT SetColorKey(DWORD flag, DDCOLORKEY *ck);
-    COLORREF GetColorKey() { return colorKey; }
+    int SetColorKey(uint32_t flag, ColorKey *ck);
+    Color GetColorKey() { return colorKey; }
 
     /* Stubs needed by original code */
-    HRESULT GetDC(HDC *hdc) { *hdc = nullptr; return DD_OK; }
-    HRESULT ReleaseDC(HDC hdc) { (void)hdc; return DD_OK; }
-    HRESULT Restore() { return DD_OK; }
-    HRESULT Lock(RECT *r, DDSURFACEDESC *d, DWORD f, void *h) {
+    int GetDC(HDC *hdc) { *hdc = nullptr; return DD_OK; }
+    int ReleaseDC(HDC hdc) { (void)hdc; return DD_OK; }
+    int Restore() { return DD_OK; }
+    int Lock(Rect *r, SurfaceDesc *d, uint32_t f, void *h) {
         (void)r; (void)d; (void)f; (void)h; return E_FAIL; }
-    HRESULT Unlock(RECT *r) { (void)r; return DD_OK; }
-    HRESULT GetSurfaceDesc(DDSURFACEDESC *d) {
+    int Unlock(Rect *r) { (void)r; return DD_OK; }
+    int GetSurfaceDesc(SurfaceDesc *d) {
         d->dwWidth = w; d->dwHeight = h; return DD_OK; }
 
-    static IDirectDrawSurface *LoadBitmap(const char *path, int dx, int dy);
+    static Surface *LoadBitmap(const char *path, int dx, int dy);
     void Release();
     
     /* For compatibility: direct release function */
     void Release2() { Release(); }
 };
 
-typedef IDirectDrawSurface* LPDIRECTDRAWSURFACE;
 
-/* IDirectDraw stub */
-class IDirectDraw {
+/* GfxDevice stub */
+class GfxDevice {
 public:
-    HRESULT CreateSurface(DDSURFACEDESC *d, LPDIRECTDRAWSURFACE *surf, void *u);
-    HRESULT CreatePalette(DWORD f, void *e, IDirectDrawPalette **p, void *u);
-    HRESULT SetCooperativeLevel(void *w, DWORD f) { return DD_OK; }
-    HRESULT SetDisplayMode(DWORD w, DWORD h, DWORD bpp) { return DD_OK; }
+    int CreateSurface(SurfaceDesc *d, Surface* *surf, void *u);
+    int CreatePalette(uint32_t f, void *e, GfxDevicePalette **p, void *u);
+    int SetCooperativeLevel(void *w, uint32_t f) { return DD_OK; }
+    int SetDisplayMode(uint32_t w, uint32_t h, uint32_t bpp) { return DD_OK; }
     void Release() { delete this; }
 };
-typedef IDirectDraw* LPDIRECTDRAW;
 
 /* ═══════════════════════════════════════════════════════════════════════
- * C++ Wrapper: IDirectSoundBuffer (replaces LPDIRECTSOUNDBUFFER)
+ * C++ Wrapper: Sound (replaces Sound*)
  * ═══════════════════════════════════════════════════════════════════════ */
 
-class IDirectSoundBuffer {
+class Sound {
 public:
     Uint8  *data;
     Uint32  length;
     int     looping;
     SDL_AudioStream *stream;
 
-    IDirectSoundBuffer() : data(nullptr), length(0), looping(0), stream(nullptr) {}
-    ~IDirectSoundBuffer();
+    Sound() : data(nullptr), length(0), looping(0), stream(nullptr) {}
+    ~Sound();
 
-    HRESULT Play(DWORD reserved1, DWORD reserved2, DWORD flags);
-    HRESULT Stop();
-    HRESULT SetCurrentPosition(DWORD pos);
-    HRESULT Restore() { return DD_OK; }
+    int Play(uint32_t reserved1, uint32_t reserved2, uint32_t flags);
+    int Stop();
+    int SetCurrentPosition(uint32_t pos);
+    int Restore() { return DD_OK; }
     void Release() { delete this; }
 
-    static IDirectSoundBuffer *LoadWAV(const char *path);
-    static IDirectSoundBuffer *LoadMP3(const char *path);
+    static Sound *LoadWAV(const char *path);
+    static Sound *LoadMP3(const char *path);
 };
 
-typedef IDirectSoundBuffer* LPDIRECTSOUNDBUFFER;
 
-/* IDirectSound stub */
-class IDirectSound {
+/* AudioDev stub */
+class AudioDev {
 public:
-    HRESULT SetCooperativeLevel(void *w, DWORD l) { return DD_OK; }
+    int SetCooperativeLevel(void *w, uint32_t l) { return DD_OK; }
     void Release() { delete this; }
 };
-typedef IDirectSound* LPDIRECTSOUND;
 
-/* DSBUFFERDESC */
-struct DSBUFFERDESC {
-    DWORD dwSize;
-    DWORD dwFlags;
-    DWORD dwBufferBytes;
-    WAVEFORMATEX *lpwfxFormat;
+/* SoundDesc */
+struct SoundDesc {
+    uint32_t dwSize;
+    uint32_t dwFlags;
+    uint32_t dwBufferBytes;
+    WaveFmt *lpwfxFormat;
 };
 #define DSBCAPS_STATIC               0x80000
 #define DSBCAPS_CTRLPAN              0x200000
@@ -265,8 +257,8 @@ void KIU_Quit(void);
 int  KIU_PollEvents(void);
 void KIU_Present(void);
 
-void KIU_FillSurface(LPDIRECTDRAWSURFACE pdds, DWORD color);
-COLORREF KIU_ColorMatch(LPDIRECTDRAWSURFACE pdds, COLORREF rgb);
+void KIU_FillSurface(Surface* pdds, uint32_t color);
+Color KIU_ColorMatch(Surface* pdds, Color rgb);
 void KIU_DisplayMessage(int x, int y, const char *msg);
 void KIU_ReadKeyboard(void);
 void KIU_CleanupInput(void);
@@ -452,7 +444,7 @@ static inline char *_strupr(char *s) {
 
 struct WIN32_FIND_DATA {
     char cFileName[MAX_PATH];
-    DWORD dwFileAttributes;
+    uint32_t dwFileAttributes;
 };
 #define FILE_ATTRIBUTE_DIRECTORY  0x10
 #define INVALID_HANDLE_VALUE      ((DIR*)0)
@@ -506,12 +498,12 @@ static inline BOOL FindNextFile(HANDLE h, WIN32_FIND_DATA *data) {
 static inline void FindClose(HANDLE h) { if (h && h != INVALID_HANDLE_VALUE) closedir((DIR*)h); }
 
 /* GetFullPathName stub */
-static inline DWORD GetFullPathName(const char *file, DWORD len, char *buf, char **part) {
+static inline uint32_t GetFullPathName(const char *file, uint32_t len, char *buf, char **part) {
     char cwd[MAX_PATH];
     getcwd(cwd, sizeof(cwd));
     snprintf(buf, len, "%s/%s", cwd, file);
     if (part) *part = NULL;
-    return (DWORD)strlen(buf);
+    return (uint32_t)strlen(buf);
 }
 
 /* OutputDebugString */
@@ -547,15 +539,15 @@ typedef char TCHAR;
 #define DefWindowProc(h, m, w, l) 0L
 #define MB_OK                 0
 
-/* Add lPitch to DDSURFACEDESC */
-#define DDSURFACEDESC_HAS_LPITCH 1
+/* Add lPitch to SurfaceDesc */
+#define SurfaceDesc_HAS_LPITCH 1
 
 /* TransAlphaImproved declaration */
-extern "C" HRESULT TransAlphaImproved(LPDIRECTDRAWSURFACE src, LPDIRECTDRAWSURFACE dest,
-    LONG lDestX, LONG lDestY, RECT srcRect, WORD ALPHA, DWORD ColorKey, WORD BPP);
+extern "C" int TransAlphaImproved(Surface* src, Surface* dest,
+    int32_t lDestX, int32_t lDestY, Rect srcRect, uint16_t ALPHA, uint32_t ColorKey, uint16_t BPP);
 
-/* Add Release to IDirectDraw */
-/* Add Release to IDirectSoundBuffer */
+/* Add Release to GfxDevice */
+/* Add Release to Sound */
 
 /* VK_* virtual key codes */
 #define VK_F2    0x71

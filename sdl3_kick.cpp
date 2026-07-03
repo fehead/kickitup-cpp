@@ -92,10 +92,10 @@ void KIU_Present(void)
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
- * IDirectDrawSurface Implementation
+ * Surface Implementation
  * ═══════════════════════════════════════════════════════════════════════ */
 
-IDirectDrawSurface *IDirectDrawSurface::LoadBitmap(const char *path, int dx, int dy)
+Surface *Surface::LoadBitmap(const char *path, int dx, int dy)
 {
     (void)dx; (void)dy;
     /* Load PNG/BMP via SDL3_image */
@@ -111,7 +111,7 @@ IDirectDrawSurface *IDirectDrawSurface::LoadBitmap(const char *path, int dx, int
 
     if (!tex) return nullptr;
 
-    IDirectDrawSurface *surf = new IDirectDrawSurface();
+    Surface *surf = new Surface();
     surf->tex  = tex;
     surf->w    = w;
     surf->h    = h;
@@ -122,16 +122,16 @@ IDirectDrawSurface *IDirectDrawSurface::LoadBitmap(const char *path, int dx, int
     return surf;
 }
 
-void IDirectDrawSurface::Release()
+void Surface::Release()
 {
     if (tex) { SDL_DestroyTexture(tex); tex = nullptr; }
     delete this;
 }
 
-HRESULT IDirectDrawSurface::BltFast(int x, int y,
-                                     IDirectDrawSurface *src,
-                                     const RECT *srcRect,
-                                     DWORD flags)
+int Surface::BltFast(int x, int y,
+                                     Surface *src,
+                                     const Rect *srcRect,
+                                     uint32_t flags)
 {
     if (!src || !src->tex) return E_FAIL;
     (void)x; (void)y; (void)flags;
@@ -173,18 +173,18 @@ HRESULT IDirectDrawSurface::BltFast(int x, int y,
     return DD_OK;
 }
 
-HRESULT IDirectDrawSurface::Blt(const RECT *destRect,
-                                 IDirectDrawSurface *src,
-                                 const RECT *srcRect,
-                                 DWORD flags,
-                                 DDBLTFX *fx)
+int Surface::Blt(const Rect *destRect,
+                                 Surface *src,
+                                 const Rect *srcRect,
+                                 uint32_t flags,
+                                 BlitFx *fx)
 {
     /* Handle color fill */
     if (flags & DDBLT_COLORFILL) {
         if (fx) {
-            BYTE r = (BYTE)((fx->dwFillColor >> 16) & 0xFF);
-            BYTE g = (BYTE)((fx->dwFillColor >> 8) & 0xFF);
-            BYTE b = (BYTE)(fx->dwFillColor & 0xFF);
+            uint8_t r = (uint8_t)((fx->dwFillColor >> 16) & 0xFF);
+            uint8_t g = (uint8_t)((fx->dwFillColor >> 8) & 0xFF);
+            uint8_t b = (uint8_t)(fx->dwFillColor & 0xFF);
             SDL_SetRenderDrawColor(g_sdlRenderer, r, g, b, 255);
             if (destRect) {
                 SDL_FRect rct = { (float)destRect->left, (float)destRect->top,
@@ -229,7 +229,7 @@ HRESULT IDirectDrawSurface::Blt(const RECT *destRect,
     return DD_OK;
 }
 
-HRESULT IDirectDrawSurface::SetColorKey(DWORD flag, DDCOLORKEY *ck)
+int Surface::SetColorKey(uint32_t flag, ColorKey *ck)
 {
     (void)flag; (void)ck;
     hasColorKey = true;
@@ -237,13 +237,13 @@ HRESULT IDirectDrawSurface::SetColorKey(DWORD flag, DDCOLORKEY *ck)
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
- * IDirectDraw Implementation
+ * GfxDevice Implementation
  * ═══════════════════════════════════════════════════════════════════════ */
 
-HRESULT IDirectDraw::CreateSurface(DDSURFACEDESC *d, LPDIRECTDRAWSURFACE *surf, void *u)
+int GfxDevice::CreateSurface(SurfaceDesc *d, Surface* *surf, void *u)
 {
     (void)u;
-    IDirectDrawSurface *s = new IDirectDrawSurface();
+    Surface *s = new Surface();
     s->w = (int)d->dwWidth;
     s->h = (int)d->dwHeight;
     s->tex = SDL_CreateTexture(g_sdlRenderer,
@@ -256,34 +256,34 @@ HRESULT IDirectDraw::CreateSurface(DDSURFACEDESC *d, LPDIRECTDRAWSURFACE *surf, 
     return DD_OK;
 }
 
-HRESULT IDirectDraw::CreatePalette(DWORD f, void *e, IDirectDrawPalette **p, void *u)
+int GfxDevice::CreatePalette(uint32_t f, void *e, GfxDevicePalette **p, void *u)
 {
     (void)f; (void)e; (void)u;
-    *p = new IDirectDrawPalette();
+    *p = new GfxDevicePalette();
     return DD_OK;
 }
 
-void KIU_FillSurface(LPDIRECTDRAWSURFACE pdds, DWORD color)
+void KIU_FillSurface(Surface* pdds, uint32_t color)
 {
     (void)pdds;
-    BYTE r = (BYTE)((color >> 16) & 0xFF);
-    BYTE g = (BYTE)((color >> 8) & 0xFF);
-    BYTE b = (BYTE)(color & 0xFF);
+    uint8_t r = (uint8_t)((color >> 16) & 0xFF);
+    uint8_t g = (uint8_t)((color >> 8) & 0xFF);
+    uint8_t b = (uint8_t)(color & 0xFF);
     SDL_SetRenderDrawColor(g_sdlRenderer, r, g, b, 255);
     SDL_RenderClear(g_sdlRenderer);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
- * IDirectSoundBuffer Implementation (WAV effects via SDL3 audio)
+ * Sound Implementation (WAV effects via SDL3 audio)
  * ═══════════════════════════════════════════════════════════════════════ */
 
-IDirectSoundBuffer::~IDirectSoundBuffer()
+Sound::~Sound()
 {
     if (stream) SDL_DestroyAudioStream(stream);
     if (data) SDL_free(data);
 }
 
-IDirectSoundBuffer *IDirectSoundBuffer::LoadWAV(const char *path)
+Sound *Sound::LoadWAV(const char *path)
 {
     SDL_AudioSpec spec;
     Uint8 *buf;
@@ -294,7 +294,7 @@ IDirectSoundBuffer *IDirectSoundBuffer::LoadWAV(const char *path)
         return nullptr;
     }
 
-    IDirectSoundBuffer *snd = new IDirectSoundBuffer();
+    Sound *snd = new Sound();
     snd->data   = buf;
     snd->length = len;
 
@@ -307,7 +307,7 @@ IDirectSoundBuffer *IDirectSoundBuffer::LoadWAV(const char *path)
     return snd;
 }
 
-IDirectSoundBuffer *IDirectSoundBuffer::LoadMP3(const char *path)
+Sound *Sound::LoadMP3(const char *path)
 {
     int err;
     mpg123_handle *mh = mpg123_new(nullptr, &err);
@@ -349,7 +349,7 @@ IDirectSoundBuffer *IDirectSoundBuffer::LoadMP3(const char *path)
     spec.channels = ch;
     spec.freq     = (int)rate;
 
-    IDirectSoundBuffer *snd = new IDirectSoundBuffer();
+    Sound *snd = new Sound();
     snd->data   = buf;
     snd->length = (Uint32)buf_size;
     snd->stream = SDL_CreateAudioStream(&spec, &spec);
@@ -361,7 +361,7 @@ IDirectSoundBuffer *IDirectSoundBuffer::LoadMP3(const char *path)
     return snd;
 }
 
-HRESULT IDirectSoundBuffer::Play(DWORD reserved1, DWORD reserved2, DWORD flags)
+int Sound::Play(uint32_t reserved1, uint32_t reserved2, uint32_t flags)
 {
     (void)reserved1; (void)reserved2;
     if (!data || !stream) return E_FAIL;
@@ -391,7 +391,7 @@ HRESULT IDirectSoundBuffer::Play(DWORD reserved1, DWORD reserved2, DWORD flags)
     return DD_OK;
 }
 
-HRESULT IDirectSoundBuffer::Stop()
+int Sound::Stop()
 {
     looping = 0;
     if (stream) {
@@ -401,7 +401,7 @@ HRESULT IDirectSoundBuffer::Stop()
     return DD_OK;
 }
 
-HRESULT IDirectSoundBuffer::SetCurrentPosition(DWORD pos)
+int Sound::SetCurrentPosition(uint32_t pos)
 {
     if (pos < length && stream) {
         SDL_ClearAudioStream(stream);
@@ -774,7 +774,7 @@ void KIU_CleanupInput(void)
     /* Nothing to clean up for SDL3 input */
 }
 
-COLORREF KIU_ColorMatch(LPDIRECTDRAWSURFACE pdds, COLORREF rgb)
+Color KIU_ColorMatch(Surface* pdds, Color rgb)
 {
     if (rgb == CLR_INVALID)
         return RGB(255, 0, 255);

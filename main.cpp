@@ -10,10 +10,11 @@
 	2000/07/23 'Patching'
 			- Bpm changing bug fixed (bpm change was incorrected.)
 */
-#include "Main.h"
+#include "main.h"
+#include "player.h"
 
 // Dshow ..
-#include "Media.h"
+#include "media.h"
 
 // Dshow ..
 
@@ -25,27 +26,27 @@
 #include <time.h>
 #include <cstdio>
 
-#include "Result.h"
-#include "Config.h"
-#include "DEAD.H"
-#include "Double.h"
+#include "result.h"
+#include "config.h"
+#include "dead.h"
+#include "double.h"
 #include "ddutil.h"
 #include "dsutil.h"
-#include "Song.h"
-#include "SELECT.H"
+#include "song.h"
+#include "select.h"
 //#include "sound.h"
-#include "Input.h"
-#include "RESOURCE.H"
+#include "input.h"
+#include "resource.h"
 
 #define VER_NUM	"0.4b"
 char	TITLE[MAX_PATH];
 
 /* MODESLCT stubs — mode selection images */
-LPDIRECTDRAWSURFACE	ModeEasy   = NULL;
-LPDIRECTDRAWSURFACE	ModeHard   = NULL;
-LPDIRECTDRAWSURFACE	ModeDouble = NULL;
-LPDIRECTDRAWSURFACE	ModeNonstop = NULL;
-DWORD				PressedKey[10] = {0};
+Surface*	ModeEasy   = NULL;
+Surface*	ModeHard   = NULL;
+Surface*	ModeDouble = NULL;
+Surface*	ModeNonstop = NULL;
+uint32_t				PressedKey[10] = {0};
 
 #define	PRGNAME		"Kick It UP!"
 
@@ -60,8 +61,8 @@ double				Data_y1[MAX_DATA+1];
 // �������
 
 // ���� ������ ����
-char				Data_Double[MAX_DATA+1][14];
-char				Data_Double_Judge[MAX_DATA+1][14];
+char Data_Double[MAX_DATA+1][14];
+char Data_Double_Judge[MAX_DATA+1][14];
 double				Data_Double_y[MAX_DATA+1];//���� �������� Y���� ������ �ִ� �迭
 // ���� ������ ��
 
@@ -77,181 +78,123 @@ double				bpm2;
 double				bpm3;
 
 int					start,start2,start3;
-DWORD					bunki,bunki2;
+uint32_t					bunki,bunki2;
 
 int					tick;
 
 char				Title[MAX_PATH+1];
 
 char				g_ProgramState=GAMETITLE;
-char				ArrowState1p[10];
-char				ArrowState2p[10];
 
 char				ArrowState_Joy[10];
 
-DWORD				PressedKey1p[10];
-DWORD				PressedKey2p[10];
-DWORD				PressedKey_Joy[10];
+uint32_t				PressedKey_Joy[10];
 
-char				Judgement1p;
-char				Judgement2p;
-DWORD				Combo1p;
-DWORD				Combo2p;
-DWORD				dwState;
-DWORD				dwState2;
 BOOL				g_bActive;
 
-long				Score1p;
-long				Score2p;
 
-int					Gauge1p=10;
-int					Gauge2p=10;
 
 char				GameMode=MODE_HARD;
+bool Couple = false, Double = false;
 
-char				Couple=FALSE;
-char				Double=FALSE;
+// Couple now in player.h
+// Double now in player.h
 
 char				First;
 int start1;
 
-BOOL				Start1p;
-BOOL				Start2p;
 
 void *hWnd;
 void *g_hInst;
 
-LPDIRECTDRAW g_pDD                = NULL;
-LPDIRECTDRAWSURFACE	g_pDDSPrimary = NULL;
-LPDIRECTDRAWSURFACE g_pDDSBack    = NULL;
+GfxDevice* g_pDD                = NULL;
+Surface*	g_pDDSPrimary = NULL;
+Surface* g_pDDSBack    = NULL;
 
-LPDIRECTDRAWSURFACE	GameTITLE		= NULL;
-LPDIRECTDRAWSURFACE	Background		= NULL;
-LPDIRECTDRAWSURFACE	SongTitle 		= NULL;
-LPDIRECTDRAWSURFACE	SongBack 		= NULL;
-LPDIRECTDRAWSURFACE	SelectBack		= NULL;
-LPDIRECTDRAWSURFACE	JudgeFont		= NULL;
-LPDIRECTDRAWSURFACE	NumberFont		= NULL;
-LPDIRECTDRAWSURFACE	ComboFont		= NULL;
-LPDIRECTDRAWSURFACE NoDISC			= NULL;
-LPDIRECTDRAWSURFACE	ShiftLeft		= NULL;
-LPDIRECTDRAWSURFACE	ShiftRight		= NULL;
-LPDIRECTDRAWSURFACE	GaugeWaku		= NULL;
-LPDIRECTDRAWSURFACE Gauge			= NULL;
-LPDIRECTDRAWSURFACE Score			= NULL;
-LPDIRECTDRAWSURFACE DeadScreen		= NULL;
-LPDIRECTDRAWSURFACE GameOver		= NULL;
-LPDIRECTDRAWSURFACE Logo			= NULL;
-LPDIRECTDRAWSURFACE	Diff			= NULL;
-LPDIRECTDRAWSURFACE	DoubleIcon		= NULL;
-LPDIRECTDRAWSURFACE	CrazyIcon		= NULL;
-LPDIRECTDRAWSURFACE	EasyIcon		= NULL;
-LPDIRECTDRAWSURFACE	HardIcon		= NULL;
+Surface*	GameTITLE		= NULL;
+Surface*	Background		= NULL;
+Surface*	SongTitle 		= NULL;
+Surface*	SongBack 		= NULL;
+Surface*	SelectBack		= NULL;
+Surface*	JudgeFont		= NULL;
+Surface*	NumberFont		= NULL;
+Surface*	ComboFont		= NULL;
+Surface* NoDISC			= NULL;
+Surface*	ShiftLeft		= NULL;
+Surface*	ShiftRight		= NULL;
+Surface*	GaugeWaku		= NULL;
+Surface* Gauge			= NULL;
+Surface* Score			= NULL;
+Surface* DeadScreen		= NULL;
+Surface* GameOver		= NULL;
+Surface* Logo			= NULL;
+Surface*	Diff			= NULL;
+Surface*	DoubleIcon		= NULL;
+Surface*	CrazyIcon		= NULL;
+Surface*	EasyIcon		= NULL;
+Surface*	HardIcon		= NULL;
 
-LPDIRECTDRAWSURFACE	SmallFont		= NULL;
-LPDIRECTDRAWSURFACE	Arrow1			= NULL;
-LPDIRECTDRAWSURFACE	Arrow2			= NULL;
-LPDIRECTDRAWSURFACE	wArrow			= NULL;
+Surface*	SmallFont		= NULL;
+Surface*	Arrow1			= NULL;
+Surface*	Arrow2			= NULL;
+Surface*	wArrow			= NULL;
 
-LPDIRECTDRAWSURFACE	pArrow1			= NULL;
-LPDIRECTDRAWSURFACE	pArrow3			= NULL;
-LPDIRECTDRAWSURFACE	pArrow5			= NULL;
-LPDIRECTDRAWSURFACE	pArrow7			= NULL;
-LPDIRECTDRAWSURFACE	pArrow9			= NULL;
+Surface*	pArrow1			= NULL;
+Surface*	pArrow3			= NULL;
+Surface*	pArrow5			= NULL;
+Surface*	pArrow7			= NULL;
+Surface*	pArrow9			= NULL;
 
-LPDIRECTDRAWSURFACE	cArrow1			= NULL;
-LPDIRECTDRAWSURFACE	cArrow3			= NULL;
-LPDIRECTDRAWSURFACE	cArrow5			= NULL;
-LPDIRECTDRAWSURFACE	cArrow7			= NULL;
-LPDIRECTDRAWSURFACE	cArrow9			= NULL;
+Surface*	cArrow1			= NULL;
+Surface*	cArrow3			= NULL;
+Surface*	cArrow5			= NULL;
+Surface*	cArrow7			= NULL;
+Surface*	cArrow9			= NULL;
 
-LPDIRECTDRAWSURFACE	ModeIcon		= NULL;
-LPDIRECTDRAWSURFACE	g_cFont			= NULL;
+Surface*	ModeIcon		= NULL;
+Surface*	g_cFont			= NULL;
 
-LPDIRECTDRAWSURFACE	ResultFont		= NULL;
-LPDIRECTDRAWSURFACE	ResultBack		= NULL;
-LPDIRECTDRAWSURFACE	StageCount		= NULL;
+Surface*	ResultFont		= NULL;
+Surface*	ResultBack		= NULL;
+Surface*	StageCount		= NULL;
 
-LPDIRECTSOUND		lpds			= NULL;
-LPDIRECTSOUNDBUFFER	lpdsbd			= NULL;
+AudioDev*		lpds			= NULL;
+Sound*	lpdsbd			= NULL;
 
-LPDIRECTSOUNDBUFFER				g_dsOpening	= NULL;
-LPDIRECTSOUNDBUFFER				g_dsDead		= NULL;
-LPDIRECTSOUNDBUFFER				g_dsMode		= NULL;
-LPDIRECTSOUNDBUFFER				g_dsCancel		= NULL;
-LPDIRECTSOUNDBUFFER				g_dsMove		= NULL;
-LPDIRECTSOUNDBUFFER				g_dsBeat		= NULL;
-LPDIRECTSOUNDBUFFER				g_dsSelectSong	= NULL;
+Sound*				g_dsOpening	= NULL;
+Sound*				g_dsDead		= NULL;
+Sound*				g_dsMode		= NULL;
+Sound*				g_dsCancel		= NULL;
+Sound*				g_dsMove		= NULL;
+Sound*				g_dsBeat		= NULL;
+Sound*				g_dsSelectSong	= NULL;
 
 SONG				CSONG[512];
 
-BOOL	SongFlag;
-BOOL	IntroFlag;
+bool	SongFlag;
+bool	IntroFlag;
 
-int		HighSpeed1p=1;
-int		HighSpeed2p=1;
 
-int		HighSpeed1p_1;
-int		HighSpeed1p_3;
-int		HighSpeed1p_5;
-int		HighSpeed1p_7;
-int		HighSpeed1p_9;
 
-int		HighSpeed2p_1;
-int		HighSpeed2p_3;
-int		HighSpeed2p_5;
-int		HighSpeed2p_7;
-int		HighSpeed2p_9;
 
 int		MaxSpeed;
 int		MinSpeed;
 
 int		JudgeArray[110];
 
-BOOL	bModeMirror1p;
-BOOL	bModeNonstep1p;
-BOOL	bModeSynchro;
-BOOL	bModeUnion1p;
-BOOL	bModeRandom1p;
-BOOL	b4dMix1p;			// 1p 4DMIX mode.
-BOOL	bModeVanish1p;
-BOOL	bModeCrazy1p;
-BOOL	bModeSuddenR1p;
-BOOL	bModeRandomS1p;
 
-BOOL	bModeMirror2p;
-BOOL	bModeNonstep2p;
-BOOL	bModeUnion2p;
-BOOL	bModeRandom2p;
-BOOL	b4dMix2p;
-BOOL	bModeVanish2p;
-BOOL	bModeCrazy2p;
-BOOL	bModeSuddenR2p;
-BOOL	bModeRandomS2p;
 
 int	ALPHA=0;
 int	inc=20;
-DWORD	CKey_CFont;
-DWORD	CKey_Arr;
+uint32_t	CKey_CFont;
+uint32_t	CKey_Arr;
 
-DWORD	cPerfect1p;
-DWORD	cGreat1p;
-DWORD	cGood1p;
-DWORD	cBad1p;
-DWORD	cMiss1p;
-DWORD	cMaxCombo1p;
 
-DWORD	cPerfect2p;
-DWORD	cGreat2p;
-DWORD	cGood2p;
-DWORD	cBad2p;
-DWORD	cMiss2p;
-DWORD	cMaxCombo2p;
 
 // Data of configuration
 KIUCONFIG	KCFG;
 
-DWORD		dwGameCount;
+uint32_t		dwGameCount;
 
 BOOL debugflag=TRUE;
 char g_szDebugName[MAX_PATH];
@@ -261,8 +204,8 @@ BOOL	g_fullscreen=FALSE;
 CMedia *intro;
 CMedia *song;
 
-RECT                    g_rcViewport;           // Pos. & size to blt from
-RECT                    g_rcScreen;             // Screen pos. for blt
+Rect                    g_rcViewport;           // Pos. & size to blt from
+Rect                    g_rcScreen;             // Screen pos. for blt
 
 void	DebugPrintf(char *str,...)
 {
@@ -291,9 +234,9 @@ void	JudgementSet(void)
 	for(i=73;i<88;i++)	JudgeArray[i] = PERFECT;
 }
 
-void	DisplayStageCount(DWORD Count)
+void	DisplayStageCount(uint32_t Count)
 {
-	RECT	sssRect;
+	Rect	sssRect;
 	
 	sssRect.top=0;
 	sssRect.left=Count*80;
@@ -307,37 +250,37 @@ void	DisplayStageCount(DWORD Count)
 
 void ClearMode(void)
 {
-		HighSpeed1p=1;
-		bModeMirror1p=FALSE;
-		bModeNonstep1p=FALSE;
-		bModeSynchro=FALSE;
-		bModeUnion1p=FALSE;
-		bModeRandom1p=FALSE;
-		b4dMix1p=FALSE;
-		HighSpeed1p_1=1;
-		HighSpeed1p_3=1;
-		HighSpeed1p_5=1;
-		HighSpeed1p_7=1;
-		HighSpeed1p_9=1;
-		bModeVanish1p=FALSE;
-		bModeRandomS1p=FALSE;
-		bModeSuddenR1p=FALSE;
+		g_p1.speedBase=1;
+		g_p1.mirror=FALSE;
+		g_p1.nonstep=FALSE;
+		g_p1.synchro=FALSE;
+		g_p1.union_=FALSE;
+		g_p1.random=FALSE;
+		g_p1.dMix=FALSE;
+		g_p1.speed1=1;
+		g_p1.speed3=1;
+		g_p1.speed5=1;
+		g_p1.speed7=1;
+		g_p1.speed9=1;
+		g_p1.vanish=FALSE;
+		g_p1.randomS=FALSE;
+		g_p1.suddenR=FALSE;
 
-		HighSpeed2p=1;
-		bModeMirror2p=FALSE;
-		bModeNonstep2p=FALSE;
-		bModeUnion2p=FALSE;
-		bModeRandom2p=FALSE;
-		b4dMix2p=FALSE;
-		HighSpeed2p_1=1;
-		HighSpeed2p_3=1;
-		HighSpeed2p_5=1;
-		HighSpeed2p_7=1;
-		HighSpeed2p_9=1;
-		bModeVanish2p=FALSE;
+		g_p2.speedBase=1;
+		g_p2.mirror=FALSE;
+		g_p2.nonstep=FALSE;
+		g_p2.union_=FALSE;
+		g_p2.random=FALSE;
+		g_p2.dMix=FALSE;
+		g_p2.speed1=1;
+		g_p2.speed3=1;
+		g_p2.speed5=1;
+		g_p2.speed7=1;
+		g_p2.speed9=1;
+		g_p2.vanish=FALSE;
 		Double=FALSE;
-		bModeRandomS2p=FALSE;
-		bModeSuddenR2p=FALSE;
+		g_p2.randomS=FALSE;
+		g_p2.suddenR=FALSE;
 }
 
 void	GameOver1(void)
@@ -356,18 +299,18 @@ void	GameOver1(void)
 	Flipp();
 }
 
-void DrawBackground(char Data[][14], DWORD i, int temp)
+void DrawBackground(char Data[][14], uint32_t i, int temp)
 {
 	g_pDDSBack->BltFast(0,0,SongBack,NULL, DDBLTFAST_WAIT | DDBLTFAST_NOCOLORKEY);
 }
 
 void DrawScore1p(void)
 {
-	RECT	cRect;
+	Rect	cRect;
 	char chScore[11];
 	int Loop;
 
-	sprintf(chScore,"%07d",Score1p);
+	sprintf(chScore,"%07d",g_p1.score);
 			
 	for(Loop=0;;Loop++)
 	{
@@ -383,11 +326,11 @@ void DrawScore1p(void)
 
 void DrawScore2p(void)
 {
-	RECT	cRect;
+	Rect	cRect;
 	char chScore[11];
 	int Loop;
 
-	sprintf(chScore,"%07d",Score2p);
+	sprintf(chScore,"%07d",g_p2.score);
 			
 	for(Loop=0;;Loop++)
 	{
@@ -407,9 +350,9 @@ void DrawGauge1p(void)
 	int i;
 //	static	int	Phase;
 
-	RECT sRect;
+	Rect sRect;
 
-	CurG=Gauge1p;
+	CurG=g_p1.gauge;
 	
 	if(CurG<0)CurG=0;
 
@@ -461,10 +404,10 @@ void DrawGauge2p(void)
 {
 	int CurG;
 	int i;
-	RECT sRect;
+	Rect sRect;
 //	static	int	Phase;
 
-	CurG=Gauge2p;
+	CurG=g_p2.gauge;
 	
 	if(CurG<0)CurG=0;
 
@@ -515,13 +458,13 @@ void DrawGauge2p(void)
 void KIU_STAGE(void)
 {
 	static int temp;
-	static DWORD i;
-	static DWORD cur,last,sec;
-	static DWORD starttime, curtime;
+	static uint32_t i;
+	static uint32_t cur,last,sec;
+	static uint32_t starttime, curtime;
 
-	static RECT rect1[7],rect3[7],rect5[7],rect7[7],rect9[7];
+	static Rect rect1[7],rect3[7],rect5[7],rect7[7],rect9[7];
 	int k;
-	DWORD delta;
+	uint32_t delta;
 
 	static int sta;
 
@@ -529,7 +472,7 @@ void KIU_STAGE(void)
 
 	static time_t t;
 
-	static	HRESULT	hr;
+	static	int	hr;
 
 	char s[50];
 
@@ -559,44 +502,44 @@ void KIU_STAGE(void)
 
 	if(start1==0)
 	{
-		if(b4dMix1p==TRUE)
+		if(g_p1.dMix==TRUE)
 		{
-			MaxSpeed = MinSpeed = HighSpeed1p_1;
+			MaxSpeed = MinSpeed = g_p1.speed1;
 
-			MaxSpeed = max( MaxSpeed, HighSpeed1p_3);
-			MaxSpeed = max( MaxSpeed, HighSpeed1p_5);
-			MaxSpeed = max( MaxSpeed, HighSpeed1p_7);
-			MaxSpeed = max( MaxSpeed, HighSpeed1p_9);
+			MaxSpeed = max( MaxSpeed, g_p1.speed3);
+			MaxSpeed = max( MaxSpeed, g_p1.speed5);
+			MaxSpeed = max( MaxSpeed, g_p1.speed7);
+			MaxSpeed = max( MaxSpeed, g_p1.speed9);
 			
-			MinSpeed = min( MinSpeed, HighSpeed1p_3);
-			MinSpeed = min( MinSpeed, HighSpeed1p_5);
-			MinSpeed = min( MinSpeed, HighSpeed1p_7);
-			MinSpeed = min( MinSpeed, HighSpeed1p_9);
+			MinSpeed = min( MinSpeed, g_p1.speed3);
+			MinSpeed = min( MinSpeed, g_p1.speed5);
+			MinSpeed = min( MinSpeed, g_p1.speed7);
+			MinSpeed = min( MinSpeed, g_p1.speed9);
 		}
 		else 
 		{
-			MaxSpeed = MinSpeed = HighSpeed1p;
-			HighSpeed1p_1 = HighSpeed1p_3 = HighSpeed1p_5 = HighSpeed1p_7 = HighSpeed1p_9 = HighSpeed1p;
+			MaxSpeed = MinSpeed = g_p1.speedBase;
+			g_p1.speed1 = g_p1.speed3 = g_p1.speed5 = g_p1.speed7 = g_p1.speed9 = g_p1.speedBase;
 		}
 
-		if(b4dMix2p)
+		if(g_p2.dMix)
 		{
-			MaxSpeed=MinSpeed=HighSpeed2p_1;
+			MaxSpeed=MinSpeed=g_p2.speed1;
 
-			MaxSpeed = max( MaxSpeed, HighSpeed2p_3);
-			MaxSpeed = max( MaxSpeed, HighSpeed2p_5);
-			MaxSpeed = max( MaxSpeed, HighSpeed2p_7);
-			MaxSpeed = max( MaxSpeed, HighSpeed2p_9);
+			MaxSpeed = max( MaxSpeed, g_p2.speed3);
+			MaxSpeed = max( MaxSpeed, g_p2.speed5);
+			MaxSpeed = max( MaxSpeed, g_p2.speed7);
+			MaxSpeed = max( MaxSpeed, g_p2.speed9);
 			
-			MinSpeed = min( MinSpeed, HighSpeed2p_3);
-			MinSpeed = min( MinSpeed, HighSpeed2p_5);
-			MinSpeed = min( MinSpeed, HighSpeed2p_7);
-			MinSpeed = min( MinSpeed, HighSpeed2p_9);
+			MinSpeed = min( MinSpeed, g_p2.speed3);
+			MinSpeed = min( MinSpeed, g_p2.speed5);
+			MinSpeed = min( MinSpeed, g_p2.speed7);
+			MinSpeed = min( MinSpeed, g_p2.speed9);
 		}
 		else 
 		{
-			MaxSpeed = MinSpeed = HighSpeed2p;
-			HighSpeed2p_1 = HighSpeed2p_3 = HighSpeed2p_5 = HighSpeed2p_7 = HighSpeed2p_9 = HighSpeed2p;
+			MaxSpeed = MinSpeed = g_p2.speedBase;
+			g_p2.speed1 = g_p2.speed3 = g_p2.speed5 = g_p2.speed7 = g_p2.speed9 = g_p2.speedBase;
 		}
 
 		for(sta=0;sta<6;sta++)
@@ -628,10 +571,10 @@ void KIU_STAGE(void)
 		}
 		sta=0;
 
-		Gauge1p=10;
-		Gauge2p=10;
+		g_p1.gauge=10;
+		g_p2.gauge=10;
 
-		if(bModeRandom1p)
+		if(g_p1.random)
 		{
 			srand((unsigned) time(&t));
 			
@@ -655,9 +598,9 @@ void KIU_STAGE(void)
 			}
 		}
 		
-		if(bModeRandom2p)
+		if(g_p2.random)
 		{
-			if(!bModeRandom1p)srand((unsigned) time(&t));
+			if(!g_p1.random)srand((unsigned) time(&t));
 			
 			for(i=0;i<MAX_DATA;i++)
 			{
@@ -679,7 +622,7 @@ void KIU_STAGE(void)
 			}
 		}
 
-		if(bModeMirror1p)
+		if(g_p1.mirror)
 		{
 			for(i=0;i<MAX_DATA;i++)
 			{
@@ -699,7 +642,7 @@ void KIU_STAGE(void)
 
 			}
 		}
-		if(bModeMirror2p)
+		if(g_p2.mirror)
 		{
 			for(i=0;i<MAX_DATA;i++)
 			{
@@ -723,7 +666,7 @@ void KIU_STAGE(void)
 		memcpy(&Data_Judge,&Data,sizeof(Data));
 		memcpy(&Data_Judge1,&Data1,sizeof(Data));
 	
-		if(bModeNonstep1p)
+		if(g_p1.nonstep)
 		{
 			for(i=0;i<MAX_DATA;i++)
 			{
@@ -746,7 +689,7 @@ void KIU_STAGE(void)
 			}
 		}
 		
-		if(bModeNonstep2p)
+		if(g_p2.nonstep)
 		{
 			for(i=0;i<MAX_DATA;i++)
 			{
@@ -795,8 +738,8 @@ void KIU_STAGE(void)
 	delta=cur-last;
 	last=cur;
 
-	if(Start1p)DrawArrow1p(i); //ȸ�� ȭ��ǥ�� ���մϴ�.
-	if(Start2p)DrawArrow2p(i);
+	if(g_p1.started)DrawArrow1p(i); //ȸ�� ȭ��ǥ�� ���մϴ�.
+	if(g_p2.started)DrawArrow2p(i);
 
 	start-=delta;
 
@@ -828,11 +771,11 @@ void KIU_STAGE(void)
 			temp=+55;
 			tail=0;
 
-			curtime=(DWORD)(song->GetCurrentPosition()*1000);
+			curtime=(uint32_t)(song->GetCurrentPosition()*1000);
 
 			if(curtime > starttime) 
-			delta=(DWORD)curtime-starttime;
-			else delta=(DWORD)curtime;
+			delta=(uint32_t)curtime-starttime;
+			else delta=(uint32_t)curtime;
 		}
 
 		//1000 Tick�� 180/60 -> 1�ʿ� 64*(180/60)  �� 1 tick �� 64*(bpm/60)/1000
@@ -863,7 +806,7 @@ void KIU_STAGE(void)
 		else sta++;
 	}
 
-	if(Start1p)
+	if(g_p1.started)
 	for(k=0;k<48;k+=tick) 
 	{
 		if(Data[i][0]=='2' || Data[i+1][0]=='2' || Data[i+2][0]=='2' || Data[i+3][0]=='2')
@@ -883,32 +826,32 @@ void KIU_STAGE(void)
 		if(tick==2)
 		{
 			if(Data[i+k][0]=='1')
-				ClpBlt(LP1_X,(temp+PUMP_SPRITE_Y*k/2)*HighSpeed1p_1-(PUMP_SPRITE_Y)*(HighSpeed1p_1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP1_X,(temp+PUMP_SPRITE_Y*k/2)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k][1]=='1')
-				ClpBlt(LP7_X,(temp+PUMP_SPRITE_Y*k/2)*HighSpeed1p_7-(PUMP_SPRITE_Y)*(HighSpeed1p_7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP7_X,(temp+PUMP_SPRITE_Y*k/2)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k][2]=='1')
-				ClpBlt(LP5_X,(temp+PUMP_SPRITE_Y*k/2)*HighSpeed1p_5-(PUMP_SPRITE_Y)*(HighSpeed1p_5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP5_X,(temp+PUMP_SPRITE_Y*k/2)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k][3]=='1')
-				ClpBlt(LP9_X,(temp+PUMP_SPRITE_Y*k/2)*HighSpeed1p_9-(PUMP_SPRITE_Y)*(HighSpeed1p_9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP9_X,(temp+PUMP_SPRITE_Y*k/2)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k][4]=='1')
-				ClpBlt(LP3_X,(temp+PUMP_SPRITE_Y*k/2)*HighSpeed1p_3-(PUMP_SPRITE_Y)*(HighSpeed1p_3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP3_X,(temp+PUMP_SPRITE_Y*k/2)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			
 			Data_y[i+k]=(temp+PUMP_SPRITE_Y*k/2)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 			
 			if(Data[i+k+1][0]=='1')
-				ClpBlt(LP1_X,(25+temp+PUMP_SPRITE_Y*k/2)*HighSpeed1p_1-(PUMP_SPRITE_Y)*(HighSpeed1p_1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP1_X,(25+temp+PUMP_SPRITE_Y*k/2)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+1][1]=='1')
-				ClpBlt(LP7_X,(25+temp+PUMP_SPRITE_Y*k/2)*HighSpeed1p_7-(PUMP_SPRITE_Y)*(HighSpeed1p_7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP7_X,(25+temp+PUMP_SPRITE_Y*k/2)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+1][2]=='1')
-				ClpBlt(LP5_X,(25+temp+PUMP_SPRITE_Y*k/2)*HighSpeed1p_5-(PUMP_SPRITE_Y)*(HighSpeed1p_5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP5_X,(25+temp+PUMP_SPRITE_Y*k/2)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+1][3]=='1')
-				ClpBlt(LP9_X,(25+temp+PUMP_SPRITE_Y*k/2)*HighSpeed1p_9-(PUMP_SPRITE_Y)*(HighSpeed1p_9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP9_X,(25+temp+PUMP_SPRITE_Y*k/2)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+1][4]=='1')
-				ClpBlt(LP3_X,(25+temp+PUMP_SPRITE_Y*k/2)*HighSpeed1p_3-(PUMP_SPRITE_Y)*(HighSpeed1p_3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP3_X,(25+temp+PUMP_SPRITE_Y*k/2)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
 			Data_y[i+k+1]=(25+temp+PUMP_SPRITE_Y*k/2)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
-			if(bModeSuddenR1p)
+			if(g_p1.suddenR)
 			{
 				if(Data_y[i+k]>240 && Data_y[i+k]<290)
 				{
@@ -966,58 +909,58 @@ void KIU_STAGE(void)
 		else if(tick==4)
 		{
 			if(Data[i+k][0]=='1')
-				ClpBlt(LP1_X,(temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_1-(PUMP_SPRITE_Y)*(HighSpeed1p_1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP1_X,(temp+PUMP_SPRITE_Y*k/4)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k][1]=='1')
-				ClpBlt(LP7_X,(temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_7-(PUMP_SPRITE_Y)*(HighSpeed1p_7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP7_X,(temp+PUMP_SPRITE_Y*k/4)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k][2]=='1')
-				ClpBlt(LP5_X,(temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_5-(PUMP_SPRITE_Y)*(HighSpeed1p_5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP5_X,(temp+PUMP_SPRITE_Y*k/4)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k][3]=='1')
-				ClpBlt(LP9_X,(temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_9-(PUMP_SPRITE_Y)*(HighSpeed1p_9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP9_X,(temp+PUMP_SPRITE_Y*k/4)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k][4]=='1')
-				ClpBlt(LP3_X,(temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_3-(PUMP_SPRITE_Y)*(HighSpeed1p_3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP3_X,(temp+PUMP_SPRITE_Y*k/4)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
 			Data_y[i+k]=(temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
 			if(Data[i+k+1][0]=='1')
-				ClpBlt(LP1_X,(12+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_1-(PUMP_SPRITE_Y)*(HighSpeed1p_1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP1_X,(12+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+1][1]=='1')
-				ClpBlt(LP7_X,(12+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_7-(PUMP_SPRITE_Y)*(HighSpeed1p_7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP7_X,(12+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+1][2]=='1')
-				ClpBlt(LP5_X,(12+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_5-(PUMP_SPRITE_Y)*(HighSpeed1p_5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP5_X,(12+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+1][3]=='1')
-				ClpBlt(LP9_X,(12+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_9-(PUMP_SPRITE_Y)*(HighSpeed1p_9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP9_X,(12+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+1][4]=='1')
-				ClpBlt(LP3_X,(12+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_3-(PUMP_SPRITE_Y)*(HighSpeed1p_3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP3_X,(12+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
 			Data_y[i+k+1]=(12+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
 			if(Data[i+k+2][0]=='1')
-				ClpBlt(LP1_X,(25+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_1-(PUMP_SPRITE_Y)*(HighSpeed1p_1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP1_X,(25+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+2][1]=='1')
-				ClpBlt(LP7_X,(25+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_7-(PUMP_SPRITE_Y)*(HighSpeed1p_7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP7_X,(25+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+2][2]=='1')
-				ClpBlt(LP5_X,(25+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_5-(PUMP_SPRITE_Y)*(HighSpeed1p_5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP5_X,(25+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+2][3]=='1')
-				ClpBlt(LP9_X,(25+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_9-(PUMP_SPRITE_Y)*(HighSpeed1p_9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP9_X,(25+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+2][4]=='1')
-				ClpBlt(LP3_X,(25+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_3-(PUMP_SPRITE_Y)*(HighSpeed1p_3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP3_X,(25+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
 			Data_y[i+k+2]=(25+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 		
 			if(Data[i+k+3][0]=='1')
-				ClpBlt(LP1_X,(38+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_1-(PUMP_SPRITE_Y)*(HighSpeed1p_1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP1_X,(38+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+3][1]=='1')
-				ClpBlt(LP7_X,(38+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_7-(PUMP_SPRITE_Y)*(HighSpeed1p_7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP7_X,(38+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+3][2]=='1')
-				ClpBlt(LP5_X,(38+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_5-(PUMP_SPRITE_Y)*(HighSpeed1p_5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP5_X,(38+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+3][3]=='1')
-				ClpBlt(LP9_X,(38+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_9-(PUMP_SPRITE_Y)*(HighSpeed1p_9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP9_X,(38+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data[i+k+3][4]=='1')
-				ClpBlt(LP3_X,(38+temp+PUMP_SPRITE_Y*k/4)*HighSpeed1p_3-(PUMP_SPRITE_Y)*(HighSpeed1p_3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP3_X,(38+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
 			Data_y[i+k+3]=(38+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
-			if(bModeSuddenR1p)
+			if(g_p1.suddenR)
 			{
 				if(Data_y[i+k]>240 && Data_y[i+k]<290)
 				{
@@ -1123,7 +1066,7 @@ void KIU_STAGE(void)
 		}
 	}
 
-	if(Start2p)
+	if(g_p2.started)
 	for(k=0;k<48;k+=tick) 
 	{
 		if(Data1[i][0]=='2' || Data1[i+1][0]=='2' || Data1[i+2][0]=='2' || Data1[i+3][0]=='2')
@@ -1143,32 +1086,32 @@ void KIU_STAGE(void)
 		if(tick==2)
 		{
 			if(Data1[i+k][5]=='1')
-				ClpBlt(LP1_X1,(temp+PUMP_SPRITE_Y*k/2)*HighSpeed2p_1-(PUMP_SPRITE_Y)*(HighSpeed2p_1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP1_X1,(temp+PUMP_SPRITE_Y*k/2)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k][6]=='1')
-				ClpBlt(LP7_X1,(temp+PUMP_SPRITE_Y*k/2)*HighSpeed2p_7-(PUMP_SPRITE_Y)*(HighSpeed2p_7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP7_X1,(temp+PUMP_SPRITE_Y*k/2)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k][7]=='1')
-				ClpBlt(LP5_X1,(temp+PUMP_SPRITE_Y*k/2)*HighSpeed2p_5-(PUMP_SPRITE_Y)*(HighSpeed2p_5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP5_X1,(temp+PUMP_SPRITE_Y*k/2)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k][8]=='1')
-				ClpBlt(LP9_X1,(temp+PUMP_SPRITE_Y*k/2)*HighSpeed2p_9-(PUMP_SPRITE_Y)*(HighSpeed2p_9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP9_X1,(temp+PUMP_SPRITE_Y*k/2)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k][9]=='1')
-				ClpBlt(LP3_X1,(temp+PUMP_SPRITE_Y*k/2)*HighSpeed2p_3-(PUMP_SPRITE_Y)*(HighSpeed2p_3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP3_X1,(temp+PUMP_SPRITE_Y*k/2)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			
 			Data_y1[i+k]=(temp+PUMP_SPRITE_Y*k/2)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 			
 			if(Data1[i+k+1][5]=='1')
-				ClpBlt(LP1_X1,(25+temp+PUMP_SPRITE_Y*k/2)*HighSpeed2p_1-(PUMP_SPRITE_Y)*(HighSpeed2p_1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP1_X1,(25+temp+PUMP_SPRITE_Y*k/2)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+1][6]=='1')
-				ClpBlt(LP7_X1,(25+temp+PUMP_SPRITE_Y*k/2)*HighSpeed2p_7-(PUMP_SPRITE_Y)*(HighSpeed2p_7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP7_X1,(25+temp+PUMP_SPRITE_Y*k/2)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+1][7]=='1')
-				ClpBlt(LP5_X1,(25+temp+PUMP_SPRITE_Y*k/2)*HighSpeed2p_5-(PUMP_SPRITE_Y)*(HighSpeed2p_5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP5_X1,(25+temp+PUMP_SPRITE_Y*k/2)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+1][8]=='1')
-				ClpBlt(LP9_X1,(25+temp+PUMP_SPRITE_Y*k/2)*HighSpeed2p_9-(PUMP_SPRITE_Y)*(HighSpeed2p_9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP9_X1,(25+temp+PUMP_SPRITE_Y*k/2)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+1][9]=='1')
-				ClpBlt(LP3_X1,(25+temp+PUMP_SPRITE_Y*k/2)*HighSpeed2p_3-(PUMP_SPRITE_Y)*(HighSpeed2p_3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP3_X1,(25+temp+PUMP_SPRITE_Y*k/2)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
 			Data_y1[i+k+1]=(25+temp+PUMP_SPRITE_Y*k/2)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
-			if(bModeSuddenR2p)
+			if(g_p2.suddenR)
 			{
 				if(Data_y1[i+k]>240 && Data_y1[i+k]<290)
 				{
@@ -1226,58 +1169,58 @@ void KIU_STAGE(void)
 		{
 
 			if(Data1[i+k][5]=='1')
-				ClpBlt(LP1_X1,(temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_1-(PUMP_SPRITE_Y)*(HighSpeed2p_1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP1_X1,(temp+PUMP_SPRITE_Y*k/4)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k][6]=='1')
-				ClpBlt(LP7_X1,(temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_7-(PUMP_SPRITE_Y)*(HighSpeed2p_7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP7_X1,(temp+PUMP_SPRITE_Y*k/4)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k][7]=='1')
-				ClpBlt(LP5_X1,(temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_5-(PUMP_SPRITE_Y)*(HighSpeed2p_5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP5_X1,(temp+PUMP_SPRITE_Y*k/4)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k][8]=='1')
-				ClpBlt(LP9_X1,(temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_9-(PUMP_SPRITE_Y)*(HighSpeed2p_9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP9_X1,(temp+PUMP_SPRITE_Y*k/4)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k][9]=='1')
-				ClpBlt(LP3_X1,(temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_3-(PUMP_SPRITE_Y)*(HighSpeed2p_3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP3_X1,(temp+PUMP_SPRITE_Y*k/4)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
 			Data_y1[i+k]=(temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
 			if(Data1[i+k+1][5]=='1')
-				ClpBlt(LP1_X1,(12+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_1-(PUMP_SPRITE_Y)*(HighSpeed2p_1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP1_X1,(12+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+1][6]=='1')
-				ClpBlt(LP7_X1,(12+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_7-(PUMP_SPRITE_Y)*(HighSpeed2p_7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP7_X1,(12+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+1][7]=='1')
-				ClpBlt(LP5_X1,(12+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_5-(PUMP_SPRITE_Y)*(HighSpeed2p_5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP5_X1,(12+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+1][8]=='1')
-				ClpBlt(LP9_X1,(12+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_9-(PUMP_SPRITE_Y)*(HighSpeed2p_9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP9_X1,(12+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+1][9]=='1')
-				ClpBlt(LP3_X1,(12+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_3-(PUMP_SPRITE_Y)*(HighSpeed2p_3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP3_X1,(12+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
 			Data_y1[i+k+1]=(12+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
 			if(Data1[i+k+2][5]=='1')
-				ClpBlt(LP1_X1,(25+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_1-(PUMP_SPRITE_Y)*(HighSpeed2p_1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP1_X1,(25+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+2][6]=='1')
-				ClpBlt(LP7_X1,(25+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_7-(PUMP_SPRITE_Y)*(HighSpeed2p_7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP7_X1,(25+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+2][7]=='1')
-				ClpBlt(LP5_X1,(25+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_5-(PUMP_SPRITE_Y)*(HighSpeed2p_5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP5_X1,(25+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+2][8]=='1')
-				ClpBlt(LP9_X1,(25+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_9-(PUMP_SPRITE_Y)*(HighSpeed2p_9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP9_X1,(25+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+2][9]=='1')
-				ClpBlt(LP3_X1,(25+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_3-(PUMP_SPRITE_Y)*(HighSpeed2p_3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP3_X1,(25+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
 			Data_y1[i+k+2]=(25+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 		
 			if(Data1[i+k+3][5]=='1')
-				ClpBlt(LP1_X1,(38+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_1-(PUMP_SPRITE_Y)*(HighSpeed2p_1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP1_X1,(38+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+3][6]=='1')
-				ClpBlt(LP7_X1,(38+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_7-(PUMP_SPRITE_Y)*(HighSpeed2p_7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP7_X1,(38+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+3][7]=='1')
-				ClpBlt(LP5_X1,(38+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_5-(PUMP_SPRITE_Y)*(HighSpeed2p_5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP5_X1,(38+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+3][8]=='1')
-				ClpBlt(LP9_X1,(38+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_9-(PUMP_SPRITE_Y)*(HighSpeed2p_9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP9_X1,(38+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			if(Data1[i+k+3][9]=='1')
-				ClpBlt(LP3_X1,(38+temp+PUMP_SPRITE_Y*k/4)*HighSpeed2p_3-(PUMP_SPRITE_Y)*(HighSpeed2p_3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+				ClpBlt(LP3_X1,(38+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
 			Data_y1[i+k+3]=(38+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
-			if(bModeSuddenR2p)
+			if(g_p2.suddenR)
 			{
 				if(Data_y1[i+k]>240 && Data_y1[i+k]<290)
 				{
@@ -1383,35 +1326,35 @@ void KIU_STAGE(void)
 		}
 	}
 
-	if(Start1p)
+	if(g_p1.started)
 	{
 		if(KCFG.OptJudge)DrawJudge1p();
 		DrawGauge1p();
 		DrawScore1p();
 	}
-	if(Start2p)
+	if(g_p2.started)
 	{
 		if(KCFG.OptJudge)DrawJudge2p();
 		DrawGauge2p();
 		DrawScore2p();
 	}
 
-	if(bModeMirror1p)DrawMode(0,200,HMODE_MIRROR);
-	if(bModeNonstep1p)DrawMode(0,240,HMODE_NONSTEP);
-	if(bModeSynchro)DrawMode(0,280,HMODE_SYNCHRO);
-	if(bModeUnion1p)DrawMode(0,320,HMODE_UNION);
-	if(bModeRandom1p)DrawMode(0,360,HMODE_RANDOM);
-	if(bModeVanish1p)DrawMode(0,400,HMODE_VANISH);
+	if(g_p1.mirror)DrawMode(0,200,HMODE_MIRROR);
+	if(g_p1.nonstep)DrawMode(0,240,HMODE_NONSTEP);
+	if(g_p1.synchro)DrawMode(0,280,HMODE_SYNCHRO);
+	if(g_p1.union_)DrawMode(0,320,HMODE_UNION);
+	if(g_p1.random)DrawMode(0,360,HMODE_RANDOM);
+	if(g_p1.vanish)DrawMode(0,400,HMODE_VANISH);
 
-	if(HighSpeed1p>1)DrawMode(0,160,HMODE_2X);
+	if(g_p1.speedBase>1)DrawMode(0,160,HMODE_2X);
 
-	if(bModeMirror2p)DrawMode(600,200,HMODE_MIRROR);
-	if(bModeNonstep2p)DrawMode(600,240,HMODE_NONSTEP);
-	if(bModeUnion2p)DrawMode(600,320,HMODE_UNION);
-	if(bModeRandom2p)DrawMode(600,360,HMODE_RANDOM);
-	if(bModeVanish2p)DrawMode(600,400,HMODE_VANISH);
+	if(g_p2.mirror)DrawMode(600,200,HMODE_MIRROR);
+	if(g_p2.nonstep)DrawMode(600,240,HMODE_NONSTEP);
+	if(g_p2.union_)DrawMode(600,320,HMODE_UNION);
+	if(g_p2.random)DrawMode(600,360,HMODE_RANDOM);
+	if(g_p2.vanish)DrawMode(600,400,HMODE_VANISH);
 
-	if(HighSpeed2p>1)DrawMode(600,160,HMODE_2X);
+	if(g_p2.speedBase>1)DrawMode(600,160,HMODE_2X);
 
 	Flipp();
 }
@@ -1419,13 +1362,13 @@ void KIU_STAGE(void)
 
 void WaveSet_Loading(void)
 {
-	g_dsOpening=DSLoadSoundBuffer(lpds, "WAVE/opening.mp3");
-	g_dsDead=DSLoadSoundBuffer(lpds,"WAVE/dead.mp3");
-	g_dsMode=DSLoadSoundBuffer(lpds,"WAVE/mode.mp3");
-	g_dsCancel=DSLoadSoundBuffer(lpds,"WAVE/cancel.mp3");
-	g_dsMove=DSLoadSoundBuffer(lpds,"WAVE/move.mp3");
-	g_dsBeat=DSLoadSoundBuffer(lpds,"WAVE/beat.mp3");
-	g_dsSelectSong=DSLoadSoundBuffer(lpds, "WAVE/musicSelect.mp3");
+	g_dsOpening=DSLoadSoundBuffer(lpds, "wave/opening.mp3");
+	g_dsDead=DSLoadSoundBuffer(lpds,"wave/dead.mp3");
+	g_dsMode=DSLoadSoundBuffer(lpds,"wave/mode.mp3");
+	g_dsCancel=DSLoadSoundBuffer(lpds,"wave/cancel.mp3");
+	g_dsMove=DSLoadSoundBuffer(lpds,"wave/move.mp3");
+	g_dsBeat=DSLoadSoundBuffer(lpds,"wave/beat.mp3");
+	g_dsSelectSong=DSLoadSoundBuffer(lpds, "wave/musicSelect.mp3");
 }
 
 void DisplayMessage(int x, int y, char * message)
@@ -1433,7 +1376,7 @@ void DisplayMessage(int x, int y, char * message)
 #define FONT_SIZE	8
 #define FONT_HEIGHT	16
 
-	RECT sRect = { 0, };
+	Rect sRect = { 0, };
 
 	for(int i = 0 ; ; i++) {		
 		if(message[i] == NULL)
@@ -1452,10 +1395,10 @@ void DisplayMessage(int x, int y, char * message)
 }
 
 			
-HRESULT	ClpBlt(int x ,int y ,LPDIRECTDRAWSURFACE ds,LPRECT srect,DWORD mode)
+int	ClpBlt(int x ,int y ,Surface* ds,Rect* srect,uint32_t mode)
 {
-	static RECT sRect;
-	HRESULT	hRet;
+	static Rect sRect;
+	int	hRet;
 
 	memcpy(&sRect,srect,sizeof(sRect));
 	
@@ -1477,7 +1420,7 @@ HRESULT	ClpBlt(int x ,int y ,LPDIRECTDRAWSURFACE ds,LPRECT srect,DWORD mode)
 
 	if(g_ProgramState==DOUBLE)
 	{
-		if(bModeVanish1p || bModeVanish2p)
+		if(g_p1.vanish || g_p2.vanish)
 		{
 			if(y<150)
 			{
@@ -1487,7 +1430,7 @@ HRESULT	ClpBlt(int x ,int y ,LPDIRECTDRAWSURFACE ds,LPRECT srect,DWORD mode)
 			if(y<250)TransAlphaImproved(ds,g_pDDSBack,x,y,sRect,(y-150)*2,CKey_Arr,16);
 			if(y>250)hRet=g_pDDSBack->BltFast(x,y,ds,srect,mode);
 		}
-		else if(bModeSuddenR1p || bModeSuddenR2p)
+		else if(g_p1.suddenR || g_p2.suddenR)
 		{
 			if(y<=100)hRet = g_pDDSBack->BltFast(x,y,ds,srect,mode);
 			else if(y>100 && y<=200)TransAlphaImproved(ds,g_pDDSBack,x,y,sRect,(200-y)*2,CKey_Arr,16);
@@ -1503,7 +1446,7 @@ HRESULT	ClpBlt(int x ,int y ,LPDIRECTDRAWSURFACE ds,LPRECT srect,DWORD mode)
 	}
 	else if(x<320)
 	{
-		if(bModeVanish1p)
+		if(g_p1.vanish)
 		{
 			if(y<150)
 			{
@@ -1513,7 +1456,7 @@ HRESULT	ClpBlt(int x ,int y ,LPDIRECTDRAWSURFACE ds,LPRECT srect,DWORD mode)
 			if(y<250)TransAlphaImproved(ds,g_pDDSBack,x,y,sRect,(y-150)*2,CKey_Arr,16);
 			if(y>250)hRet=g_pDDSBack->BltFast(x,y,ds,srect,mode);
 		}
-		else if(bModeSuddenR1p)
+		else if(g_p1.suddenR)
 		{
 			if(y<=100)hRet = g_pDDSBack->BltFast(x,y,ds,srect,mode);
 			else if(y>100 && y<=200)TransAlphaImproved(ds,g_pDDSBack,x,y,sRect,(200-y)*2,CKey_Arr,16);
@@ -1529,7 +1472,7 @@ HRESULT	ClpBlt(int x ,int y ,LPDIRECTDRAWSURFACE ds,LPRECT srect,DWORD mode)
 	}
 	else if(x>320)
 	{
-		if(bModeVanish2p)
+		if(g_p2.vanish)
 		{
 			if(y<150)
 			{
@@ -1539,7 +1482,7 @@ HRESULT	ClpBlt(int x ,int y ,LPDIRECTDRAWSURFACE ds,LPRECT srect,DWORD mode)
 			if(y<250)TransAlphaImproved(ds,g_pDDSBack,x,y,sRect,(y-150)*2,CKey_Arr,16);
 			if(y>250)hRet=g_pDDSBack->BltFast(x,y,ds,srect,mode);
 		}
-		else if(bModeSuddenR2p)
+		else if(g_p2.suddenR)
 		{
 			if(y<=100)hRet = g_pDDSBack->BltFast(x,y,ds,srect,mode);
 			else if(y>100 && y<=200)TransAlphaImproved(ds,g_pDDSBack,x,y,sRect,(200-y)*2,CKey_Arr,16);
@@ -1562,14 +1505,14 @@ HRESULT	ClpBlt(int x ,int y ,LPDIRECTDRAWSURFACE ds,LPRECT srect,DWORD mode)
 
 void StageTitle(void)
 {
-	RECT	lRect;
+	Rect	lRect;
 
 	if(First==0)
 	{
 		ClearMode();
 
-		Start1p=FALSE;
-		Start2p=FALSE;
+		g_p1.started=FALSE;
+		g_p2.started=FALSE;
 		First++;
 		if(g_dsOpening)
 			g_dsOpening->Play(0,0,0);
@@ -1577,43 +1520,43 @@ void StageTitle(void)
 
 	ReadGameInput();
 
-	if(PressedKey1p[5]==TRUE)
-		Start1p=TRUE;
+	if(g_p1.pressedKey[5]==TRUE)
+		g_p1.started=TRUE;
 
-	if(PressedKey2p[5]==TRUE)
-		Start2p=TRUE;
+	if(g_p2.pressedKey[5]==TRUE)
+		g_p2.started=TRUE;
 	
 	// Draw Background image. "KICK IT UP"
 	g_pDDSBack->BltFast(0,0,GameTITLE,NULL, DDBLTFAST_WAIT | DDBLTFAST_NOCOLORKEY);
 
 	// Check Start.
-	if(Start1p || Start2p)
+	if(g_p1.started || g_p2.started)
 	{
-		if(Start1p && Start2p)
+		if(g_p1.started && g_p2.started)
 		{
-			PressedKey2p[0]=3;
+			g_p2.pressedKey[0]=3;
 		}
-		else if(Start1p)
+		else if(g_p1.started)
 		{
-			if(PressedKey1p[5]==TRUE)
-				PressedKey2p[0]=3;
+			if(g_p1.pressedKey[5]==TRUE)
+				g_p2.pressedKey[0]=3;
 		}
-		else if(Start2p)
+		else if(g_p2.started)
 		{
-			if(PressedKey2p[5]==TRUE)
-				PressedKey2p[0]=3;
+			if(g_p2.pressedKey[5]==TRUE)
+				g_p2.pressedKey[0]=3;
 		}
 	}
 
 	// if start button is pressed.
-	if(PressedKey2p[0]==3)
+	if(g_p2.pressedKey[0]==3)
 	{
-		Couple = Start1p && Start2p;
+		Couple = g_p1.started && g_p2.started;
 
 		First=0;
 		if(g_dsOpening)
 			g_dsOpening->Stop();
-		PressedKey2p[0]=0;
+		g_p2.pressedKey[0]=0;
 
 		// Change ProgramState to SelectSong Stage
 		g_ProgramState=SELECTSONG;
@@ -1628,7 +1571,7 @@ void StageTitle(void)
 
 	g_pDDSBack->BltFast(210,450,g_cFont, &lRect, DDBLTFAST_SRCCOLORKEY);
 
-	if(Start1p==FALSE)
+	if(g_p1.started==FALSE)
 	{
 		// Draw to screen (10, 450) "PRESS CENTER BUTTON"
 		lRect.top=0;
@@ -1638,7 +1581,7 @@ void StageTitle(void)
 
 		TransAlphaImproved(g_cFont, g_pDDSBack, 10, 450, lRect, ALPHA, CKey_CFont, 16);
 	}
-	if(Start2p==FALSE)//DisplayMessage(320,480-20,"PRESS CENTER STEP");
+	if(g_p2.started==FALSE)//DisplayMessage(320,480-20,"PRESS CENTER STEP");
 	{
 		// Draw to screen (410, 450) "PRESS CENTER BUTTON"
 		lRect.top=0;
@@ -1668,42 +1611,42 @@ void StageTitle(void)
 
 void DrawJudge1p(void)
 {
-	static DWORD cur, last;
+	static uint32_t cur, last;
 	static char LastJudge;
 
 	char chCombo1p[255];
 
-	static DWORD sec,delta;
+	static uint32_t sec,delta;
 
-	RECT rRect, cRect, destRect;
+	Rect rRect, cRect, destRect;
 	int Loop;
 
-	if(Judgement1p)
+	if(g_p1.judgement)
 	{
-		dwState=0;
+		g_p1.state=0;
 	}
-	else if(dwState)
+	else if(g_p1.state)
 	{
-		Judgement1p=LastJudge;
+		g_p1.judgement=LastJudge;
 
 		delta=timeGetTime()-sec;
 		if(delta>16)
 		{
 			sec=timeGetTime();
-			if(dwState>=40)
+			if(g_p1.state>=40)
 			{
-				dwState=0;
-				Judgement1p=NONE;
+				g_p1.state=0;
+				g_p1.judgement=NONE;
 			}
 			else
 			{
-				if(delta >16 && delta <32)dwState+=2;
-				else if(delta >=32)dwState+=4;
+				if(delta >16 && delta <32)g_p1.state+=2;
+				else if(delta >=32)g_p1.state+=4;
 			}
 		}
 	}
 
-	switch(Judgement1p)
+	switch(g_p1.judgement)
 	{
 		case NONE:LastJudge=NONE;
 			break;
@@ -1713,7 +1656,7 @@ void DrawJudge1p(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y;
-			if(dwState==0)dwState++;
+			if(g_p1.state==0)g_p1.state++;
 			break;
 		case GREAT:
 			LastJudge=GREAT;
@@ -1721,7 +1664,7 @@ void DrawJudge1p(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y*2;
-			if(dwState==0)dwState++;
+			if(g_p1.state==0)g_p1.state++;
 			break;
 		case GOOD:
 			LastJudge=GOOD;
@@ -1729,7 +1672,7 @@ void DrawJudge1p(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y*3;
-			if(dwState==0)dwState++;
+			if(g_p1.state==0)g_p1.state++;
 			break;
 		case BAD:
 			LastJudge=BAD;
@@ -1737,7 +1680,7 @@ void DrawJudge1p(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y*4;
-			if(dwState==0)dwState++;
+			if(g_p1.state==0)g_p1.state++;
 			break;
 		case MISS:
 			LastJudge=MISS;
@@ -1745,11 +1688,11 @@ void DrawJudge1p(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y*5;
-			if(dwState==0)dwState++;
+			if(g_p1.state==0)g_p1.state++;
 			break;
 	}
 
-	if(dwState>15)
+	if(g_p1.state>15)
 	{
 		destRect.top=200;
 		destRect.left=40;
@@ -1758,22 +1701,22 @@ void DrawJudge1p(void)
 	}
 	else
 	{
-		destRect.top=200-30+(dwState*2);
-		destRect.left=40-60+(dwState*4);
-		destRect.right=40+JUDGE_SIZE_X+60-(dwState*4);
-		destRect.bottom=200+JUDGE_SIZE_Y+30-(dwState*2);
+		destRect.top=200-30+(g_p1.state*2);
+		destRect.left=40-60+(g_p1.state*4);
+		destRect.right=40+JUDGE_SIZE_X+60-(g_p1.state*4);
+		destRect.bottom=200+JUDGE_SIZE_Y+30-(g_p1.state*2);
 	}
 
-	if(Judgement1p)
+	if(g_p1.judgement)
 	{
-		//g_pDDSBack->BltFast(40,200+dwState/2,JudgeFont,&rRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
+		//g_pDDSBack->BltFast(40,200+g_p1.state/2,JudgeFont,&rRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
 		
 		g_pDDSBack->Blt(&destRect, JudgeFont, &rRect,DDBLT_WAIT | DDBLT_KEYSRC , NULL);
 
 		/* �޺� ��º� �Դϴ�. */
-		if((Judgement1p==PERFECT || Judgement1p==GREAT) && Combo1p>3)
+		if((g_p1.judgement==PERFECT || g_p1.judgement==GREAT) && g_p1.combo>3)
 		{
-			sprintf(chCombo1p,"%03d",Combo1p);
+			sprintf(chCombo1p,"%03d",g_p1.combo);
 			
 			for(Loop=0;;Loop++)
 			{
@@ -1783,62 +1726,62 @@ void DrawJudge1p(void)
 				cRect.right=cRect.left+50;
 				cRect.top=0;
 				cRect.bottom=65;
-				if(dwState>10)g_pDDSBack->BltFast(80+Loop*50,250+dwState*2-dwState*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
-				else g_pDDSBack->BltFast(80+Loop*50,250+dwState*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
+				if(g_p1.state>10)g_pDDSBack->BltFast(80+Loop*50,250+g_p1.state*2-g_p1.state*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
+				else g_pDDSBack->BltFast(80+Loop*50,250+g_p1.state*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
 
 				cRect.left=0;
 				cRect.right=150;
 				cRect.top=65;
 				cRect.bottom=100;
 				
-				if(dwState>10)g_pDDSBack->BltFast(80,320+dwState*2-dwState*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
-				else g_pDDSBack->BltFast(80,320+dwState*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
+				if(g_p1.state>10)g_pDDSBack->BltFast(80,320+g_p1.state*2-g_p1.state*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
+				else g_pDDSBack->BltFast(80,320+g_p1.state*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
 			}/* ������� */
 		}
 	}
 
-	Judgement1p=NONE;
+	g_p1.judgement=NONE;
 }
 
 void DrawJudge2p(void)
 {
-	static DWORD cur, last;
+	static uint32_t cur, last;
 	static char LastJudge;
 
 	char chCombo2p[255];
 
-	static DWORD sec,delta;
+	static uint32_t sec,delta;
 
-	RECT rRect, cRect, destRect;
+	Rect rRect, cRect, destRect;
 	int Loop;
 
-	if(Judgement2p)
+	if(g_p2.judgement)
 	{
-		dwState2=0;
+		g_p2.state=0;
 	}
-	else if(dwState2)
+	else if(g_p2.state)
 	{
-		Judgement2p=LastJudge;
+		g_p2.judgement=LastJudge;
 
 		delta=timeGetTime()-sec;
 		
 		if(delta>16)
 		{
 			sec=timeGetTime();
-			if(dwState2>=40)
+			if(g_p2.state>=40)
 			{
-				dwState2=0;
-				Judgement2p=NONE;
+				g_p2.state=0;
+				g_p2.judgement=NONE;
 			}
 			else
 			{
-				if(delta >16 && delta <32)dwState2+=2;
-				else if(delta >=32)dwState2+=4;
+				if(delta >16 && delta <32)g_p2.state+=2;
+				else if(delta >=32)g_p2.state+=4;
 			}
 		}
 	}
 
-	switch(Judgement2p)
+	switch(g_p2.judgement)
 	{
 		case NONE:LastJudge=NONE;
 			break;
@@ -1848,7 +1791,7 @@ void DrawJudge2p(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y;
-			if(dwState2==0)dwState2++;
+			if(g_p2.state==0)g_p2.state++;
 			break;
 		case GREAT:
 			LastJudge=GREAT;
@@ -1856,7 +1799,7 @@ void DrawJudge2p(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y*2;
-			if(dwState2==0)dwState2++;
+			if(g_p2.state==0)g_p2.state++;
 			break;
 		case GOOD:
 			LastJudge=GOOD;
@@ -1864,7 +1807,7 @@ void DrawJudge2p(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y*3;
-			if(dwState2==0)dwState2++;
+			if(g_p2.state==0)g_p2.state++;
 			break;
 		case BAD:
 			LastJudge=BAD;
@@ -1872,7 +1815,7 @@ void DrawJudge2p(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y*4;
-			if(dwState2==0)dwState2++;
+			if(g_p2.state==0)g_p2.state++;
 			break;
 		case MISS:
 			LastJudge=MISS;
@@ -1880,11 +1823,11 @@ void DrawJudge2p(void)
 			rRect.right=JUDGE_SIZE_X;
 			rRect.left=0;
 			rRect.bottom=JUDGE_SIZE_Y*5;
-			if(dwState2==0)dwState2++;
+			if(g_p2.state==0)g_p2.state++;
 			break;
 	}
 
-	if(dwState2>15)
+	if(g_p2.state>15)
 	{
 		destRect.top=200;
 		destRect.left=350;
@@ -1893,22 +1836,22 @@ void DrawJudge2p(void)
 	}
 	else
 	{
-		destRect.top=200-30+(dwState2*2);
-		destRect.left=350-60+(dwState2*4);
-		destRect.right=350+JUDGE_SIZE_X+60-(dwState2*4);
-		destRect.bottom=200+JUDGE_SIZE_Y+30-(dwState2*2);
+		destRect.top=200-30+(g_p2.state*2);
+		destRect.left=350-60+(g_p2.state*4);
+		destRect.right=350+JUDGE_SIZE_X+60-(g_p2.state*4);
+		destRect.bottom=200+JUDGE_SIZE_Y+30-(g_p2.state*2);
 	}
 
-	if(Judgement2p)
+	if(g_p2.judgement)
 	{
 //		g_pDDSBack->BltFast(400,200+dwState22/2,JudgeFont,&rRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
 
 		g_pDDSBack->Blt(&destRect, JudgeFont, &rRect,DDBLT_WAIT | DDBLT_KEYSRC , NULL);
 
 		/* �޺� ��º� �Դϴ�. */
-		if((Judgement2p==PERFECT || Judgement2p==GREAT) && Combo2p>3)
+		if((g_p2.judgement==PERFECT || g_p2.judgement==GREAT) && g_p2.combo>3)
 		{
-			sprintf(chCombo2p,"%03d",Combo2p);
+			sprintf(chCombo2p,"%03d",g_p2.combo);
 			
 			for(Loop=0;;Loop++)
 			{
@@ -1919,25 +1862,25 @@ void DrawJudge2p(void)
 				cRect.top=0;
 				cRect.bottom=65;
 //				g_pDDSBack->BltFast(380+Loop*30+dwState22*2,250,NumberFont,&cRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-				if(dwState2>10)g_pDDSBack->BltFast(400+Loop*50,250+dwState2*2-dwState2*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
-				else g_pDDSBack->BltFast(400+Loop*50,250+dwState2*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
+				if(g_p2.state>10)g_pDDSBack->BltFast(400+Loop*50,250+g_p2.state*2-g_p2.state*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
+				else g_pDDSBack->BltFast(400+Loop*50,250+g_p2.state*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
 
 				cRect.left=0;
 				cRect.right=150;
 				cRect.top=65;
 				cRect.bottom=100;
 				
-				if(dwState2>10)g_pDDSBack->BltFast(400,320+dwState2*2-dwState2*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
-				else g_pDDSBack->BltFast(400,320+dwState2*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
+				if(g_p2.state>10)g_pDDSBack->BltFast(400,320+g_p2.state*2-g_p2.state*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
+				else g_pDDSBack->BltFast(400,320+g_p2.state*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
 			}/* ������� */
 		}
 	}
 
-	Judgement2p=NONE;
+	g_p2.judgement=NONE;
 }
 
 
-void DrawArrow1p(DWORD cur)
+void DrawArrow1p(uint32_t cur)
 {
 	static int arrow_l[20]={0,0,72,72,144,144,216,216,288,288,360,360,432,432,504,504,576,576,648,648};
 	static int arrow_r[20]={72,72,144,144,216,216,288,288,360,360,432,432,504,504,576,576,648,648,720,720};
@@ -1945,26 +1888,26 @@ void DrawArrow1p(DWORD cur)
 	static int Carrow_l[20]={0,0,80,80,160,160,240,240,320,320,400,400,480,480,560,560,640,640};
 	static int Carrow_r[20]={80,80,160,160,240,240,320,320,400,400,480,480,560,560,640,640,720,720};
 
-	static BYTE s1,s3,s5,s7,s9;
-	static DWORD stat1,stat3,stat5,stat7,stat9;
-	static DWORD cur2;
+	static uint8_t s1,s3,s5,s7,s9;
+	static uint32_t stat1,stat3,stat5,stat7,stat9;
+	static uint32_t cur2;
 	static int beat;
 
 	static BOOL Crash1, Crash3, Crash5, Crash7, Crash9;
 	static BOOL	On1, On3, On5, On7, On9;
 
-	static RECT pArr1,pArr3,pArr5,pArr7,pArr9;
-	static RECT cArr1,cArr3,cArr5,cArr7,cArr9;
+	static Rect pArr1,pArr3,pArr5,pArr7,pArr9;
+	static Rect cArr1,cArr3,cArr5,cArr7,cArr9;
 
 
-	BYTE JudgeTemp=0;
-	BYTE	count;
+	uint8_t JudgeTemp=0;
+	uint8_t	count;
 
 	if(cur2!=cur)
 	{
-		if(bModeRandomS1p == TRUE)
+		if(g_p1.randomS == TRUE)
 		{
-			HighSpeed1p_1 = HighSpeed1p_3 = HighSpeed1p_5 = HighSpeed1p_7 = HighSpeed1p_9 = 1 + rand() % 8 ;
+			g_p1.speed1 = g_p1.speed3 = g_p1.speed5 = g_p1.speed7 = g_p1.speed9 = 1 + rand() % 8 ;
 		}
 		cur2=cur;
 		beat=4;
@@ -2071,7 +2014,7 @@ void DrawArrow1p(DWORD cur)
 		}
 	}
 
-	if(s1 || (PressedKey1p[1]==TRUE) )
+	if(s1 || (g_p1.pressedKey[1]==TRUE) )
 	{
 		if(s1==20)
 		{
@@ -2082,14 +2025,14 @@ void DrawArrow1p(DWORD cur)
 		{
 			s1++;
 		}
-		if(PressedKey1p[1]==TRUE)
+		if(g_p1.pressedKey[1]==TRUE)
 		for(count=0;count<18;count++)
 		{
-			if( ZONE_U*HighSpeed1p_1 < Data_y[cur+count] && 
-				ZONE_D*HighSpeed1p_1 > Data_y[cur+count]  )
+			if( ZONE_U*g_p1.speed1 < Data_y[cur+count] && 
+				ZONE_D*g_p1.speed1 > Data_y[cur+count]  )
 			{
-				if( PERFECT_ZONE_U*HighSpeed1p_1 < Data_y[cur+count] &&
-					PERFECT_ZONE_D*HighSpeed1p_1 > Data_y[cur+count])
+				if( PERFECT_ZONE_U*g_p1.speed1 < Data_y[cur+count] &&
+					PERFECT_ZONE_D*g_p1.speed1 > Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][0]=='1')
 					{
@@ -2105,8 +2048,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( GREAT_ZONE_U*HighSpeed1p_1 < Data_y[cur+count] && 
-						 GREAT_ZONE_D*HighSpeed1p_1 > Data_y[cur+count]  )
+				else if( GREAT_ZONE_U*g_p1.speed1 < Data_y[cur+count] && 
+						 GREAT_ZONE_D*g_p1.speed1 > Data_y[cur+count]  )
 				{
 					if(Data_Judge[cur+count][0]=='1')
 					{
@@ -2122,8 +2065,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( GOOD_ZONE_U*HighSpeed1p_1 < Data_y[cur+count] &&
-					     GOOD_ZONE_D*HighSpeed1p_1 > Data_y[cur+count] )
+				else if( GOOD_ZONE_U*g_p1.speed1 < Data_y[cur+count] &&
+					     GOOD_ZONE_D*g_p1.speed1 > Data_y[cur+count] )
 				{
 					if(Data_Judge[cur+count][0]=='1')
 					{
@@ -2137,8 +2080,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( BAD_ZONE_U*HighSpeed1p_1 < Data_y[cur+count] &&
-						 BAD_ZONE_D*HighSpeed1p_1 > Data_y[cur+count] )
+				else if( BAD_ZONE_U*g_p1.speed1 < Data_y[cur+count] &&
+						 BAD_ZONE_D*g_p1.speed1 > Data_y[cur+count] )
 				{
 					if(Data_Judge[cur+count][0]=='1')
 					{
@@ -2156,7 +2099,7 @@ void DrawArrow1p(DWORD cur)
 		}
 	}
 
-	if(s3 || (PressedKey1p[3]==TRUE))
+	if(s3 || (g_p1.pressedKey[3]==TRUE))
 	{
 		if(s3==20)
 		{
@@ -2167,14 +2110,14 @@ void DrawArrow1p(DWORD cur)
 		{
 			s3++;
 		}
-		if(PressedKey1p[3]==TRUE)
+		if(g_p1.pressedKey[3]==TRUE)
 		for(count=0;count<18;count++)
 		{
-			if( ZONE_U*HighSpeed1p_3 < Data_y[cur+count] &&
-				ZONE_D*HighSpeed1p_3 > Data_y[cur+count])
+			if( ZONE_U*g_p1.speed3 < Data_y[cur+count] &&
+				ZONE_D*g_p1.speed3 > Data_y[cur+count])
 			{
-				if( PERFECT_ZONE_U*HighSpeed1p_3 < Data_y[cur+count] &&
-				    PERFECT_ZONE_D*HighSpeed1p_3 > Data_y[cur+count])
+				if( PERFECT_ZONE_U*g_p1.speed3 < Data_y[cur+count] &&
+				    PERFECT_ZONE_D*g_p1.speed3 > Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][4]=='1')
 					{
@@ -2190,8 +2133,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( GREAT_ZONE_U*HighSpeed1p_3<Data_y[cur+count] &&
-					     GREAT_ZONE_D*HighSpeed1p_3>Data_y[cur+count] )
+				else if( GREAT_ZONE_U*g_p1.speed3<Data_y[cur+count] &&
+					     GREAT_ZONE_D*g_p1.speed3>Data_y[cur+count] )
 				{
 					if(Data_Judge[cur+count][4]=='1')
 					{
@@ -2207,8 +2150,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( GOOD_ZONE_U*HighSpeed1p_3 < Data_y[cur+count] &&
-						 GOOD_ZONE_D*HighSpeed1p_3 > Data_y[cur+count])
+				else if( GOOD_ZONE_U*g_p1.speed3 < Data_y[cur+count] &&
+						 GOOD_ZONE_D*g_p1.speed3 > Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][4]=='1')
 					{
@@ -2222,8 +2165,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( BAD_ZONE_U*HighSpeed1p_3<Data_y[cur+count] &&
-						 BAD_ZONE_D*HighSpeed1p_3>Data_y[cur+count])
+				else if( BAD_ZONE_U*g_p1.speed3<Data_y[cur+count] &&
+						 BAD_ZONE_D*g_p1.speed3>Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][4]=='1')
 					{
@@ -2241,7 +2184,7 @@ void DrawArrow1p(DWORD cur)
 		}
 	}
 
-	if(s5 || (PressedKey1p[5]==TRUE))
+	if(s5 || (g_p1.pressedKey[5]==TRUE))
 	{
 		if(s5==20)
 		{
@@ -2252,14 +2195,14 @@ void DrawArrow1p(DWORD cur)
 		{
 			s5++;
 		}
-		if(PressedKey1p[5]==TRUE)
+		if(g_p1.pressedKey[5]==TRUE)
 		for(count=0;count<18;count++)
 		{
-			if( ZONE_U*HighSpeed1p_5<Data_y[cur+count] &&
-				ZONE_D*HighSpeed1p_5>Data_y[cur+count])
+			if( ZONE_U*g_p1.speed5<Data_y[cur+count] &&
+				ZONE_D*g_p1.speed5>Data_y[cur+count])
 			{
-				if( PERFECT_ZONE_U*HighSpeed1p_5<Data_y[cur+count] &&
-					PERFECT_ZONE_D*HighSpeed1p_5>Data_y[cur+count])
+				if( PERFECT_ZONE_U*g_p1.speed5<Data_y[cur+count] &&
+					PERFECT_ZONE_D*g_p1.speed5>Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][2]=='1')
 					{
@@ -2275,8 +2218,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( GREAT_ZONE_U*HighSpeed1p_5<Data_y[cur+count] &&
-					     GREAT_ZONE_D*HighSpeed1p_5>Data_y[cur+count])
+				else if( GREAT_ZONE_U*g_p1.speed5<Data_y[cur+count] &&
+					     GREAT_ZONE_D*g_p1.speed5>Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][2]=='1')
 					{
@@ -2292,8 +2235,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( GOOD_ZONE_U*HighSpeed1p_5<Data_y[cur+count] &&
-					     GOOD_ZONE_D*HighSpeed1p_5>Data_y[cur+count])
+				else if( GOOD_ZONE_U*g_p1.speed5<Data_y[cur+count] &&
+					     GOOD_ZONE_D*g_p1.speed5>Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][2]=='1')
 					{
@@ -2307,8 +2250,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( BAD_ZONE_U*HighSpeed1p_5<Data_y[cur+count] &&
-					     BAD_ZONE_D*HighSpeed1p_5>Data_y[cur+count])
+				else if( BAD_ZONE_U*g_p1.speed5<Data_y[cur+count] &&
+					     BAD_ZONE_D*g_p1.speed5>Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][2]=='1')
 					{
@@ -2328,7 +2271,7 @@ void DrawArrow1p(DWORD cur)
 
 	}
 
-	if(s7 || (PressedKey1p[7]==TRUE) )
+	if(s7 || (g_p1.pressedKey[7]==TRUE) )
 	{
 		if(s7==20)
 		{
@@ -2339,14 +2282,14 @@ void DrawArrow1p(DWORD cur)
 		{
 			s7++;
 		}
-		if(PressedKey1p[7]==TRUE)
+		if(g_p1.pressedKey[7]==TRUE)
 		for(count=0;count<18;count++)
 		{
-			if( ZONE_U*HighSpeed1p_7 < Data_y[cur+count] &&
-				ZONE_D*HighSpeed1p_7 > Data_y[cur+count])
+			if( ZONE_U*g_p1.speed7 < Data_y[cur+count] &&
+				ZONE_D*g_p1.speed7 > Data_y[cur+count])
 			{
-				if( PERFECT_ZONE_U*HighSpeed1p_7 < Data_y[cur+count] &&
-					PERFECT_ZONE_D*HighSpeed1p_7 > Data_y[cur+count])
+				if( PERFECT_ZONE_U*g_p1.speed7 < Data_y[cur+count] &&
+					PERFECT_ZONE_D*g_p1.speed7 > Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][1]=='1')
 					{
@@ -2362,8 +2305,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( GREAT_ZONE_U*HighSpeed1p_7<Data_y[cur+count] &&
-					     GREAT_ZONE_D*HighSpeed1p_7>Data_y[cur+count])
+				else if( GREAT_ZONE_U*g_p1.speed7<Data_y[cur+count] &&
+					     GREAT_ZONE_D*g_p1.speed7>Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][1]=='1')
 					{
@@ -2379,8 +2322,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( GOOD_ZONE_U*HighSpeed1p_7<Data_y[cur+count] &&
-					     GOOD_ZONE_D*HighSpeed1p_7>Data_y[cur+count])
+				else if( GOOD_ZONE_U*g_p1.speed7<Data_y[cur+count] &&
+					     GOOD_ZONE_D*g_p1.speed7>Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][1]=='1')
 					{
@@ -2394,8 +2337,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( BAD_ZONE_U*HighSpeed1p_7<Data_y[cur+count] &&
-					     BAD_ZONE_D*HighSpeed1p_7>Data_y[cur+count])
+				else if( BAD_ZONE_U*g_p1.speed7<Data_y[cur+count] &&
+					     BAD_ZONE_D*g_p1.speed7>Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][1]=='1')
 					{
@@ -2414,7 +2357,7 @@ void DrawArrow1p(DWORD cur)
 		}
 	}
 
-	if(s9 || (PressedKey1p[9]==TRUE))
+	if(s9 || (g_p1.pressedKey[9]==TRUE))
 	{
 		if(s9==20)
 		{
@@ -2426,14 +2369,14 @@ void DrawArrow1p(DWORD cur)
 		{
 			s9++;
 		}
-		if(PressedKey1p[9]==TRUE)
+		if(g_p1.pressedKey[9]==TRUE)
 		for(count=0;count<18;count++)
 		{
-			if( ZONE_U*HighSpeed1p_9<Data_y[cur+count] &&
-				ZONE_D*HighSpeed1p_9>Data_y[cur+count])
+			if( ZONE_U*g_p1.speed9<Data_y[cur+count] &&
+				ZONE_D*g_p1.speed9>Data_y[cur+count])
 			{
-				if( PERFECT_ZONE_U*HighSpeed1p_9<Data_y[cur+count] &&
-					PERFECT_ZONE_D*HighSpeed1p_9>Data_y[cur+count])
+				if( PERFECT_ZONE_U*g_p1.speed9<Data_y[cur+count] &&
+					PERFECT_ZONE_D*g_p1.speed9>Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][3]=='1')
 					{
@@ -2449,8 +2392,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( GREAT_ZONE_U*HighSpeed1p_9<Data_y[cur+count] &&
-					     GREAT_ZONE_D*HighSpeed1p_9>Data_y[cur+count])
+				else if( GREAT_ZONE_U*g_p1.speed9<Data_y[cur+count] &&
+					     GREAT_ZONE_D*g_p1.speed9>Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][3]=='1')
 					{
@@ -2466,8 +2409,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( GOOD_ZONE_U*HighSpeed1p_9<Data_y[cur+count] &&
-					     GOOD_ZONE_D*HighSpeed1p_9>Data_y[cur+count])
+				else if( GOOD_ZONE_U*g_p1.speed9<Data_y[cur+count] &&
+					     GOOD_ZONE_D*g_p1.speed9>Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][3]=='1')
 					{
@@ -2481,8 +2424,8 @@ void DrawArrow1p(DWORD cur)
 						break;
 					}
 				}
-				else if( BAD_ZONE_U*HighSpeed1p_9<Data_y[cur+count] &&
-					     BAD_ZONE_D*HighSpeed1p_9>Data_y[cur+count])
+				else if( BAD_ZONE_U*g_p1.speed9<Data_y[cur+count] &&
+					     BAD_ZONE_D*g_p1.speed9>Data_y[cur+count])
 				{
 					if(Data_Judge[cur+count][3]=='1')
 					{
@@ -2501,7 +2444,7 @@ void DrawArrow1p(DWORD cur)
 
 	}
 	
-	Judgement1p=JudgeTemp;
+	g_p1.judgement=JudgeTemp;
 	
 	// �̽�ó���Դϴ�.
 	for(count=0;count<10;count++)
@@ -2511,8 +2454,8 @@ void DrawArrow1p(DWORD cur)
 	{
 		if(Data[cur+count][0]=='2')break;
 		Data_Judge[cur+count][0]=Data_Judge[cur+count][1]=Data_Judge[cur+count][2]=Data_Judge[cur+count][3]=Data_Judge[cur+count][4]='0';
-		Judgement1p=MISS;
-		Combo1p=0;
+		g_p1.judgement=MISS;
+		g_p1.combo=0;
 	}
 
 
@@ -2521,53 +2464,53 @@ void DrawArrow1p(DWORD cur)
 		if(s1==2)if(Data_Judge[stat1][0]=='0' && Data_Judge[stat1][1]=='0' && Data_Judge[stat1][2]=='0' && Data_Judge[stat1][3]=='0' && Data_Judge[stat1][4]=='0' )
 		{
 			Data[stat1][0]=Data[stat1][1]=Data[stat1][2]=Data[stat1][3]=Data[stat1][4]='0';
-			//Judgement1p=PERFECT;
-			Judgement1p=JudgeTemp;
+			//g_p1.judgement=PERFECT;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 	if(Crash7)
 	{
 		if(s7==2)if(Data_Judge[stat7][0]=='0' && Data_Judge[stat7][1]=='0' && Data_Judge[stat7][2]=='0' && Data_Judge[stat7][3]=='0' && Data_Judge[stat7][4]=='0' )
 		{
 			Data[stat7][0]=Data[stat7][1]=Data[stat7][2]=Data[stat7][3]=Data[stat7][4]='0';
-			//Judgement1p=PERFECT;
-			Judgement1p=JudgeTemp;
+			//g_p1.judgement=PERFECT;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 	if(Crash5)
 	{
 		if(s5==2)if(Data_Judge[stat5][0]=='0' && Data_Judge[stat5][1]=='0' && Data_Judge[stat5][2]=='0' && Data_Judge[stat5][3]=='0' && Data_Judge[stat5][4]=='0' )
 		{
 			Data[stat5][0]=Data[stat5][1]=Data[stat5][2]=Data[stat5][3]=Data[stat5][4]='0';
-			//Judgement1p=PERFECT;
-			Judgement1p=JudgeTemp;
+			//g_p1.judgement=PERFECT;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 	if(Crash9)
 	{
 		if(s9==2)if(Data_Judge[stat9][0]=='0' && Data_Judge[stat9][1]=='0' && Data_Judge[stat9][2]=='0' && Data_Judge[stat9][3]=='0' && Data_Judge[stat9][4]=='0' )
 		{
 			Data[stat9][0]=Data[stat9][1]=Data[stat9][2]=Data[stat9][3]=Data[stat9][4]='0';
-			//Judgement1p=PERFECT;
-			Judgement1p=JudgeTemp;
+			//g_p1.judgement=PERFECT;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 	if(Crash3)
 	{
 		if(s3==2)if(Data_Judge[stat3][0]=='0' && Data_Judge[stat3][1]=='0' && Data_Judge[stat3][2]=='0' && Data_Judge[stat3][3]=='0' && Data_Judge[stat3][4]=='0' )
 		{
 			Data[stat3][0]=Data[stat3][1]=Data[stat3][2]=Data[stat3][3]=Data[stat3][4]='0';
-			//Judgement1p=PERFECT;
-			Judgement1p=JudgeTemp;
+			//g_p1.judgement=PERFECT;
+			g_p1.judgement=JudgeTemp;
 		}
-		else Judgement1p=NONE;
+		else g_p1.judgement=NONE;
 	}
 
-	if(Judgement1p==PERFECT || Judgement1p==GREAT)
+	if(g_p1.judgement==PERFECT || g_p1.judgement==GREAT)
 	{
 		if(g_dsBeat)
 		{
@@ -2575,16 +2518,16 @@ void DrawArrow1p(DWORD cur)
 			g_dsBeat->SetCurrentPosition(0);
 			g_dsBeat->Play(0,0,0);
 		}
-		if(Judgement1p==PERFECT)cPerfect1p++;
-		if(Judgement1p==GREAT)cGreat1p++;
+		if(g_p1.judgement==PERFECT)g_p1.perfect++;
+		if(g_p1.judgement==GREAT)g_p1.great++;
 
-		Combo1p++;
-		if(Combo1p>cMaxCombo1p)cMaxCombo1p=Combo1p;
-		if(Combo1p>10)
+		g_p1.combo++;
+		if(g_p1.combo>g_p1.maxCombo)g_p1.maxCombo=g_p1.combo;
+		if(g_p1.combo>10)
 		{
-			if(Gauge1p<0)Gauge1p=1;
-			else Gauge1p++;
-			if(Gauge1p>42)Gauge1p=41;
+			if(g_p1.gauge<0)g_p1.gauge=1;
+			else g_p1.gauge++;
+			if(g_p1.gauge>42)g_p1.gauge=41;
 		}
 		Crash1=On1;
 		Crash3=On3;
@@ -2594,42 +2537,42 @@ void DrawArrow1p(DWORD cur)
 
 		On1=On3=On5=On7=On9=FALSE;
 	}
-	else if(Judgement1p==GOOD || Judgement1p==BAD || Judgement1p==MISS)
+	else if(g_p1.judgement==GOOD || g_p1.judgement==BAD || g_p1.judgement==MISS)
 	{
-		if(Judgement1p==GOOD)cGood1p++;
-		else if(Judgement1p==BAD)cBad1p++;
-		else if(Judgement1p==MISS)cMiss1p++;
-		Combo1p=0;
+		if(g_p1.judgement==GOOD)g_p1.good++;
+		else if(g_p1.judgement==BAD)g_p1.bad++;
+		else if(g_p1.judgement==MISS)g_p1.miss++;
+		g_p1.combo=0;
 	}
 
-	if(Combo1p)
+	if(g_p1.combo)
 	{
-		if(Judgement1p==PERFECT)Score1p+=2000;
-		else if(Judgement1p==GREAT)Score1p+=1500;
+		if(g_p1.judgement==PERFECT)g_p1.score+=2000;
+		else if(g_p1.judgement==GREAT)g_p1.score+=1500;
 	}
 	else
 	{
-		if(Judgement1p==PERFECT)Score1p+=1000;
-		else if(Judgement1p==GREAT)Score1p+=500;
+		if(g_p1.judgement==PERFECT)g_p1.score+=1000;
+		else if(g_p1.judgement==GREAT)g_p1.score+=500;
 	}
 
-	if(Judgement1p==GOOD)Score1p+=100;
-	else if(Judgement1p==BAD)
+	if(g_p1.judgement==GOOD)g_p1.score+=100;
+	else if(g_p1.judgement==BAD)
 	{
-		Score1p-=700;
-		Gauge1p-=2;
+		g_p1.score-=700;
+		g_p1.gauge-=2;
 	}
-	else if(Judgement1p==MISS)
+	else if(g_p1.judgement==MISS)
 	{
-		Score1p-=1000;
-		Gauge1p-=5;
+		g_p1.score-=1000;
+		g_p1.gauge-=5;
 	}
 
 	if(KCFG.bcDead)
 	{
 		if(Couple)
 		{
-			if(Gauge1p<-40 && Gauge2p<-40)
+			if(g_p1.gauge<-40 && g_p2.gauge<-40)
 			{
 				if(SongFlag)
 				{
@@ -2642,7 +2585,7 @@ void DrawArrow1p(DWORD cur)
 		}
 		else
 		{
-			if(Gauge1p<-40)
+			if(g_p1.gauge<-40)
 			{
 				if(SongFlag)
 				{
@@ -2655,7 +2598,7 @@ void DrawArrow1p(DWORD cur)
 		}
 	}
 
-	if(Score1p<0)Score1p=0;
+	if(g_p1.score<0)g_p1.score=0;
 
 	if (beat) g_pDDSBack->BltFast(32,50,Arrow2,NULL,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
 	else g_pDDSBack->BltFast(32,50,Arrow1,NULL,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
@@ -2726,7 +2669,7 @@ void DrawArrow1p(DWORD cur)
 	else if(s3)g_pDDSBack->BltFast(227,45,pArrow3,&pArr3,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
 }
 
-void DrawArrow2p(DWORD cur)
+void DrawArrow2p(uint32_t cur)
 {
 	static int arrow_l[20]={0,0,72,72,144,144,216,216,288,288,360,360,432,432,504,504,576,576,648,648};
 	static int arrow_r[20]={72,72,144,144,216,216,288,288,360,360,432,432,504,504,576,576,648,648,720,720};
@@ -2734,28 +2677,28 @@ void DrawArrow2p(DWORD cur)
 	static int Carrow_l[20]={0,0,80,80,160,160,240,240,320,320,400,400,480,480,560,560,640,640};
 	static int Carrow_r[20]={80,80,160,160,240,240,320,320,400,400,480,480,560,560,640,640,720,720};
 
-	static BYTE s1,s3,s5,s7,s9;
-	static DWORD stat1,stat3,stat5,stat7,stat9;
-	static DWORD cur2;
+	static uint8_t s1,s3,s5,s7,s9;
+	static uint32_t stat1,stat3,stat5,stat7,stat9;
+	static uint32_t cur2;
 	static int beat;
 
 	static BOOL Crash1, Crash3, Crash5, Crash7, Crash9;
 	static BOOL	On1, On3, On5, On7, On9;
 
-	static RECT pArr1,pArr3,pArr5,pArr7,pArr9;
-	static RECT cArr1,cArr3,cArr5,cArr7,cArr9;
+	static Rect pArr1,pArr3,pArr5,pArr7,pArr9;
+	static Rect cArr1,cArr3,cArr5,cArr7,cArr9;
 
 
-	BYTE JudgeTemp=0;
-	BYTE	count;
+	uint8_t JudgeTemp=0;
+	uint8_t	count;
 
 	
-	if(Start2p==TRUE && Start1p==FALSE)ReadGameInput();
+	if(g_p2.started==TRUE && g_p1.started==FALSE)ReadGameInput();
 	if(cur2!=cur)
 	{
-		if(bModeRandomS2p == TRUE)
+		if(g_p2.randomS == TRUE)
 		{
-			HighSpeed2p_1 = HighSpeed2p_3 = HighSpeed2p_5 = HighSpeed2p_7 = HighSpeed2p_9 = 1 + rand() % 8 ;
+			g_p2.speed1 = g_p2.speed3 = g_p2.speed5 = g_p2.speed7 = g_p2.speed9 = 1 + rand() % 8 ;
 		}
 		cur2=cur;
 		beat=4;
@@ -2861,7 +2804,7 @@ void DrawArrow2p(DWORD cur)
 		}
 	}
 
-	if(s1 || (PressedKey2p[1]==TRUE) )
+	if(s1 || (g_p2.pressedKey[1]==TRUE) )
 	{
 		if(s1==20)
 		{
@@ -2872,14 +2815,14 @@ void DrawArrow2p(DWORD cur)
 		{
 			s1++;
 		}
-		if(PressedKey2p[1]==TRUE)
+		if(g_p2.pressedKey[1]==TRUE)
 		for(count=0;count<18;count++)
 		{
-			if( ZONE_U*HighSpeed2p_1 < Data_y1[cur+count] && 
-				ZONE_D*HighSpeed2p_1 > Data_y1[cur+count]  )
+			if( ZONE_U*g_p2.speed1 < Data_y1[cur+count] && 
+				ZONE_D*g_p2.speed1 > Data_y1[cur+count]  )
 			{
-				if( PERFECT_ZONE_U*HighSpeed2p_1 < Data_y1[cur+count] &&
-					PERFECT_ZONE_D*HighSpeed2p_1 > Data_y1[cur+count])
+				if( PERFECT_ZONE_U*g_p2.speed1 < Data_y1[cur+count] &&
+					PERFECT_ZONE_D*g_p2.speed1 > Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][5]=='1')
 					{
@@ -2895,8 +2838,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( GREAT_ZONE_U*HighSpeed2p_1 < Data_y1[cur+count] && 
-						 GREAT_ZONE_D*HighSpeed2p_1 > Data_y1[cur+count]  )
+				else if( GREAT_ZONE_U*g_p2.speed1 < Data_y1[cur+count] && 
+						 GREAT_ZONE_D*g_p2.speed1 > Data_y1[cur+count]  )
 				{
 					if(Data_Judge1[cur+count][5]=='1')
 					{
@@ -2912,8 +2855,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( GOOD_ZONE_U*HighSpeed2p_1 < Data_y1[cur+count] &&
-					     GOOD_ZONE_D*HighSpeed2p_1 > Data_y1[cur+count] )
+				else if( GOOD_ZONE_U*g_p2.speed1 < Data_y1[cur+count] &&
+					     GOOD_ZONE_D*g_p2.speed1 > Data_y1[cur+count] )
 				{
 					if(Data_Judge1[cur+count][5]=='1')
 					{
@@ -2927,8 +2870,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( BAD_ZONE_U*HighSpeed2p_1 < Data_y1[cur+count] &&
-						 BAD_ZONE_D*HighSpeed2p_1 > Data_y1[cur+count] )
+				else if( BAD_ZONE_U*g_p2.speed1 < Data_y1[cur+count] &&
+						 BAD_ZONE_D*g_p2.speed1 > Data_y1[cur+count] )
 				{
 					if(Data_Judge1[cur+count][5]=='1')
 					{
@@ -2946,7 +2889,7 @@ void DrawArrow2p(DWORD cur)
 		}
 	}
 
-	if(s3 || (PressedKey2p[3]==TRUE))
+	if(s3 || (g_p2.pressedKey[3]==TRUE))
 	{
 		if(s3==20)
 		{
@@ -2957,14 +2900,14 @@ void DrawArrow2p(DWORD cur)
 		{
 			s3++;
 		}
-		if(PressedKey2p[3]==TRUE)
+		if(g_p2.pressedKey[3]==TRUE)
 		for(count=0;count<18;count++)
 		{
-			if( ZONE_U*HighSpeed2p_3 < Data_y1[cur+count] &&
-				ZONE_D*HighSpeed2p_3 > Data_y1[cur+count])
+			if( ZONE_U*g_p2.speed3 < Data_y1[cur+count] &&
+				ZONE_D*g_p2.speed3 > Data_y1[cur+count])
 			{
-				if( PERFECT_ZONE_U*HighSpeed2p_3 < Data_y1[cur+count] &&
-				    PERFECT_ZONE_D*HighSpeed2p_3 > Data_y1[cur+count])
+				if( PERFECT_ZONE_U*g_p2.speed3 < Data_y1[cur+count] &&
+				    PERFECT_ZONE_D*g_p2.speed3 > Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][9]=='1')
 					{
@@ -2980,8 +2923,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( GREAT_ZONE_U*HighSpeed2p_3<Data_y1[cur+count] &&
-					     GREAT_ZONE_D*HighSpeed2p_3>Data_y1[cur+count] )
+				else if( GREAT_ZONE_U*g_p2.speed3<Data_y1[cur+count] &&
+					     GREAT_ZONE_D*g_p2.speed3>Data_y1[cur+count] )
 				{
 					if(Data_Judge1[cur+count][9]=='1')
 					{
@@ -2997,8 +2940,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( GOOD_ZONE_U*HighSpeed2p_3 < Data_y1[cur+count] &&
-						 GOOD_ZONE_D*HighSpeed2p_3 > Data_y1[cur+count])
+				else if( GOOD_ZONE_U*g_p2.speed3 < Data_y1[cur+count] &&
+						 GOOD_ZONE_D*g_p2.speed3 > Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][9]=='1')
 					{
@@ -3012,8 +2955,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( BAD_ZONE_U*HighSpeed2p_3<Data_y1[cur+count] &&
-						 BAD_ZONE_D*HighSpeed2p_3>Data_y1[cur+count])
+				else if( BAD_ZONE_U*g_p2.speed3<Data_y1[cur+count] &&
+						 BAD_ZONE_D*g_p2.speed3>Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][9]=='1')
 					{
@@ -3031,7 +2974,7 @@ void DrawArrow2p(DWORD cur)
 		}
 	}
 
-	if(s5 || (PressedKey2p[5]==TRUE))
+	if(s5 || (g_p2.pressedKey[5]==TRUE))
 	{
 		if(s5==20)
 		{
@@ -3042,14 +2985,14 @@ void DrawArrow2p(DWORD cur)
 		{
 			s5++;
 		}
-		if(PressedKey2p[5]==TRUE)
+		if(g_p2.pressedKey[5]==TRUE)
 		for(count=0;count<18;count++)
 		{
-			if( ZONE_U*HighSpeed2p_5<Data_y1[cur+count] &&
-				ZONE_D*HighSpeed2p_5>Data_y1[cur+count])
+			if( ZONE_U*g_p2.speed5<Data_y1[cur+count] &&
+				ZONE_D*g_p2.speed5>Data_y1[cur+count])
 			{
-				if( PERFECT_ZONE_U*HighSpeed2p_5<Data_y1[cur+count] &&
-					PERFECT_ZONE_D*HighSpeed2p_5>Data_y1[cur+count])
+				if( PERFECT_ZONE_U*g_p2.speed5<Data_y1[cur+count] &&
+					PERFECT_ZONE_D*g_p2.speed5>Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][7]=='1')
 					{
@@ -3065,8 +3008,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( GREAT_ZONE_U*HighSpeed2p_5<Data_y1[cur+count] &&
-					     GREAT_ZONE_D*HighSpeed2p_5>Data_y1[cur+count])
+				else if( GREAT_ZONE_U*g_p2.speed5<Data_y1[cur+count] &&
+					     GREAT_ZONE_D*g_p2.speed5>Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][7]=='1')
 					{
@@ -3082,8 +3025,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( GOOD_ZONE_U*HighSpeed2p_5<Data_y1[cur+count] &&
-					     GOOD_ZONE_D*HighSpeed2p_5>Data_y1[cur+count])
+				else if( GOOD_ZONE_U*g_p2.speed5<Data_y1[cur+count] &&
+					     GOOD_ZONE_D*g_p2.speed5>Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][7]=='1')
 					{
@@ -3097,8 +3040,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( BAD_ZONE_U*HighSpeed2p_5<Data_y1[cur+count] &&
-					     BAD_ZONE_D*HighSpeed2p_5>Data_y1[cur+count])
+				else if( BAD_ZONE_U*g_p2.speed5<Data_y1[cur+count] &&
+					     BAD_ZONE_D*g_p2.speed5>Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][7]=='1')
 					{
@@ -3118,7 +3061,7 @@ void DrawArrow2p(DWORD cur)
 
 	}
 
-	if(s7 || (PressedKey2p[7]==TRUE) )
+	if(s7 || (g_p2.pressedKey[7]==TRUE) )
 	{
 		if(s7==20)
 		{
@@ -3129,14 +3072,14 @@ void DrawArrow2p(DWORD cur)
 		{
 			s7++;
 		}
-		if(PressedKey2p[7]==TRUE)
+		if(g_p2.pressedKey[7]==TRUE)
 		for(count=0;count<18;count++)
 		{
-			if( ZONE_U*HighSpeed2p_7 < Data_y1[cur+count] &&
-				ZONE_D*HighSpeed2p_7 > Data_y1[cur+count])
+			if( ZONE_U*g_p2.speed7 < Data_y1[cur+count] &&
+				ZONE_D*g_p2.speed7 > Data_y1[cur+count])
 			{
-				if( PERFECT_ZONE_U*HighSpeed2p_7 < Data_y1[cur+count] &&
-					PERFECT_ZONE_D*HighSpeed2p_7 > Data_y1[cur+count])
+				if( PERFECT_ZONE_U*g_p2.speed7 < Data_y1[cur+count] &&
+					PERFECT_ZONE_D*g_p2.speed7 > Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][6]=='1')
 					{
@@ -3152,8 +3095,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( GREAT_ZONE_U*HighSpeed2p_7<Data_y1[cur+count] &&
-					     GREAT_ZONE_D*HighSpeed2p_7>Data_y1[cur+count])
+				else if( GREAT_ZONE_U*g_p2.speed7<Data_y1[cur+count] &&
+					     GREAT_ZONE_D*g_p2.speed7>Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][6]=='1')
 					{
@@ -3169,8 +3112,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( GOOD_ZONE_U*HighSpeed2p_7<Data_y1[cur+count] &&
-					     GOOD_ZONE_D*HighSpeed2p_7>Data_y1[cur+count])
+				else if( GOOD_ZONE_U*g_p2.speed7<Data_y1[cur+count] &&
+					     GOOD_ZONE_D*g_p2.speed7>Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][6]=='1')
 					{
@@ -3184,8 +3127,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( BAD_ZONE_U*HighSpeed2p_7<Data_y1[cur+count] &&
-					     BAD_ZONE_D*HighSpeed2p_7>Data_y1[cur+count])
+				else if( BAD_ZONE_U*g_p2.speed7<Data_y1[cur+count] &&
+					     BAD_ZONE_D*g_p2.speed7>Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][6]=='1')
 					{
@@ -3204,7 +3147,7 @@ void DrawArrow2p(DWORD cur)
 		}
 	}
 
-	if(s9 || (PressedKey2p[9]==TRUE))
+	if(s9 || (g_p2.pressedKey[9]==TRUE))
 	{
 		if(s9==20)
 		{
@@ -3216,14 +3159,14 @@ void DrawArrow2p(DWORD cur)
 		{
 			s9++;
 		}
-		if(PressedKey2p[9]==TRUE)
+		if(g_p2.pressedKey[9]==TRUE)
 		for(count=0;count<18;count++)
 		{
-			if( ZONE_U*HighSpeed2p_9<Data_y1[cur+count] &&
-				ZONE_D*HighSpeed2p_9>Data_y1[cur+count])
+			if( ZONE_U*g_p2.speed9<Data_y1[cur+count] &&
+				ZONE_D*g_p2.speed9>Data_y1[cur+count])
 			{
-				if( PERFECT_ZONE_U*HighSpeed2p_9<Data_y1[cur+count] &&
-					PERFECT_ZONE_D*HighSpeed2p_9>Data_y1[cur+count])
+				if( PERFECT_ZONE_U*g_p2.speed9<Data_y1[cur+count] &&
+					PERFECT_ZONE_D*g_p2.speed9>Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][8]=='1')
 					{
@@ -3239,8 +3182,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( GREAT_ZONE_U*HighSpeed2p_9<Data_y1[cur+count] &&
-					     GREAT_ZONE_D*HighSpeed2p_9>Data_y1[cur+count])
+				else if( GREAT_ZONE_U*g_p2.speed9<Data_y1[cur+count] &&
+					     GREAT_ZONE_D*g_p2.speed9>Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][8]=='1')
 					{
@@ -3256,8 +3199,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( GOOD_ZONE_U*HighSpeed2p_9<Data_y1[cur+count] &&
-					     GOOD_ZONE_D*HighSpeed2p_9>Data_y1[cur+count])
+				else if( GOOD_ZONE_U*g_p2.speed9<Data_y1[cur+count] &&
+					     GOOD_ZONE_D*g_p2.speed9>Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][8]=='1')
 					{
@@ -3271,8 +3214,8 @@ void DrawArrow2p(DWORD cur)
 						break;
 					}
 				}
-				else if( BAD_ZONE_U*HighSpeed2p_9<Data_y1[cur+count] &&
-					     BAD_ZONE_D*HighSpeed2p_9>Data_y1[cur+count])
+				else if( BAD_ZONE_U*g_p2.speed9<Data_y1[cur+count] &&
+					     BAD_ZONE_D*g_p2.speed9>Data_y1[cur+count])
 				{
 					if(Data_Judge1[cur+count][8]=='1')
 					{
@@ -3291,7 +3234,7 @@ void DrawArrow2p(DWORD cur)
 
 	}
 	
-	Judgement2p=JudgeTemp;
+	g_p2.judgement=JudgeTemp;
 	
 	// �̽�ó���Դϴ�.
 	for(count=0;count<10;count++)
@@ -3301,8 +3244,8 @@ void DrawArrow2p(DWORD cur)
 	{
 		if(Data1[cur+count][5]=='2')break;
 		Data_Judge1[cur+count][5]=Data_Judge1[cur+count][6]=Data_Judge1[cur+count][7]=Data_Judge1[cur+count][8]=Data_Judge1[cur+count][9]='0';
-		Judgement2p=MISS;
-		Combo2p=0;
+		g_p2.judgement=MISS;
+		g_p2.combo=0;
 	}
 
 	if(Crash1)
@@ -3310,53 +3253,53 @@ void DrawArrow2p(DWORD cur)
 		if(s1==2)if(Data_Judge1[stat1][5]=='0' && Data_Judge1[stat1][6]=='0' && Data_Judge1[stat1][7]=='0' && Data_Judge1[stat1][8]=='0' && Data_Judge1[stat1][9]=='0' )
 		{
 			Data1[stat1][5]=Data1[stat1][6]=Data1[stat1][7]=Data1[stat1][8]=Data1[stat1][9]='0';
-			//Judgement2p=PERFECT;
-			Judgement2p=JudgeTemp;
+			//g_p2.judgement=PERFECT;
+			g_p2.judgement=JudgeTemp;
 		}
-		else Judgement2p=NONE;
+		else g_p2.judgement=NONE;
 	}
 	if(Crash7)
 	{
 		if(s7==2)if(Data_Judge1[stat7][5]=='0' && Data_Judge1[stat7][6]=='0' && Data_Judge1[stat7][7]=='0' && Data_Judge1[stat7][8]=='0' && Data_Judge1[stat7][9]=='0' )
 		{
 			Data1[stat7][5]=Data1[stat7][6]=Data1[stat7][7]=Data1[stat7][8]=Data1[stat7][9]='0';
-			//Judgement2p=PERFECT;
-			Judgement2p=JudgeTemp;
+			//g_p2.judgement=PERFECT;
+			g_p2.judgement=JudgeTemp;
 		}
-		else Judgement2p=NONE;
+		else g_p2.judgement=NONE;
 	}
 	if(Crash5)
 	{
 		if(s5==2)if(Data_Judge1[stat5][5]=='0' && Data_Judge1[stat5][6]=='0' && Data_Judge1[stat5][7]=='0' && Data_Judge1[stat5][8]=='0' && Data_Judge1[stat5][9]=='0' )
 		{
 			Data1[stat5][5]=Data1[stat5][6]=Data1[stat5][7]=Data1[stat5][8]=Data1[stat5][9]='0';
-			//Judgement2p=PERFECT;
-			Judgement2p=JudgeTemp;
+			//g_p2.judgement=PERFECT;
+			g_p2.judgement=JudgeTemp;
 		}
-		else Judgement2p=NONE;
+		else g_p2.judgement=NONE;
 	}
 	if(Crash9)
 	{
 		if(s9==2)if(Data_Judge1[stat9][5]=='0' && Data_Judge1[stat9][6]=='0' && Data_Judge1[stat9][7]=='0' && Data_Judge1[stat9][8]=='0' && Data_Judge1[stat9][9]=='0' )
 		{
 			Data1[stat9][5]=Data1[stat9][6]=Data1[stat9][7]=Data1[stat9][8]=Data1[stat9][9]='0';
-			//Judgement2p=PERFECT;
-			Judgement2p=JudgeTemp;
+			//g_p2.judgement=PERFECT;
+			g_p2.judgement=JudgeTemp;
 		}
-		else Judgement2p=NONE;
+		else g_p2.judgement=NONE;
 	}
 	if(Crash3)
 	{
 		if(s3==2)if(Data_Judge1[stat3][5]=='0' && Data_Judge1[stat3][6]=='0' && Data_Judge1[stat3][7]=='0' && Data_Judge1[stat3][8]=='0' && Data_Judge1[stat3][9]=='0' )
 		{
 			Data1[stat3][5]=Data1[stat3][6]=Data1[stat3][7]=Data1[stat3][8]=Data1[stat3][9]='0';
-			//Judgement2p=PERFECT;
-			Judgement2p=JudgeTemp;
+			//g_p2.judgement=PERFECT;
+			g_p2.judgement=JudgeTemp;
 		}
-		else Judgement2p=NONE;
+		else g_p2.judgement=NONE;
 	}
 
-	if(Judgement2p==PERFECT || Judgement2p==GREAT)
+	if(g_p2.judgement==PERFECT || g_p2.judgement==GREAT)
 	{
 		if(g_dsBeat)
 		{
@@ -3364,16 +3307,16 @@ void DrawArrow2p(DWORD cur)
 			g_dsBeat->SetCurrentPosition(0);
 			g_dsBeat->Play(0,0,0);
 		}
-		Combo2p++;
-		if(Judgement2p==PERFECT)cPerfect2p++;
-		else if(Judgement2p==GREAT)cGreat2p++;
+		g_p2.combo++;
+		if(g_p2.judgement==PERFECT)g_p2.perfect++;
+		else if(g_p2.judgement==GREAT)g_p2.great++;
 
-		if(Combo2p>cMaxCombo2p)cMaxCombo2p=Combo2p;
-		if(Combo2p>10)
+		if(g_p2.combo>g_p2.maxCombo)g_p2.maxCombo=g_p2.combo;
+		if(g_p2.combo>10)
 		{
-			if(Gauge2p<0)Gauge2p=1;
-			else Gauge2p++;
-			if(Gauge2p>42)Gauge2p=41;
+			if(g_p2.gauge<0)g_p2.gauge=1;
+			else g_p2.gauge++;
+			if(g_p2.gauge>42)g_p2.gauge=41;
 		}
 		Crash1=On1;
 		Crash3=On3;
@@ -3383,42 +3326,42 @@ void DrawArrow2p(DWORD cur)
 
 		On1=On3=On5=On7=On9=FALSE;
 	}
-	else if(Judgement2p==GOOD || Judgement2p==BAD || Judgement2p==MISS)
+	else if(g_p2.judgement==GOOD || g_p2.judgement==BAD || g_p2.judgement==MISS)
 	{
-		if(Judgement2p==GOOD)cGood2p++;
-		else if(Judgement2p==BAD)cBad2p++;
-		else if(Judgement2p==MISS)cMiss2p++;
-		Combo2p=0;
+		if(g_p2.judgement==GOOD)g_p2.good++;
+		else if(g_p2.judgement==BAD)g_p2.bad++;
+		else if(g_p2.judgement==MISS)g_p2.miss++;
+		g_p2.combo=0;
 	}
 
-	if(Combo2p)
+	if(g_p2.combo)
 	{
-		if(Judgement2p==PERFECT)Score2p+=2000;
-		else if(Judgement2p==GREAT)Score2p+=1500;
+		if(g_p2.judgement==PERFECT)g_p2.score+=2000;
+		else if(g_p2.judgement==GREAT)g_p2.score+=1500;
 	}
 	else
 	{
-		if(Judgement2p==PERFECT)Score2p+=1000;
-		else if(Judgement2p==GREAT)Score2p+=500;
+		if(g_p2.judgement==PERFECT)g_p2.score+=1000;
+		else if(g_p2.judgement==GREAT)g_p2.score+=500;
 	}
 
-	if(Judgement2p==GOOD)Score2p+=100;
-	else if(Judgement2p==BAD)
+	if(g_p2.judgement==GOOD)g_p2.score+=100;
+	else if(g_p2.judgement==BAD)
 	{
-		Score2p-=700;
-		Gauge2p-=2;
+		g_p2.score-=700;
+		g_p2.gauge-=2;
 	}
-	else if(Judgement2p==MISS)
+	else if(g_p2.judgement==MISS)
 	{
-		Score2p-=1000;
-		Gauge2p-=5;
+		g_p2.score-=1000;
+		g_p2.gauge-=5;
 	}
 
 	if(KCFG.bcDead)
 	{
 		if(Couple)
 		{
-			if(Gauge1p<-40 && Gauge2p<-40)
+			if(g_p1.gauge<-40 && g_p2.gauge<-40)
 			{
 				if(SongFlag)
 				{
@@ -3431,7 +3374,7 @@ void DrawArrow2p(DWORD cur)
 		}
 		else
 		{
-			if(Gauge2p<-40)
+			if(g_p2.gauge<-40)
 			{
 				if(SongFlag)
 				{
@@ -3444,7 +3387,7 @@ void DrawArrow2p(DWORD cur)
 		}
 	}
 
-	if(Score2p<0)Score2p=0;
+	if(g_p2.score<0)g_p2.score=0;
 
 	if (beat) g_pDDSBack->BltFast(352,50,Arrow2,NULL,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
 	else g_pDDSBack->BltFast(352,50,Arrow1,NULL,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
@@ -3515,9 +3458,9 @@ void DrawArrow2p(DWORD cur)
 	else if(s3)g_pDDSBack->BltFast(547,45,pArrow3,&pArr3,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
 }
 
-HRESULT	RestoreAll(void)
+int	RestoreAll(void)
 {
-	HRESULT	hRet;
+	int	hRet;
 
 	hRet=g_pDDSPrimary->Restore();
  
@@ -3816,11 +3759,11 @@ void ReleaseAllObjects(void)
 void UpdateFrame(void)
 {
 	// FPS count start
-	static DWORD lastTime, fpsTime,framesRendered,fps;
+	static uint32_t lastTime, fpsTime,framesRendered,fps;
 
 	char	buff[50];
-	DWORD	cur = timeGetTime();
-	DWORD	deltaTime = cur - lastTime;
+	uint32_t	cur = timeGetTime();
+	uint32_t	deltaTime = cur - lastTime;
 	lastTime = cur;
 
 	fpsTime += deltaTime;
@@ -3876,7 +3819,7 @@ void UpdateFrame(void)
 
 }
 
-long WindowProc(void *hWnd, UINT message, unsigned long wParam, long lParam)
+long WindowProc(void *hWnd, unsigned message, unsigned long wParam, long lParam)
 {
 	switch (message)
     {
@@ -3962,13 +3905,13 @@ long WindowProc(void *hWnd, UINT message, unsigned long wParam, long lParam)
 					switch(g_ProgramState)
 					{
 						case GAMETITLE:
-							PressedKey2p[0]=8;
+							g_p2.pressedKey[0]=8;
 							break;
 						case SELECTSONG:
-							PressedKey2p[0]=8;
+							g_p2.pressedKey[0]=8;
 							break;
 						case CONFIG:
-							PressedKey2p[0]=8;
+							g_p2.pressedKey[0]=8;
 							break;
 					}
 					break;
@@ -3976,12 +3919,12 @@ long WindowProc(void *hWnd, UINT message, unsigned long wParam, long lParam)
 					switch(g_ProgramState)
 					{
 						case GAMETITLE:
-							PressedKey2p[0]=2;
+							g_p2.pressedKey[0]=2;
 							break;
 						case SELECTSONG:
-							PressedKey2p[0]=2;
+							g_p2.pressedKey[0]=2;
 						case CONFIG:
-							PressedKey2p[0]=2;
+							g_p2.pressedKey[0]=2;
 							break;
 					}
 					break;
@@ -3990,10 +3933,10 @@ long WindowProc(void *hWnd, UINT message, unsigned long wParam, long lParam)
 					switch(g_ProgramState)
 					{
 						case SELECTSONG:
-							PressedKey2p[0]=4;
+							g_p2.pressedKey[0]=4;
 							break;
 						case CONFIG:
-							PressedKey2p[0]=4;
+							g_p2.pressedKey[0]=4;
 							break;
 					}
 					break;
@@ -4001,10 +3944,10 @@ long WindowProc(void *hWnd, UINT message, unsigned long wParam, long lParam)
 					switch(g_ProgramState)
 					{
 						case SELECTSONG:
-							PressedKey2p[0]=6;
+							g_p2.pressedKey[0]=6;
 							break;
 						case CONFIG:
-							PressedKey2p[0]=6;
+							g_p2.pressedKey[0]=6;
 							break;
 					}
 					break;
@@ -4013,10 +3956,10 @@ long WindowProc(void *hWnd, UINT message, unsigned long wParam, long lParam)
 					switch(g_ProgramState)
 					{
 						case SELECTSONG:
-							PressedKey2p[0]=3;
+							g_p2.pressedKey[0]=3;
 							break;
 						case CONFIG:
-							PressedKey2p[0]=3;
+							g_p2.pressedKey[0]=3;
 							break;
 					}
 					break;
@@ -4098,7 +4041,7 @@ long WindowProc(void *hWnd, UINT message, unsigned long wParam, long lParam)
     return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-HRESULT InitFail(void *hWnd, HRESULT hRet, const char *szError, ...)
+int InitFail(void *hWnd, int hRet, const char *szError, ...)
 {
 	char                        szBuff[128];
 	va_list                     vl;
@@ -4111,7 +4054,7 @@ HRESULT InitFail(void *hWnd, HRESULT hRet, const char *szError, ...)
 	va_end(vl);
 	return hRet;
 }
-HRESULT InitWin(void *hInstance, DWORD Width, DWORD Height, int nCmdShow)
+int InitWin(void *hInstance, uint32_t Width, uint32_t Height, int nCmdShow)
 {
 	(void)hInstance; (void)Width; (void)Height; (void)nCmdShow;
 	if (!KIU_Init("Kick It UP! SDL3", 640, 480, g_fullscreen ? 1 : 0))
@@ -4121,12 +4064,12 @@ HRESULT InitWin(void *hInstance, DWORD Width, DWORD Height, int nCmdShow)
 }
 
 
-HRESULT InitDD(void)
+int InitDD(void)
 {
-	DDSURFACEDESC ddsd;
-	HRESULT hRet;
+	SurfaceDesc ddsd;
+	int hRet;
 
-	g_pDD = new IDirectDraw();
+	g_pDD = new GfxDevice();
 
 	memset(&ddsd, 0, sizeof(ddsd));
 	ddsd.dwSize = sizeof(ddsd);
@@ -4141,11 +4084,11 @@ HRESULT InitDD(void)
 }
 
 
-HRESULT KLoadImage(void)
+int KLoadImage(void)
 {
 	// Loading image here
 	
-	SmallFont=DDLoadBitmap(g_pDD,"IMAGES/sFont.png",0,0);
+	SmallFont=DDLoadBitmap(g_pDD,"images/sFont.png",0,0);
 	if(SmallFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Font.","ERROR",0);
@@ -4155,28 +4098,28 @@ HRESULT KLoadImage(void)
 
 	DisplayMessage(0,0,"Loading Image");
 
-	GameTITLE = DDLoadBitmap(g_pDD,"IMAGES/title.png",0,0);
+	GameTITLE = DDLoadBitmap(g_pDD,"images/title.png",0,0);
 	if(GameTITLE == NULL)
 	{
 		MessageBox(hWnd,"Cannot Load GAMETITLE","ERROR",0);
 		return FALSE;
 	}
 
-	Background = DDLoadBitmap(g_pDD,"IMAGES/back.png",0,0);
+	Background = DDLoadBitmap(g_pDD,"images/back.png",0,0);
 	if(Background==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Background.","ERROR",0);
 		return FALSE;
 	}
 
-	SelectBack = DDLoadBitmap(g_pDD,"IMAGES/selectBack.png",0,0);
+	SelectBack = DDLoadBitmap(g_pDD,"images/selectBack.png",0,0);
 	if(SelectBack==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Select Background.","ERROR",0);
 		return FALSE;
 	}
 
-	JudgeFont = DDLoadBitmap(g_pDD,"IMAGES/judgement.png",0,0);
+	JudgeFont = DDLoadBitmap(g_pDD,"images/judgement.png",0,0);
 	if(JudgeFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Judgement Font.","ERROR",0);
@@ -4184,7 +4127,7 @@ HRESULT KLoadImage(void)
 	}
 	DDSetColorKey(JudgeFont,CLR_INVALID);
 	
-	NumberFont = DDLoadBitmap(g_pDD,"IMAGES/number.png",0,0);
+	NumberFont = DDLoadBitmap(g_pDD,"images/number.png",0,0);
 	if(NumberFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Number Font.","ERROR",0);
@@ -4192,7 +4135,7 @@ HRESULT KLoadImage(void)
 	}
 	DDSetColorKey(NumberFont,CLR_INVALID);
 
-	ComboFont = DDLoadBitmap(g_pDD,"IMAGES/combo.png",0,0);
+	ComboFont = DDLoadBitmap(g_pDD,"images/combo.png",0,0);
 	if(ComboFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Combo Font.","ERROR",0);
@@ -4200,7 +4143,7 @@ HRESULT KLoadImage(void)
 	}
 	DDSetColorKey(ComboFont,CLR_INVALID);
 
-	NoDISC=DDLoadBitmap(g_pDD,"IMAGES/noDisc.png",0,0);
+	NoDISC=DDLoadBitmap(g_pDD,"images/noDisc.png",0,0);
 	if(NoDISC==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load NoDISC.png",0,0);
@@ -4208,7 +4151,7 @@ HRESULT KLoadImage(void)
 	}
 	DDSetColorKey(NoDISC,CLR_INVALID);
 
-	ShiftLeft=DDLoadBitmap(g_pDD,"IMAGES/shiftL.png",0,0);
+	ShiftLeft=DDLoadBitmap(g_pDD,"images/shiftL.png",0,0);
 	if(ShiftLeft==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Shiftl.png",0,0);
@@ -4216,7 +4159,7 @@ HRESULT KLoadImage(void)
 	}
 	DDSetColorKey(ShiftLeft,CLR_INVALID);
 
-	ShiftRight=DDLoadBitmap(g_pDD,"IMAGES/shiftR.png",0,0);
+	ShiftRight=DDLoadBitmap(g_pDD,"images/shiftR.png",0,0);
 	if(ShiftRight==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Shiftr.png",0,0);
@@ -4224,7 +4167,7 @@ HRESULT KLoadImage(void)
 	}
 	DDSetColorKey(ShiftRight,CLR_INVALID);
 
-	GaugeWaku=DDLoadBitmap(g_pDD,"IMAGES/gaugeWaku.png",0,0);
+	GaugeWaku=DDLoadBitmap(g_pDD,"images/gaugeWaku.png",0,0);
 	if(GaugeWaku==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load gaugeWaku.png",0,0);
@@ -4232,7 +4175,7 @@ HRESULT KLoadImage(void)
 	}
 	DDSetColorKey(GaugeWaku,CLR_INVALID);
 
-	Gauge=DDLoadBitmap(g_pDD,"IMAGES/gauge.png",0,0);
+	Gauge=DDLoadBitmap(g_pDD,"images/gauge.png",0,0);
 	if(Gauge==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load gauge.png",0,0);
@@ -4340,14 +4283,14 @@ HRESULT KLoadImage(void)
 		return FALSE;
 	}
 	DDSetColorKey(cArrow9,CLR_INVALID);
-	ModeIcon=DDLoadBitmap(g_pDD, "IMAGES/modeIcon.png",0,0);
+	ModeIcon=DDLoadBitmap(g_pDD, "images/modeIcon.png",0,0);
 	if(ModeIcon==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load modeIcon.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(ModeIcon, CLR_INVALID);
-	g_cFont=DDLoadBitmap(g_pDD, "IMAGES/cFont.png",0,0);
+	g_cFont=DDLoadBitmap(g_pDD, "images/cFont.png",0,0);
 	if(g_cFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load CFont.png",0,0);
@@ -4356,20 +4299,20 @@ HRESULT KLoadImage(void)
 	DDSetColorKey(g_cFont, CLR_INVALID);
 	CKey_CFont=DDColorMatch(g_cFont,CLR_INVALID);
 
-	ResultFont=DDLoadBitmap(g_pDD, "IMAGES/resFont.png",0,0);
+	ResultFont=DDLoadBitmap(g_pDD, "images/resFont.png",0,0);
 	if(ResultFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load resFont.png",0,0);
 		return	FALSE;
 	}
 	DDSetColorKey(ResultFont, CLR_INVALID);
-	ResultBack=DDLoadBitmap(g_pDD, "IMAGES/resBack.png",0,0);
+	ResultBack=DDLoadBitmap(g_pDD, "images/resBack.png",0,0);
 	if(ResultBack==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Resback.png",0,0);
 		return FALSE;
 	}
-	StageCount=DDLoadBitmap(g_pDD, "IMAGES/stageCount.png",0,0);
+	StageCount=DDLoadBitmap(g_pDD, "images/stageCount.png",0,0);
 	if(StageCount==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load stageCount.png",0,0);
@@ -4377,7 +4320,7 @@ HRESULT KLoadImage(void)
 	}
 	DDSetColorKey(StageCount, CLR_INVALID);
 
-	Score=DDLoadBitmap(g_pDD,"IMAGES/score.png",0,0);
+	Score=DDLoadBitmap(g_pDD,"images/score.png",0,0);
 	if(Score==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load score.png",0,0);
@@ -4385,54 +4328,54 @@ HRESULT KLoadImage(void)
 	}
 	DDSetColorKey(Score,CLR_INVALID);
 
-	DeadScreen=DDLoadBitmap(g_pDD,"IMAGES/dead.png",0,0);
+	DeadScreen=DDLoadBitmap(g_pDD,"images/dead.png",0,0);
 	if(DeadScreen==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load DeadScreen.png",0,0);
 		return FALSE;
 	}
-	GameOver=DDLoadBitmap(g_pDD,"IMAGES/gameOver.png",0,0);
+	GameOver=DDLoadBitmap(g_pDD,"images/gameOver.png",0,0);
 	if(GameOver==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load GameOver.png",0,0);
 		return FALSE;
 	}
-	Logo=DDLoadBitmap(g_pDD,"IMAGES/logo.png",0,0);
+	Logo=DDLoadBitmap(g_pDD,"images/logo.png",0,0);
 	if(Logo==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load logo.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(Logo,CLR_INVALID);
-	Diff=DDLoadBitmap(g_pDD,"IMAGES/diff.png",0,0);
+	Diff=DDLoadBitmap(g_pDD,"images/diff.png",0,0);
 	if(Diff==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load diff.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(Diff,CLR_INVALID);
-	DoubleIcon=DDLoadBitmap(g_pDD,"IMAGES/doubleIcon.png",0,0);
+	DoubleIcon=DDLoadBitmap(g_pDD,"images/doubleIcon.png",0,0);
 	if(DoubleIcon==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load doubleIcon.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(DoubleIcon,CLR_INVALID);
-	CrazyIcon=DDLoadBitmap(g_pDD,"IMAGES/crazyIcon.png",0,0);
+	CrazyIcon=DDLoadBitmap(g_pDD,"images/crazyIcon.png",0,0);
 	if(CrazyIcon==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load crazyIcon.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(CrazyIcon,CLR_INVALID);
-	EasyIcon=DDLoadBitmap(g_pDD,"IMAGES/easyIcon.png",0,0);
+	EasyIcon=DDLoadBitmap(g_pDD,"images/easyIcon.png",0,0);
 	if(EasyIcon==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load easyIcon.png",0,0);
 		return FALSE;
 	}
 	DDSetColorKey(EasyIcon,CLR_INVALID);
-	HardIcon=DDLoadBitmap(g_pDD,"IMAGES/hardIcon.png",0,0);
+	HardIcon=DDLoadBitmap(g_pDD,"images/hardIcon.png",0,0);
 	if(HardIcon==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load hardIcon.png",0,0);
@@ -4474,8 +4417,8 @@ int main(int argc, char *argv[])
 }
 
 
-HRESULT TransAlphaImproved(LPDIRECTDRAWSURFACE src, LPDIRECTDRAWSURFACE dest, 
-				   LONG lDestX, LONG lDestY, RECT srcRect, WORD ALPHA, DWORD ColorKey, WORD BPP)
+int TransAlphaImproved(Surface* src, Surface* dest, 
+				   int32_t lDestX, int32_t lDestY, Rect srcRect, uint16_t ALPHA, uint32_t ColorKey, uint16_t BPP)
 {
 	/* SDL3 port: Direct surface locking not supported.
 	   Fall back to a simple opaque blit. */

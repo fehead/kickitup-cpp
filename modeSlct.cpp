@@ -4,19 +4,19 @@
 */
 
 /* ddraw.h via sdl3_kick.h */
-#include "MODESLCT.H"
-#include "Input.h"
-#include "Main.h"
+#include "modeSlct.h"
+#include "input.h"
+#include "main.h"
 
-extern	LPDIRECTDRAWSURFACE	g_pDDSBack;
-extern	LPDIRECTDRAWSURFACE	ModeEasy;
-extern	LPDIRECTDRAWSURFACE	ModeHard;
-extern	LPDIRECTDRAWSURFACE	ModeDouble;
-extern	LPDIRECTDRAWSURFACE	ModeNonstop;
+extern	Surface*	g_pDDSBack;
+extern	Surface*	ModeEasy;
+extern	Surface*	ModeHard;
+extern	Surface*	ModeDouble;
+extern	Surface*	ModeNonstop;
 
-extern	LPDIRECTDRAWSURFACE	SelectBack;
+extern	Surface*	SelectBack;
 
-extern	DWORD	PressedKey[10];
+extern	uint32_t	PressedKey[10];
 extern	char	g_ProgramState;
 extern	char	GameMode;
 
@@ -25,7 +25,7 @@ int ModeSwitch;
 void ModeSelect(void)
 {
 	
-	RECT	DiscSize,Button[10];
+	Rect	DiscSize,Button[10];
 
 	DiscSize.top=0;
 	DiscSize.left=0;

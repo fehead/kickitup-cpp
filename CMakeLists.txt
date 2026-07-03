@@ -12,17 +12,18 @@ pkg_check_modules(MPG123 REQUIRED libmpg123)
 
 set(SOURCES
     sdl3_kick.cpp
-    Main.cpp
-    Song.cpp
-    Select.cpp
-    Result.cpp
-    Dead.cpp
-    Double.cpp
-    Config.cpp
-    Input.cpp
-    Ddutil.cpp
+    main.cpp
+    song.cpp
+    select.cpp
+    result.cpp
+    dead.cpp
+    double.cpp
+    config.cpp
+    input.cpp
+    ddutil.cpp
     dsutil.cpp
-    MODESLCT.CPP
+    modeSlct.cpp
+    player.cpp
 )
 
 add_executable(kickitup ${SOURCES})
@@ -41,5 +42,3 @@ target_link_libraries(kickitup PRIVATE
     ${SDL3_TTF_LIBRARIES}
     ${MPG123_LIBRARIES}
 )
-
-target_compile_options(kickitup PRIVATE -Wall -Wextra -Wno-unused-parameter)

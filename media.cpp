@@ -4,6 +4,6 @@
  * The CMedia class is now fully implemented in sdl3_kick.cpp.
  */
 
-#include "Media.h"
+#include "media.h"
 
 /* Everything is now in sdl3_kick.cpp */

@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////
 
 /* dsound.h via main.h */
-#include "Song.h"
+#include "song.h"
 #include <stdio.h>
 #include <cstdio>
 /* windows.h via sdl3_kick.h */

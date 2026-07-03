@@ -4,12 +4,12 @@
 
 */
 
-#include "Main.h"
-#include "Config.h"
-#include "Input.h"
+#include "main.h"
+#include "config.h"
+#include "input.h"
 
-extern	LPDIRECTDRAWSURFACE	SmallFont;
-extern	LPDIRECTDRAWSURFACE	Background;
+extern	Surface*	SmallFont;
+extern	Surface*	Background;
 
 extern	KIUCONFIG			KCFG;
 
@@ -66,7 +66,7 @@ void Configuration(void)
 	
 	static	int	cur_x, cur_y;
 	
-	DDBLTFX ddbltfx;
+	BlitFx ddbltfx;
 
 	memset(&ddbltfx, 0, sizeof(ddbltfx));
 	ddbltfx.dwSize = sizeof(ddbltfx);
@@ -139,7 +139,7 @@ void Configuration(void)
 	
   	DisplayMessage(0,START_X+cur_y*16,">");
 
-	switch(PressedKey2p[0])
+	switch(g_p2.pressedKey[0])
 	{
 		case 3:
 			switch(cur_y)
@@ -201,7 +201,7 @@ void Configuration(void)
 					else KCFG.auto3_2p=TRUE;
 					break;
 			}
-			PressedKey2p[0]=0;
+			g_p2.pressedKey[0]=0;
 			break;
 		case 8:
 			cur_y--;
@@ -216,7 +216,7 @@ void Configuration(void)
 				case 6:cur_y=3;break;
 				case 12: cur_y=11;break;
 			}
-			PressedKey2p[0]=0;
+			g_p2.pressedKey[0]=0;
 			break;
 		case 2:
 			cur_y++;
@@ -230,7 +230,7 @@ void Configuration(void)
 				case 6:	cur_y=7;break;
 				case 12: cur_y=13;break;
 			}
-			PressedKey2p[0]=0;
+			g_p2.pressedKey[0]=0;
 			break;
 	}
 	Flipp();

@@ -12,9 +12,9 @@
 #include "ddutil.h"
 //#include "sound.h"
 #include "dsutil.h"
-#include "Main.h"
+#include "main.h"
 
-extern LPDIRECTDRAWSURFACE NoDISC;
+extern Surface* NoDISC;
 
 struct  STEP
 {
@@ -69,8 +69,8 @@ public:
 	int Easy_Start3;
 	int Double_Start3;
 
-	DWORD Bunki;
-	DWORD Bunki2;
+	uint32_t Bunki;
+	uint32_t Bunki2;
 
 	int Crazy_Tick;
 	int Hard_Tick;
@@ -107,7 +107,7 @@ public:
 	BOOL HaveDouble;
 
 
-	LPDIRECTSOUNDBUFFER	Int_Song;
+	Sound*	Int_Song;
 
 	char TitleImgPath[MAX_PATH+1];
 	char IntroWavPath[MAX_PATH+1];	// intro wav file.
@@ -128,15 +128,15 @@ public:
 	char BgImgPath[MAX_PATH+1];
 	char MSDPath[MAX_PATH+1];
 	
-	LPDIRECTDRAWSURFACE DiskImage;
+	Surface* DiskImage;
 
 	char SongTitle[MAX_PATH+1];
 	char PlayWavPath[MAX_PATH+1];
 	char PlayMp3Path[MAX_PATH+1];
 	char PlayMpgPath[MAX_PATH+1];
 
-	DWORD	Next;
-	DWORD	Prev;
+	uint32_t	Next;
+	uint32_t	Prev;
 
 	SONG();
 	virtual ~SONG();

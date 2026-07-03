@@ -6,24 +6,24 @@
 
 /* ddraw.h via main.h */
 
-#include "Main.h"
-#include "Input.h"
+#include "main.h"
+#include "input.h"
 #include <stdio.h>
 #include "ddutil.h"
 
-extern	LPDIRECTDRAWSURFACE	ResultBack;
-extern	LPDIRECTDRAWSURFACE	ResultFont;
-extern	LPDIRECTDRAWSURFACE	Background;
-extern	LPDIRECTDRAWSURFACE	NumberFont;
+extern	Surface*	ResultBack;
+extern	Surface*	ResultFont;
+extern	Surface*	Background;
+extern	Surface*	NumberFont;
 
 extern	char First;
-extern	char	Double;
-extern	DWORD dwGameCount;
+extern bool Double;
+extern	uint32_t dwGameCount;
 
-HRESULT	ClpBlt2(int x ,int y ,LPDIRECTDRAWSURFACE ds,LPRECT srect,DWORD mode)
+int	ClpBlt2(int x ,int y ,Surface* ds,Rect* srect,uint32_t mode)
 {
-	static RECT sRect;
-	HRESULT	hRet;
+	static Rect sRect;
+	int	hRet;
 
 	memcpy(&sRect,srect,sizeof(sRect));
 	
@@ -53,45 +53,45 @@ HRESULT	ClpBlt2(int x ,int y ,LPDIRECTDRAWSURFACE ds,LPRECT srect,DWORD mode)
 
 char JudgeAnaly1p(void)
 {
-	DWORD	cTotal1p;
+	uint32_t	cTotal1p;
 
-	cTotal1p=cPerfect1p+cGreat1p+cGood1p+cBad1p+cMiss1p;
+	cTotal1p=g_p1.perfect+g_p1.great+g_p1.good+g_p1.bad+g_p1.miss;
 
-	if(Gauge1p<0)return	'F';
+	if(g_p1.gauge<0)return	'F';
 
-	if(cGood1p==0 && cBad1p==0 && cMiss1p==0)return	'S';
+	if(g_p1.good==0 && g_p1.bad==0 && g_p1.miss==0)return	'S';
 
-	if((((double)(cPerfect1p+cGreat1p)/cTotal1p)*100)>95)return	'A';
+	if((((double)(g_p1.perfect+g_p1.great)/cTotal1p)*100)>95)return	'A';
 
-	if((((double)(cPerfect1p+cGreat1p)/(double)cTotal1p)*100)>80)return	'B';
+	if((((double)(g_p1.perfect+g_p1.great)/(double)cTotal1p)*100)>80)return	'B';
 
-	if((((double)(cPerfect1p+cGreat1p)/(double)cTotal1p)*100)>60)return	'C';
+	if((((double)(g_p1.perfect+g_p1.great)/(double)cTotal1p)*100)>60)return	'C';
 
 	return	'F';
 }
 
 char JudgeAnaly2p(void)
 {
-	DWORD	cTotal2p;
+	uint32_t	cTotal2p;
 
-	cTotal2p=cPerfect2p+cGreat2p+cGood2p+cBad2p+cMiss2p;
+	cTotal2p=g_p2.perfect+g_p2.great+g_p2.good+g_p2.bad+g_p2.miss;
 
-	if(Gauge2p<0)if(!Double)return	'F';
+	if(g_p2.gauge<0)if(!Double)return	'F';
 
-	if(cGood2p==0 && cBad2p==0 && cMiss2p==0)return	'S';
+	if(g_p2.good==0 && g_p2.bad==0 && g_p2.miss==0)return	'S';
 
-	if((((double)(cPerfect2p+cGreat2p)/(double)cTotal2p)*100)>95)return	'A';
+	if((((double)(g_p2.perfect+g_p2.great)/(double)cTotal2p)*100)>95)return	'A';
 
-	if((((double)(cPerfect2p+cGreat2p)/(double)cTotal2p)*100)>80)return	'B';
+	if((((double)(g_p2.perfect+g_p2.great)/(double)cTotal2p)*100)>80)return	'B';
 
-	if((((double)(cPerfect2p+cGreat2p)/(double)cTotal2p)*100)>60)return	'C';
+	if((((double)(g_p2.perfect+g_p2.great)/(double)cTotal2p)*100)>60)return	'C';
 
 	return	'F';
 }
 
-void DisplayJudge(int x, int y, char s, DWORD ColorKey)
+void DisplayJudge(int x, int y, char s, uint32_t ColorKey)
 {
-	RECT	sRect;
+	Rect	sRect;
 
 	switch(s)
 	{
@@ -145,7 +145,7 @@ void DisplayJudge(int x, int y, char s, DWORD ColorKey)
 void	DisplayNumber(int x, int y, char *message)
 {
 	int Loop;
-	RECT	cRect;
+	Rect	cRect;
 	
 	for(Loop=0;;Loop++)
 	{
@@ -162,7 +162,7 @@ void	DisplayNumber(int x, int y, char *message)
 
 void Result(void)
 {
-	RECT	sRect;
+	Rect	sRect;
 
 	static	int	FontColorkey;
 
@@ -170,9 +170,9 @@ void Result(void)
 	
 	static	int Count,Phase;
 
-	static	DWORD	Perfect, Great, Good, Bad, Miss;
+	static	uint32_t	Perfect, Great, Good, Bad, Miss;
 	
-	static	DWORD		i;
+	static	uint32_t		i;
 
 	static	char	Judge1p,Judge2p;		// 1p, 2p --'S' 'A' 'B' 'C' 'F'
 
@@ -199,8 +199,8 @@ void Result(void)
 
 	ReadGameInput();
 	
-	if(PressedKey1p[5])if(Phase!=7 && Start1p)Phase=6;
-	if(PressedKey2p[5])if(Phase!=7 && Start2p)Phase=6;
+	if(g_p1.pressedKey[5])if(Phase!=7 && g_p1.started)Phase=6;
+	if(g_p2.pressedKey[5])if(Phase!=7 && g_p2.started)Phase=6;
 
 	g_pDDSBack->BltFast(0,0,ResultBack, NULL,DDBLTFAST_NOCOLORKEY);
 	
@@ -326,20 +326,20 @@ void Result(void)
 
 	if(Phase==0)
 	{
-		if(Start1p)
+		if(g_p1.started)
 		{
-			if(cPerfect1p>i)sprintf(Number,"%03d",i);
-			else sprintf(Number,"%03d",cPerfect1p);
+			if(g_p1.perfect>i)sprintf(Number,"%03d",i);
+			else sprintf(Number,"%03d",g_p1.perfect);
 			DisplayNumber(80,120,Number);
 		}
-		if(Start2p)
+		if(g_p2.started)
 		{
-			if(cPerfect2p>i)sprintf(Number,"%03d",i);
-			else sprintf(Number,"%03d",cPerfect2p);
+			if(g_p2.perfect>i)sprintf(Number,"%03d",i);
+			else sprintf(Number,"%03d",g_p2.perfect);
 			DisplayNumber(480,120,Number);
 		}
 		i++;
-		if(cPerfect1p<i && cPerfect2p<i)
+		if(g_p1.perfect<i && g_p2.perfect<i)
 		{
 			Phase=1;
 			i=0;
@@ -348,26 +348,26 @@ void Result(void)
 	}
 	if(Phase==1)
 	{
-		if(Start1p)
+		if(g_p1.started)
 		{
-			sprintf(Number, "%03d", cPerfect1p);
+			sprintf(Number, "%03d", g_p1.perfect);
 			DisplayNumber(80,120, Number);
 		
-			if(cGreat1p>i)sprintf(Number,"%03d",i);
-			else sprintf(Number,"%03d",cGreat1p);
+			if(g_p1.great>i)sprintf(Number,"%03d",i);
+			else sprintf(Number,"%03d",g_p1.great);
 			DisplayNumber(80,170,Number);
 		}
-		if(Start2p)
+		if(g_p2.started)
 		{
-			sprintf(Number, "%03d", cPerfect2p);
+			sprintf(Number, "%03d", g_p2.perfect);
 			DisplayNumber(480,120, Number);
 
-			if(cGreat2p>i)sprintf(Number,"%03d",i);
-			else sprintf(Number,"%03d",cGreat2p);
+			if(g_p2.great>i)sprintf(Number,"%03d",i);
+			else sprintf(Number,"%03d",g_p2.great);
 			DisplayNumber(480,170,Number);
 		}
 		i++;
-		if(cGreat1p<i && cGreat2p<i)
+		if(g_p1.great<i && g_p2.great<i)
 		{
 			Phase=2;
 			i=0;
@@ -377,30 +377,30 @@ void Result(void)
 	if(Phase==2)
 	{
 
-		if(Start1p)
+		if(g_p1.started)
 		{
-			sprintf(Number, "%03d", cPerfect1p);
+			sprintf(Number, "%03d", g_p1.perfect);
 			DisplayNumber(80,120, Number);
-			sprintf(Number,"%03d",cGreat1p);
+			sprintf(Number,"%03d",g_p1.great);
 			DisplayNumber(80,170,Number);
 
-			if(cGood1p>i)sprintf(Number,"%03d",i);
-			else sprintf(Number,"%03d",cGood1p);
+			if(g_p1.good>i)sprintf(Number,"%03d",i);
+			else sprintf(Number,"%03d",g_p1.good);
 			DisplayNumber(80,220,Number);
 		}
-		if(Start2p)
+		if(g_p2.started)
 		{
-			sprintf(Number, "%03d", cPerfect2p);
+			sprintf(Number, "%03d", g_p2.perfect);
 			DisplayNumber(480,120, Number);
-			sprintf(Number,"%03d",cGreat2p);
+			sprintf(Number,"%03d",g_p2.great);
 			DisplayNumber(480,170,Number);
 
-			if(cGood2p>i)sprintf(Number,"%03d",i);
-			else sprintf(Number,"%03d",cGood2p);
+			if(g_p2.good>i)sprintf(Number,"%03d",i);
+			else sprintf(Number,"%03d",g_p2.good);
 			DisplayNumber(480,220,Number);
 		}
 		i++;
-		if(cGood1p<i && cGood2p<i)
+		if(g_p1.good<i && g_p2.good<i)
 		{
 			Phase=3;
 			i=0;
@@ -410,34 +410,34 @@ void Result(void)
 
 	if(Phase==3)
 	{
-		if(Start1p)
+		if(g_p1.started)
 		{
-			sprintf(Number, "%03d", cPerfect1p);
+			sprintf(Number, "%03d", g_p1.perfect);
 			DisplayNumber(80,120, Number);
-			sprintf(Number,"%03d",cGreat1p);
+			sprintf(Number,"%03d",g_p1.great);
 			DisplayNumber(80,170,Number);
-			sprintf(Number,"%03d",cGood1p);
+			sprintf(Number,"%03d",g_p1.good);
 			DisplayNumber(80,220,Number);
 
-			if(cBad1p>i)sprintf(Number,"%03d",i);
-			else sprintf(Number,"%03d",cBad1p);
+			if(g_p1.bad>i)sprintf(Number,"%03d",i);
+			else sprintf(Number,"%03d",g_p1.bad);
 			DisplayNumber(80,270,Number);
 		}
-		if(Start2p)
+		if(g_p2.started)
 		{
-			sprintf(Number, "%03d", cPerfect2p);
+			sprintf(Number, "%03d", g_p2.perfect);
 			DisplayNumber(480,120, Number);
-			sprintf(Number,"%03d",cGreat2p);
+			sprintf(Number,"%03d",g_p2.great);
 			DisplayNumber(480,170,Number);
-			sprintf(Number,"%03d",cGood2p);
+			sprintf(Number,"%03d",g_p2.good);
 			DisplayNumber(480,220,Number);
 
-			if(cBad2p>i)sprintf(Number,"%03d",i);
-			else sprintf(Number,"%03d",cBad2p);
+			if(g_p2.bad>i)sprintf(Number,"%03d",i);
+			else sprintf(Number,"%03d",g_p2.bad);
 			DisplayNumber(480,270,Number);
 		}
 		i++;
-		if(cBad1p<i && cBad2p<i)
+		if(g_p1.bad<i && g_p2.bad<i)
 		{
 			Phase=4;
 			i=0;
@@ -448,38 +448,38 @@ void Result(void)
 	if(Phase==4)
 	{
 		
-		if(Start1p)
+		if(g_p1.started)
 		{
-			sprintf(Number, "%03d", cPerfect1p);
+			sprintf(Number, "%03d", g_p1.perfect);
 			DisplayNumber(80,120, Number);
-			sprintf(Number,"%03d",cGreat1p);
+			sprintf(Number,"%03d",g_p1.great);
 			DisplayNumber(80,170,Number);
-			sprintf(Number,"%03d",cGood1p);
+			sprintf(Number,"%03d",g_p1.good);
 			DisplayNumber(80,220,Number);
-			sprintf(Number,"%03d",cBad1p);
+			sprintf(Number,"%03d",g_p1.bad);
 			DisplayNumber(80,270,Number);
 			
-			if(cMiss1p>i)sprintf(Number,"%03d",i);
-			else sprintf(Number,"%03d",cMiss1p);
+			if(g_p1.miss>i)sprintf(Number,"%03d",i);
+			else sprintf(Number,"%03d",g_p1.miss);
 			DisplayNumber(80,320,Number);
 		}
-		if(Start2p)
+		if(g_p2.started)
 		{
-			sprintf(Number, "%03d", cPerfect2p);
+			sprintf(Number, "%03d", g_p2.perfect);
 			DisplayNumber(480,120, Number);
-			sprintf(Number,"%03d",cGreat2p);
+			sprintf(Number,"%03d",g_p2.great);
 			DisplayNumber(480,170,Number);
-			sprintf(Number,"%03d",cGood2p);
+			sprintf(Number,"%03d",g_p2.good);
 			DisplayNumber(480,220,Number);
-			sprintf(Number,"%03d",cBad2p);
+			sprintf(Number,"%03d",g_p2.bad);
 			DisplayNumber(480,270,Number);
 
-			if(cMiss2p>i)sprintf(Number,"%03d",i);
-			else sprintf(Number,"%03d",cMiss2p);
+			if(g_p2.miss>i)sprintf(Number,"%03d",i);
+			else sprintf(Number,"%03d",g_p2.miss);
 			DisplayNumber(480,320,Number);
 		}
 		i++;
-		if(cMiss1p<i && cMiss2p<i)
+		if(g_p1.miss<i && g_p2.miss<i)
 		{
 			Phase=5;
 			i=0;
@@ -488,42 +488,42 @@ void Result(void)
 	}
 	if(Phase==5)
 	{
-		if(Start1p)
+		if(g_p1.started)
 		{
-			sprintf(Number, "%03d", cPerfect1p);
+			sprintf(Number, "%03d", g_p1.perfect);
 			DisplayNumber(80,120, Number);
-			sprintf(Number,"%03d",cGreat1p);
+			sprintf(Number,"%03d",g_p1.great);
 			DisplayNumber(80,170,Number);
-			sprintf(Number,"%03d",cGood1p);
+			sprintf(Number,"%03d",g_p1.good);
 			DisplayNumber(80,220,Number);
-			sprintf(Number,"%03d",cBad1p);
+			sprintf(Number,"%03d",g_p1.bad);
 			DisplayNumber(80,270,Number);
-			sprintf(Number,"%03d",cMiss1p);
+			sprintf(Number,"%03d",g_p1.miss);
 			DisplayNumber(80,320,Number);
 			
-			if(cMaxCombo1p>i)sprintf(Number,"%03d",i);
-			else sprintf(Number,"%03d",cMaxCombo1p);
+			if(g_p1.maxCombo>i)sprintf(Number,"%03d",i);
+			else sprintf(Number,"%03d",g_p1.maxCombo);
 			DisplayNumber(80,375,Number);
 		}
-		if(Start2p)
+		if(g_p2.started)
 		{
-			sprintf(Number, "%03d", cPerfect2p);
+			sprintf(Number, "%03d", g_p2.perfect);
 			DisplayNumber(480,120, Number);
-			sprintf(Number,"%03d",cGreat2p);
+			sprintf(Number,"%03d",g_p2.great);
 			DisplayNumber(480,170,Number);
-			sprintf(Number,"%03d",cGood2p);
+			sprintf(Number,"%03d",g_p2.good);
 			DisplayNumber(480,220,Number);
-			sprintf(Number,"%03d",cBad2p);
+			sprintf(Number,"%03d",g_p2.bad);
 			DisplayNumber(480,270,Number);
-			sprintf(Number,"%03d",cMiss2p);
+			sprintf(Number,"%03d",g_p2.miss);
 			DisplayNumber(480,320,Number);
 
-			if(cMaxCombo2p>i)sprintf(Number,"%03d",i);
-			else sprintf(Number,"%03d",cMaxCombo2p);
+			if(g_p2.maxCombo>i)sprintf(Number,"%03d",i);
+			else sprintf(Number,"%03d",g_p2.maxCombo);
 			DisplayNumber(480,375,Number);
 		}
 		i++;
-		if(cMaxCombo1p<i && cMaxCombo2p<i)
+		if(g_p1.maxCombo<i && g_p2.maxCombo<i)
 		{
 			Phase=6;
 			i=0;
@@ -533,34 +533,34 @@ void Result(void)
 
 	if(Phase==6)
 	{
-		if(Start1p)
+		if(g_p1.started)
 		{
-			sprintf(Number, "%03d", cPerfect1p);
+			sprintf(Number, "%03d", g_p1.perfect);
 			DisplayNumber(80,120, Number);
-			sprintf(Number,"%03d",cGreat1p);
+			sprintf(Number,"%03d",g_p1.great);
 			DisplayNumber(80,170,Number);
-			sprintf(Number,"%03d",cGood1p);
+			sprintf(Number,"%03d",g_p1.good);
 			DisplayNumber(80,220,Number);
-			sprintf(Number,"%03d",cBad1p);
+			sprintf(Number,"%03d",g_p1.bad);
 			DisplayNumber(80,270,Number);
-			sprintf(Number,"%03d",cMiss1p);
+			sprintf(Number,"%03d",g_p1.miss);
 			DisplayNumber(80,320,Number);
-			sprintf(Number,"%03d",cMaxCombo1p);
+			sprintf(Number,"%03d",g_p1.maxCombo);
 			DisplayNumber(80,375,Number);
 		}
-		if(Start2p)
+		if(g_p2.started)
 		{
-			sprintf(Number, "%03d", cPerfect2p);
+			sprintf(Number, "%03d", g_p2.perfect);
 			DisplayNumber(480,120, Number);
-			sprintf(Number,"%03d",cGreat2p);
+			sprintf(Number,"%03d",g_p2.great);
 			DisplayNumber(480,170,Number);
-			sprintf(Number,"%03d",cGood2p);
+			sprintf(Number,"%03d",g_p2.good);
 			DisplayNumber(480,220,Number);
-			sprintf(Number,"%03d",cBad2p);
+			sprintf(Number,"%03d",g_p2.bad);
 			DisplayNumber(480,270,Number);
-			sprintf(Number,"%03d",cMiss2p);
+			sprintf(Number,"%03d",g_p2.miss);
 			DisplayNumber(480,320,Number);
-			sprintf(Number,"%03d",cMaxCombo2p);
+			sprintf(Number,"%03d",g_p2.maxCombo);
 			DisplayNumber(480,375,Number);
 		}
 		
@@ -576,35 +576,35 @@ void Result(void)
 
 	if(Phase==7)
 	{
-		if(Start1p)
+		if(g_p1.started)
 		{
-			sprintf(Number, "%03d", cPerfect1p);
+			sprintf(Number, "%03d", g_p1.perfect);
 			DisplayNumber(80,120, Number);
-			sprintf(Number,"%03d",cGreat1p);
+			sprintf(Number,"%03d",g_p1.great);
 			DisplayNumber(80,170,Number);
-			sprintf(Number,"%03d",cGood1p);
+			sprintf(Number,"%03d",g_p1.good);
 			DisplayNumber(80,220,Number);
-			sprintf(Number,"%03d",cBad1p);
+			sprintf(Number,"%03d",g_p1.bad);
 			DisplayNumber(80,270,Number);
-			sprintf(Number,"%03d",cMiss1p);
+			sprintf(Number,"%03d",g_p1.miss);
 			DisplayNumber(80,320,Number);
-			sprintf(Number,"%03d",cMaxCombo1p);
+			sprintf(Number,"%03d",g_p1.maxCombo);
 			DisplayNumber(80,375,Number);
 			DisplayJudge(70,140,Judge1p,FontColorkey);
 		}
-		if(Start2p)
+		if(g_p2.started)
 		{
-			sprintf(Number, "%03d", cPerfect2p);
+			sprintf(Number, "%03d", g_p2.perfect);
 			DisplayNumber(480,120, Number);
-			sprintf(Number,"%03d",cGreat2p);
+			sprintf(Number,"%03d",g_p2.great);
 			DisplayNumber(480,170,Number);
-			sprintf(Number,"%03d",cGood2p);
+			sprintf(Number,"%03d",g_p2.good);
 			DisplayNumber(480,220,Number);
-			sprintf(Number,"%03d",cBad2p);
+			sprintf(Number,"%03d",g_p2.bad);
 			DisplayNumber(480,270,Number);
-			sprintf(Number,"%03d",cMiss2p);
+			sprintf(Number,"%03d",g_p2.miss);
 			DisplayNumber(480,320,Number);
-			sprintf(Number,"%03d",cMaxCombo2p);
+			sprintf(Number,"%03d",g_p2.maxCombo);
 			DisplayNumber(480,375,Number);
 			DisplayJudge(470,140,Judge2p,FontColorkey);
 		}

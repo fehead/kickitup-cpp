@@ -17,13 +17,13 @@
 #include <ctime>
 /* dsound.h */
 
-#include "Media.h"
-#include "Main.h"
-#include "Input.h"
-#include "SELECT.H"
-#include "Result.h"
+#include "media.h"
+#include "main.h"
+#include "input.h"
+#include "select.h"
+#include "result.h"
 
-#include "Song.h"
+#include "song.h"
 //#include "sound.h"
 #include "dsutil.h"
 
@@ -33,27 +33,27 @@
 #define	STILL_DRAWING	100
 
 extern SONG					CSONG[512];
-extern LPDIRECTDRAWSURFACE	 SelectBack;
-extern LPDIRECTDRAWSURFACE	SelectFont;
-extern LPDIRECTDRAWSURFACE	SongTitle;
-extern	LPDIRECTDRAWSURFACE	NumberFont;
+extern Surface*	 SelectBack;
+extern Surface*	SelectFont;
+extern Surface*	SongTitle;
+extern	Surface*	NumberFont;
 
-extern LPDIRECTDRAWSURFACE	SongBack;
-extern LPDIRECTDRAWSURFACE	Background;
-extern LPDIRECTDRAWSURFACE	ShiftLeft;
-extern LPDIRECTDRAWSURFACE	ShiftRight;
-extern	LPDIRECTDRAWSURFACE	ModeIcon;
-extern	LPDIRECTDRAWSURFACE	g_cFont;
-extern	LPDIRECTDRAWSURFACE	Diff;
-extern	LPDIRECTDRAWSURFACE	DoubleIcon;
-extern	LPDIRECTDRAWSURFACE	CrazyIcon;
-extern	LPDIRECTDRAWSURFACE	HardIcon;
-extern	LPDIRECTDRAWSURFACE	EasyIcon;
+extern Surface*	SongBack;
+extern Surface*	Background;
+extern Surface*	ShiftLeft;
+extern Surface*	ShiftRight;
+extern	Surface*	ModeIcon;
+extern	Surface*	g_cFont;
+extern	Surface*	Diff;
+extern	Surface*	DoubleIcon;
+extern	Surface*	CrazyIcon;
+extern	Surface*	HardIcon;
+extern	Surface*	EasyIcon;
 
 extern double				bpm,bpm2,bpm3;
 extern int					start,start2,start3;
 extern	int					tick;
-extern	DWORD					bunki,bunki2;
+extern	uint32_t					bunki,bunki2;
 
 extern char					SongName[MAX_PATH+1];
 extern char					SongName2[MAX_PATH+1];
@@ -63,29 +63,29 @@ extern	int					start1;
 
 extern	char				GameMode;
 
-extern	char				Couple;
-extern	char				Double;
+extern bool Couple;
+extern bool Double;
 // 커플 데이터 끝
 
 
 //extern CWAVE				*WavePrimary;
-extern	LPDIRECTSOUND		lpds;
+extern	AudioDev*		lpds;
 
-extern LPDIRECTSOUNDBUFFER			g_dsMode;
-extern LPDIRECTSOUNDBUFFER			g_dsCancel;
-extern LPDIRECTSOUNDBUFFER			g_dsMove;
-extern LPDIRECTSOUNDBUFFER			g_dsSelectSong;
+extern Sound*			g_dsMode;
+extern Sound*			g_dsCancel;
+extern Sound*			g_dsMove;
+extern Sound*			g_dsSelectSong;
 
 extern char First;
 
-DWORD	startTimer, curTimer;
+uint32_t	startTimer, curTimer;
 
-extern BOOL	IntroFlag;
+extern bool IntroFlag;
 
-HRESULT	ClpBlt3(int x ,int y ,LPDIRECTDRAWSURFACE ds,LPRECT srect,DWORD mode)
+int	ClpBlt3(int x ,int y ,Surface* ds,Rect* srect,uint32_t mode)
 {
-	static RECT sRect;
-	HRESULT	hRet;
+	static Rect sRect;
+	int	hRet;
 
 	memcpy(&sRect,srect,sizeof(sRect));
 	
@@ -116,7 +116,7 @@ HRESULT	ClpBlt3(int x ,int y ,LPDIRECTDRAWSURFACE ds,LPRECT srect,DWORD mode)
 void Read()
 {
 	HANDLE	hFind;
-	DWORD	Count=0;
+	uint32_t	Count=0;
 	WIN32_FIND_DATA lpData;
 
 	char* cPathStr;
@@ -134,7 +134,7 @@ void Read()
 	}
 	if(lpData.dwFileAttributes==FILE_ATTRIBUTE_DIRECTORY)
 	{
-		SetCurrentDirectory(cPathStr);
+		SetCurrentDirectory(lpData.cFileName);
 		hFind=FindFirstFile("*.*",&lpData);
 		if(lpData.cFileName[0]!='.' && lpData.dwFileAttributes==FILE_ATTRIBUTE_DIRECTORY)
 		{
@@ -215,12 +215,12 @@ void Read()
 
 void SelectSong(void)
 {
-	DWORD count,i;
-	static DWORD current;
-	static DWORD SelectCurrent;
+	uint32_t count,i;
+	static uint32_t current;
+	static uint32_t SelectCurrent;
 	static int Selected, zoom,toggle,speed;
 
-	RECT	lRect;
+	Rect	lRect;
 	int ModeTemp1p, ModeTemp2p;
 	
 	static	time_t t;
@@ -229,48 +229,48 @@ void SelectSong(void)
 
 	static	int iMove;
 
-	RECT DiscSize,Screen;
+	Rect DiscSize,Screen;
 
 	char s[50];
 
 	if(First==0)
 	{
 		startTimer=timeGetTime();
-		if(Start1p==FALSE)
+		if(g_p1.started==FALSE)
 		{
-			HighSpeed1p=1;
-			bModeMirror1p=FALSE;
-			bModeNonstep1p=FALSE;
-			bModeSynchro=FALSE;
-			bModeUnion1p=FALSE;
-			bModeRandom1p=FALSE;
-			b4dMix1p=FALSE;
-			HighSpeed1p_1=1;
-			HighSpeed1p_3=1;
-			HighSpeed1p_5=1;
-			HighSpeed1p_7=1;
-			HighSpeed1p_9=1;
-			bModeVanish1p=FALSE;
-			bModeSuddenR1p=FALSE;
-			bModeRandomS1p=FALSE;
+			g_p1.speedBase=1;
+			g_p1.mirror=FALSE;
+			g_p1.nonstep=FALSE;
+			g_p1.synchro=FALSE;
+			g_p1.union_=FALSE;
+			g_p1.random=FALSE;
+			g_p1.dMix=FALSE;
+			g_p1.speed1=1;
+			g_p1.speed3=1;
+			g_p1.speed5=1;
+			g_p1.speed7=1;
+			g_p1.speed9=1;
+			g_p1.vanish=FALSE;
+			g_p1.suddenR=FALSE;
+			g_p1.randomS=FALSE;
 
 		}
-		if(Start2p==FALSE)
+		if(g_p2.started==FALSE)
 		{
-			HighSpeed2p=1;
-			bModeMirror2p=FALSE;
-			bModeNonstep2p=FALSE;
-			bModeUnion2p=FALSE;
-			bModeRandom2p=FALSE;
-			b4dMix2p=FALSE;
-			HighSpeed2p_1=1;
-			HighSpeed2p_3=1;
-			HighSpeed2p_5=1;
-			HighSpeed2p_7=1;
-			HighSpeed2p_9=1;
-			bModeVanish2p=FALSE;
-			bModeSuddenR1p=FALSE;
-			bModeRandomS1p=FALSE;
+			g_p2.speedBase=1;
+			g_p2.mirror=FALSE;
+			g_p2.nonstep=FALSE;
+			g_p2.union_=FALSE;
+			g_p2.random=FALSE;
+			g_p2.dMix=FALSE;
+			g_p2.speed1=1;
+			g_p2.speed3=1;
+			g_p2.speed5=1;
+			g_p2.speed7=1;
+			g_p2.speed9=1;
+			g_p2.vanish=FALSE;
+			g_p1.suddenR=FALSE;
+			g_p1.randomS=FALSE;
 		}
 		// paint the background black.
 		DDFillSurface(g_pDDSPrimary,0);
@@ -279,7 +279,7 @@ void SelectSong(void)
 		// Draw BackGround as select image.
 		g_pDDSBack->BltFast(0,0, SelectBack, NULL, DDBLTFAST_NOCOLORKEY);
 		
-		a=Start1p;b=Start2p;
+		a=g_p1.started;b=g_p2.started;
 		First++;
 
 		if(g_dsSelectSong)
@@ -331,18 +331,18 @@ void SelectSong(void)
 
 	ReadGameInput();
 
-	if(PressedKey1p[5]==TRUE)
+	if(g_p1.pressedKey[5]==TRUE)
 	{
-		if(Start1p==FALSE)
+		if(g_p1.started==FALSE)
 		{
-			Start1p=TRUE;
+			g_p1.started=TRUE;
 		}
 	}
-	if(PressedKey2p[5]==TRUE)
+	if(g_p2.pressedKey[5]==TRUE)
 	{
-		if(Start2p==FALSE)
+		if(g_p2.started==FALSE)
 		{
-			Start2p=TRUE;
+			g_p2.started=TRUE;
 		}
 	}
 
@@ -360,88 +360,88 @@ void SelectSong(void)
 	switch(ModeTemp1p)
 	{
 		case HMODE_SUDDENR:
-			bModeSuddenR1p=TRUE;
-			bModeVanish1p=FALSE;
+			g_p1.suddenR=TRUE;
+			g_p1.vanish=FALSE;
 
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_RANDOMS:
-			bModeRandomS1p=TRUE;
-			HighSpeed1p=1;
+			g_p1.randomS=TRUE;
+			g_p1.speedBase=1;
 
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_2X:
-			HighSpeed1p=2;
+			g_p1.speedBase=2;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_4X:
-			HighSpeed1p=4;
+			g_p1.speedBase=4;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_8X:
-			HighSpeed1p=8;
+			g_p1.speedBase=8;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_MIRROR:
-			bModeMirror1p=TRUE;
+			g_p1.mirror=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_NONSTEP:
-			bModeNonstep1p=TRUE;
+			g_p1.nonstep=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_SYNCHRO:
-			bModeSynchro=TRUE;
+			g_p1.synchro=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_UNION:
-			bModeUnion1p=TRUE;
+			g_p1.union_=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_RANDOM:
-			bModeRandom1p=TRUE;
+			g_p1.random=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_4DMIX:
 			srand((unsigned) time(&t));
 
-			HighSpeed1p_1=1+rand()%8;
-			HighSpeed1p_3=1+rand()%8;
-			HighSpeed1p_5=1+rand()%8;
-			HighSpeed1p_7=1+rand()%8;
-			HighSpeed1p_9=1+rand()%8;
+			g_p1.speed1=1+rand()%8;
+			g_p1.speed3=1+rand()%8;
+			g_p1.speed5=1+rand()%8;
+			g_p1.speed7=1+rand()%8;
+			g_p1.speed9=1+rand()%8;
 
-			b4dMix1p=TRUE;
+			g_p1.dMix=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_VANISH:
-			bModeVanish1p=TRUE;
-			bModeSuddenR2p=FALSE;
+			g_p1.vanish=TRUE;
+			g_p2.suddenR=FALSE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 /*		case HMODE_NONSTOPDOUBLE:
-			if(Start1p&&Start2p)break;
+			if(g_p1.started&&g_p2.started)break;
 			Double=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;*/
 		case HMODE_CANCEL:
 			if(g_dsCancel)g_dsCancel->Play(0,0,0);
-			HighSpeed1p=1;
-			bModeMirror1p=FALSE;
-			bModeNonstep1p=FALSE;
-			bModeSynchro=FALSE;
-			bModeUnion1p=FALSE;
-			bModeRandom1p=FALSE;
-			b4dMix1p=FALSE;
-			HighSpeed1p_1=1;
-			HighSpeed1p_3=1;
-			HighSpeed1p_5=1;
-			HighSpeed1p_7=1;
-			HighSpeed1p_9=1;
-			bModeVanish1p=FALSE;
-			bModeSuddenR1p=FALSE;
-			bModeRandomS1p=FALSE;
+			g_p1.speedBase=1;
+			g_p1.mirror=FALSE;
+			g_p1.nonstep=FALSE;
+			g_p1.synchro=FALSE;
+			g_p1.union_=FALSE;
+			g_p1.random=FALSE;
+			g_p1.dMix=FALSE;
+			g_p1.speed1=1;
+			g_p1.speed3=1;
+			g_p1.speed5=1;
+			g_p1.speed7=1;
+			g_p1.speed9=1;
+			g_p1.vanish=FALSE;
+			g_p1.suddenR=FALSE;
+			g_p1.randomS=FALSE;
 			Double=FALSE;
 			break;
 	default:
@@ -455,90 +455,90 @@ void SelectSong(void)
 	switch(ModeTemp2p)
 	{
 		case HMODE_SUDDENR:
-			bModeSuddenR2p=TRUE;
-			bModeVanish2p=FALSE;
+			g_p2.suddenR=TRUE;
+			g_p2.vanish=FALSE;
 
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_RANDOMS:
-			bModeRandomS2p=TRUE;
-			HighSpeed2p=1;
+			g_p2.randomS=TRUE;
+			g_p2.speedBase=1;
 
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_2X:
-			HighSpeed2p=2;
+			g_p2.speedBase=2;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_4X:
-			HighSpeed2p=4;
+			g_p2.speedBase=4;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_8X:
-			HighSpeed2p=8;
+			g_p2.speedBase=8;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_MIRROR:
-			bModeMirror2p=TRUE;
+			g_p2.mirror=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_NONSTEP:
-			bModeNonstep2p=TRUE;
+			g_p2.nonstep=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_SYNCHRO:
-			bModeSynchro=TRUE;
+			g_p1.synchro=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_UNION:
-			bModeUnion2p=TRUE;
+			g_p2.union_=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_RANDOM:
-			bModeRandom2p=TRUE;
+			g_p2.random=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_4DMIX:
 
 			srand((unsigned) time(&t));
 
-			HighSpeed2p_1 = 1+rand()%8;
-			HighSpeed2p_3 = 1+rand()%8;
-			HighSpeed2p_5 = 1+rand()%8;
-			HighSpeed2p_7 = 1+rand()%8;
-			HighSpeed2p_9 = 1+rand()%8;
+			g_p2.speed1 = 1+rand()%8;
+			g_p2.speed3 = 1+rand()%8;
+			g_p2.speed5 = 1+rand()%8;
+			g_p2.speed7 = 1+rand()%8;
+			g_p2.speed9 = 1+rand()%8;
 
-			b4dMix2p=TRUE;
+			g_p2.dMix=TRUE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_VANISH:
-			bModeVanish2p=TRUE;
-			bModeSuddenR2p=FALSE;
+			g_p2.vanish=TRUE;
+			g_p2.suddenR=FALSE;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 
 		case HMODE_CANCEL:
 			if(g_dsCancel)g_dsCancel->Play(0,0,0);
-			HighSpeed2p=1;
-			bModeMirror2p=FALSE;
-			bModeNonstep2p=FALSE;
-			bModeUnion2p=FALSE;
-			bModeRandom2p=FALSE;
-			b4dMix2p=FALSE;
-			HighSpeed2p_1=1;
-			HighSpeed2p_3=1;
-			HighSpeed2p_5=1;
-			HighSpeed2p_7=1;
-			HighSpeed2p_9=1;
-			bModeVanish2p=FALSE;
-			bModeSuddenR2p=FALSE;
-			bModeRandomS2p=FALSE;
+			g_p2.speedBase=1;
+			g_p2.mirror=FALSE;
+			g_p2.nonstep=FALSE;
+			g_p2.union_=FALSE;
+			g_p2.random=FALSE;
+			g_p2.dMix=FALSE;
+			g_p2.speed1=1;
+			g_p2.speed3=1;
+			g_p2.speed5=1;
+			g_p2.speed7=1;
+			g_p2.speed9=1;
+			g_p2.vanish=FALSE;
+			g_p2.suddenR=FALSE;
+			g_p2.randomS=FALSE;
 			Double=FALSE;
 			break;
 	}
 
 	// change screen to left.
-	if((Start1p && PressedKey1p[1]) || (Start2p && PressedKey2p[1]))
+	if((g_p1.started && g_p1.pressedKey[1]) || (g_p2.started && g_p2.pressedKey[1]))
 	{
 		if(IntroFlag){intro->OnMediaStop();delete intro;IntroFlag=FALSE;}
 		if(g_dsMove){g_dsMove->Stop();g_dsMove->SetCurrentPosition(0);g_dsMove->Play(0,0,0);}
@@ -550,7 +550,7 @@ void SelectSong(void)
 	}
 
 	// change screen to right.
-	if((Start1p && PressedKey1p[3]) || (Start2p && PressedKey2p[3]))
+	if((g_p1.started && g_p1.pressedKey[3]) || (g_p2.started && g_p2.pressedKey[3]))
 	{
 		if(IntroFlag){intro->OnMediaStop();delete intro;IntroFlag=FALSE;}
 		if(g_dsMove){g_dsMove->Stop();g_dsMove->SetCurrentPosition(0);g_dsMove->Play(0,0,0);}
@@ -562,13 +562,13 @@ void SelectSong(void)
 	}
 	
 	// select the left song.
-	if((Start1p && PressedKey1p[7]) || (Start2p && PressedKey2p[7]))
+	if((g_p1.started && g_p1.pressedKey[7]) || (g_p2.started && g_p2.pressedKey[7]))
 	{
 		// if 7button pressed twice then move to the next stage.
 		if(Selected==7)
 		{
 			SelectCurrent=current;
-			PressedKey1p[0]=3;
+			g_p1.pressedKey[0]=3;
 		}
 		// if 7button pressed once then select music.
 		else
@@ -604,13 +604,13 @@ void SelectSong(void)
 	}
 	
 	// select the right song.
-	if((Start1p && PressedKey1p[9]) || (Start2p && PressedKey2p[9]))
+	if((g_p1.started && g_p1.pressedKey[9]) || (g_p2.started && g_p2.pressedKey[9]))
 	{
 		// if 9button pressed twice then move to the next stage.
 		if(Selected==9)
 		{
 			SelectCurrent=CSONG[current].Next;
-			PressedKey1p[0]=3;
+			g_p1.pressedKey[0]=3;
 		}
 		// if 9button pressed once select the right song.
 		else
@@ -646,9 +646,9 @@ void SelectSong(void)
 	}
 
 	// Game Start( Change the Next Stage. )
-	if(PressedKey1p[0]==3)
+	if(g_p1.pressedKey[0]==3)
 	{
-		PressedKey1p[0]=0;
+		g_p1.pressedKey[0]=0;
 
 		// Game Mode setting.
 		if(CSONG[SelectCurrent].HaveCrazy==TRUE)GameMode=MODE_CRAZY,Double=FALSE;
@@ -658,11 +658,11 @@ void SelectSong(void)
 		else return;
 
 		// Couple mode setting.
-		if(Start1p && Start2p)
+		if(g_p1.started && g_p2.started)
 		{
 			Couple=TRUE;
 			if(CSONG[SelectCurrent].HaveCouple==FALSE)
-				bModeSynchro=TRUE;
+				g_p1.synchro=TRUE;
 		} else
 			Couple=FALSE;
 
@@ -698,11 +698,11 @@ void SelectSong(void)
 			if(SongTitle)
 				SongBack=DDLoadBitmap(g_pDD,CSONG[SelectCurrent].TitleImgPath,0,0);
 			else	// default background image.
-				SongBack=DDLoadBitmap(g_pDD, "IMAGES/back.png",0,0);
+				SongBack=DDLoadBitmap(g_pDD, "images/back.png",0,0);
 		}
 		if(SongTitle == NULL)
 		{
-			SongTitle=DDLoadBitmap(g_pDD,"IMAGES/noDisc.png",0,0);
+			SongTitle=DDLoadBitmap(g_pDD,"images/noDisc.png",0,0);
 		}
 
 		// draw title image.
@@ -719,7 +719,7 @@ void SelectSong(void)
 			switch(GameMode)
 			{
 				case MODE_CRAZY:
-					if(bModeSynchro)
+					if(g_p1.synchro)
 					{
 						memcpy(&Data,  &CSONG[SelectCurrent].Data_Crazy, sizeof(CSONG[SelectCurrent].Data_Crazy));
 						memcpy(&Data1, &CSONG[SelectCurrent].Data_Crazy, sizeof(CSONG[SelectCurrent].Data_Crazy));
@@ -741,7 +741,7 @@ void SelectSong(void)
 					break;
 
 				case MODE_EASY:
-					if(bModeSynchro)
+					if(g_p1.synchro)
 					{
 						memcpy(&Data, &CSONG[SelectCurrent].Data_Easy, sizeof(CSONG[SelectCurrent].Data_Easy));
 						memcpy(&Data1,&CSONG[SelectCurrent].Data_Easy, sizeof(CSONG[SelectCurrent].Data_Easy));
@@ -763,7 +763,7 @@ void SelectSong(void)
 					break;
 
 				case MODE_HARD:
-					if(bModeSynchro)
+					if(g_p1.synchro)
 					{
 						memcpy(&Data, &CSONG[SelectCurrent].Data_Hard, sizeof(CSONG[SelectCurrent].Data_Hard));
 						memcpy(&Data1,&CSONG[SelectCurrent].Data_Hard, sizeof(CSONG[SelectCurrent].Data_Hard));
@@ -791,7 +791,7 @@ void SelectSong(void)
 			switch(GameMode)
 			{
 				case MODE_CRAZY:
-					if(Start1p)
+					if(g_p1.started)
 						memcpy(&Data, CSONG[SelectCurrent].Data_Crazy, sizeof(Data));
 					else	// 2p play
 					{
@@ -809,7 +809,7 @@ void SelectSong(void)
 					break;
 
 				case MODE_EASY:
-					if(Start1p)
+					if(g_p1.started)
 						memcpy(&Data,CSONG[SelectCurrent].Data_Easy,sizeof(Data));
 					else
 					{
@@ -827,7 +827,7 @@ void SelectSong(void)
 					break;
 
 				case MODE_HARD:
-					if(Start1p)
+					if(g_p1.started)
 						memcpy(&Data,CSONG[SelectCurrent].Data_Hard,sizeof(Data));
 					else	// 2p play
 					{
@@ -903,8 +903,8 @@ void SelectSong(void)
 		strcpy(SongName3, CSONG[SelectCurrent].PlayMpgPath);
 		strcpy(Title,     CSONG[SelectCurrent].SongTitle);
 
-		Judgement1p=NONE;
-		Judgement2p=NONE;
+		g_p1.judgement=NONE;
+		g_p2.judgement=NONE;
 
 		if(GameMode==MODE_DOUBLE)
 			g_ProgramState=DOUBLE;
@@ -913,8 +913,8 @@ void SelectSong(void)
 		
 		if(GameMode==MODE_DOUBLE)
 		{
-			if(Start1p && Start2p)
-				Start2p=FALSE;
+			if(g_p1.started && g_p2.started)
+				g_p2.started=FALSE;
 		}
 		Selected=0;
 		
@@ -944,30 +944,30 @@ void SelectSong(void)
 		DDFillSurface(g_pDDSBack, 0);
 
 		First=0;
-		Combo1p=0;
-		Combo2p=0;
+		g_p1.combo=0;
+		g_p2.combo=0;
 
-		cPerfect1p=0;
-		cGreat1p=0;
-		cGood1p=0;
-		cBad1p=0;
-		cMiss1p=0;
-		cMaxCombo1p=0;
+		g_p1.perfect=0;
+		g_p1.great=0;
+		g_p1.good=0;
+		g_p1.bad=0;
+		g_p1.miss=0;
+		g_p1.maxCombo=0;
 
-		cPerfect2p=0;
-		cGreat2p=0;
-		cGood2p=0;
-		cBad2p=0;
-		cMiss2p=0;
-		cMaxCombo2p=0;
+		g_p2.perfect=0;
+		g_p2.great=0;
+		g_p2.good=0;
+		g_p2.bad=0;
+		g_p2.miss=0;
+		g_p2.maxCombo=0;
 
-		dwState=0;
-		dwState2=0;
+		g_p1.state=0;
+		g_p2.state=0;
 
 		start1=0;
 
-		PressedKey1p[0]=0;
-		PressedKey2p[0]=0;
+		g_p1.pressedKey[0]=0;
+		g_p2.pressedKey[0]=0;
 		SelectCurrent=0;
 
 		return;
@@ -987,11 +987,11 @@ void SelectSong(void)
 	if(40 <= i2)
 	{
 		if(Selected == 7)
-			SelectCurrent = current, PressedKey1p[0]=3;
+			SelectCurrent = current, g_p1.pressedKey[0]=3;
 		else if(Selected == 9)
-			SelectCurrent = CSONG[current].Next, PressedKey1p[0]=3;
+			SelectCurrent = CSONG[current].Next, g_p1.pressedKey[0]=3;
 		else
-			SelectCurrent = current,PressedKey1p[0]=3;
+			SelectCurrent = current,g_p1.pressedKey[0]=3;
 	}
 		
 	DisplayNumber(560,8,s);
@@ -1103,33 +1103,33 @@ void SelectSong(void)
 		DisplayMessage(200, 300, CSONG[CSONG[current].Next].SongTitle);
 
 	// draw 1p mode pictures.
-	if(bModeMirror1p)
+	if(g_p1.mirror)
 		DrawMode(0,200,HMODE_MIRROR);
-	if(bModeNonstep1p)
+	if(g_p1.nonstep)
 		DrawMode(0,240,HMODE_NONSTEP);
-	if(bModeSynchro)
+	if(g_p1.synchro)
 		DrawMode(0,280,HMODE_SYNCHRO);
-	if(bModeUnion1p)
+	if(g_p1.union_)
 		DrawMode(0,320,HMODE_UNION);
-	if(bModeRandom1p)
+	if(g_p1.random)
 		DrawMode(0,360,HMODE_RANDOM);
-	if(bModeVanish1p)
+	if(g_p1.vanish)
 		DrawMode(0,400,HMODE_VANISH);
-	if(HighSpeed1p>1)
+	if(g_p1.speedBase>1)
 		DrawMode(0,160,HMODE_2X);
 
 	// draw 2p mode pictures.
-	if(bModeMirror2p)
+	if(g_p2.mirror)
 		DrawMode(600,200,HMODE_MIRROR);
-	if(bModeNonstep2p)
+	if(g_p2.nonstep)
 		DrawMode(600,240,HMODE_NONSTEP);
-	if(bModeUnion2p)
+	if(g_p2.union_)
 		DrawMode(600,320,HMODE_UNION);
-	if(bModeRandom2p)
+	if(g_p2.random)
 		DrawMode(600,360,HMODE_RANDOM);
-	if(bModeVanish2p)
+	if(g_p2.vanish)
 		DrawMode(600,400,HMODE_VANISH);
-	if(HighSpeed2p>1)
+	if(g_p2.speedBase>1)
 		DrawMode(600,160,HMODE_2X);
 
 	// Draw level icon to next to the title image.
@@ -1161,26 +1161,26 @@ void SelectSong(void)
 
 	g_pDDSBack->BltFast(210,450,g_cFont, &lRect, DDBLTFAST_SRCCOLORKEY);
 
-	if(Start1p)
+	if(g_p1.started)
 	{
 		if(a==0)
 		{
 			a++;
-			if(Start1p && Start2p)Couple=TRUE;
+			if(g_p1.started && g_p2.started)Couple=TRUE;
 			else Couple=FALSE;
 		}
 	}
-	if(Start2p)
+	if(g_p2.started)
 	{
 		if(b==0)
 		{
 			b++;
-			if(Start1p && Start2p)Couple=TRUE;
+			if(g_p1.started && g_p2.started)Couple=TRUE;
 			else Couple=FALSE;
 		}
 	}
 
-	if(Start1p==FALSE)
+	if(g_p1.started==FALSE)
 	{
 
 		// Draw "PRESS CENTER BUTTON"
@@ -1192,7 +1192,7 @@ void SelectSong(void)
 		TransAlphaImproved(g_cFont, g_pDDSBack, 10, 450, lRect, ALPHA, CKey_CFont, 16);
 	}
 
-	if(Start2p==FALSE)
+	if(g_p2.started==FALSE)
 	{
 		// Draw "PRESS CENTER BUTTON"
 		lRect.top=0;
@@ -1226,14 +1226,14 @@ int	ScanHiddenMode1p(void)
 	static char IntKey1p[10];
 	int i;
 
-	if(PressedKey1p[1] || PressedKey1p[3] || PressedKey1p[5] || PressedKey1p[7] || PressedKey1p[9])
+	if(g_p1.pressedKey[1] || g_p1.pressedKey[3] || g_p1.pressedKey[5] || g_p1.pressedKey[7] || g_p1.pressedKey[9])
 		for(i=0;i<7;i++)IntKey1p[i]=IntKey1p[i+1];
 	
-	if(PressedKey1p[1])IntKey1p[7]='1';
-	if(PressedKey1p[3])IntKey1p[7]='3';
-	if(PressedKey1p[5])IntKey1p[7]='5';
-	if(PressedKey1p[7])IntKey1p[7]='7';
-	if(PressedKey1p[9])IntKey1p[7]='9';
+	if(g_p1.pressedKey[1])IntKey1p[7]='1';
+	if(g_p1.pressedKey[3])IntKey1p[7]='3';
+	if(g_p1.pressedKey[5])IntKey1p[7]='5';
+	if(g_p1.pressedKey[7])IntKey1p[7]='7';
+	if(g_p1.pressedKey[9])IntKey1p[7]='9';
 
 	// 2배속 입니다.
 	if(strcmp(IntKey1p,"55755595")==0)
@@ -1337,14 +1337,14 @@ int	ScanHiddenMode2p(void)
 	static char IntKey2p[10];
 	int i;
 
-	if(PressedKey2p[1] || PressedKey2p[3] || PressedKey2p[5] || PressedKey2p[7] || PressedKey2p[9])
+	if(g_p2.pressedKey[1] || g_p2.pressedKey[3] || g_p2.pressedKey[5] || g_p2.pressedKey[7] || g_p2.pressedKey[9])
 		for(i=0;i<7;i++)IntKey2p[i]=IntKey2p[i+1];
 	
-	if(PressedKey2p[1])IntKey2p[7]='1';
-	if(PressedKey2p[3])IntKey2p[7]='3';
-	if(PressedKey2p[5])IntKey2p[7]='5';
-	if(PressedKey2p[7])IntKey2p[7]='7';
-	if(PressedKey2p[9])IntKey2p[7]='9';
+	if(g_p2.pressedKey[1])IntKey2p[7]='1';
+	if(g_p2.pressedKey[3])IntKey2p[7]='3';
+	if(g_p2.pressedKey[5])IntKey2p[7]='5';
+	if(g_p2.pressedKey[7])IntKey2p[7]='7';
+	if(g_p2.pressedKey[9])IntKey2p[7]='9';
 
 	if(strcmp(IntKey2p,"55755595")==0)
 	{
@@ -1432,7 +1432,7 @@ int	ScanHiddenMode2p(void)
 
 void DrawMode(int x, int y, int Mode)
 {
-	RECT	modeRect;
+	Rect	modeRect;
 
 	switch(Mode)
 	{

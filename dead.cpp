@@ -7,26 +7,26 @@
 /* ddraw.h via main.h */
 /* mmsystem.h replaced */
 /* dsound.h via main.h */
-#include "DEAD.H"
-#include "Main.h"
+#include "dead.h"
+#include "main.h"
 //#include "sound.h"
 #include "dsutil.h"
 
-extern	LPDIRECTDRAWSURFACE		DeadScreen;
-extern	LPDIRECTDRAWSURFACE		GameOver;
+extern	Surface*		DeadScreen;
+extern	Surface*		GameOver;
 
-extern	LPDIRECTSOUNDBUFFER		g_dsDead;
+extern	Sound*		g_dsDead;
 
-extern	DWORD	dwGameCount;
+extern	uint32_t	dwGameCount;
 
 void Dead(void)
 {
-	static DWORD	cur,last;
-	static RECT	UpRect, DownRect;
+	static uint32_t	cur,last;
+	static Rect	UpRect, DownRect;
 
 	static int Firs;
 
-	Score1p=Score2p=0;
+	g_p1.score=g_p2.score=0;
 
 	if(Firs==0)
 	{
@@ -68,7 +68,7 @@ void Dead(void)
 		if((cur-last)>2500)
 		{
 			Firs=0;
-			Start1p=Start2p=FALSE;
+			g_p1.started=g_p2.started=FALSE;
 			dwGameCount=0;
 
 			g_ProgramState=GAMEOVER;
