@@ -15,7 +15,6 @@
 extern	Surface*		DeadScreen;
 extern	Surface*		GameOver;
 
-extern	Sound*		g_dsDead;
 
 extern	uint32_t	dwGameCount;
 

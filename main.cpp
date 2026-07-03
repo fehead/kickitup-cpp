@@ -12,6 +12,7 @@
 */
 #include "main.h"
 #include "player.h"
+#include "renderer.h"
 
 // Dshow ..
 #include "media.h"
@@ -51,19 +52,10 @@ uint32_t				PressedKey[10] = {0};
 #define	PRGNAME		"Kick It UP!"
 
 // �Ϲ� �ϵ� ������ �κ�
-char				Data[MAX_DATA+1][14];
-char				Data_Judge[MAX_DATA+1][14];
-double				Data_y[MAX_DATA+1];
 
-char				Data1[MAX_DATA+1][14];
-char				Data_Judge1[MAX_DATA+1][14];
-double				Data_y1[MAX_DATA+1];
 // �������
 
 // ���� ������ ����
-char Data_Double[MAX_DATA+1][14];
-char Data_Double_Judge[MAX_DATA+1][14];
-double				Data_Double_y[MAX_DATA+1];//���� �������� Y���� ������ �ִ� �迭
 // ���� ������ ��
 
 
@@ -95,6 +87,15 @@ BOOL				g_bActive;
 
 
 char				GameMode=MODE_HARD;
+char Data[MAX_DATA+1][14];
+char Data_Judge[MAX_DATA+1][14];
+double Data_y[MAX_DATA+1];
+char Data1[MAX_DATA+1][14];
+char Data_Judge1[MAX_DATA+1][14];
+double Data_y1[MAX_DATA+1];
+char Data_Double[MAX_DATA+1][14];
+char Data_Double_Judge[MAX_DATA+1][14];
+double Data_Double_y[MAX_DATA+1];
 bool Couple = false, Double = false;
 
 // Couple now in player.h
@@ -161,13 +162,6 @@ Surface*	StageCount		= NULL;
 AudioDev*		lpds			= NULL;
 Sound*	lpdsbd			= NULL;
 
-Sound*				g_dsOpening	= NULL;
-Sound*				g_dsDead		= NULL;
-Sound*				g_dsMode		= NULL;
-Sound*				g_dsCancel		= NULL;
-Sound*				g_dsMove		= NULL;
-Sound*				g_dsBeat		= NULL;
-Sound*				g_dsSelectSong	= NULL;
 
 SONG				CSONG[512];
 
@@ -304,156 +298,12 @@ void DrawBackground(char Data[][14], uint32_t i, int temp)
 	g_pDDSBack->BltFast(0,0,SongBack,NULL, DDBLTFAST_WAIT | DDBLTFAST_NOCOLORKEY);
 }
 
-void DrawScore1p(void)
-{
-	Rect	cRect;
-	char chScore[11];
-	int Loop;
+void DrawScore1p(void) { Renderer::drawScore(g_p1, 20, 444); }
+void DrawScore2p(void) { Renderer::drawScore(g_p2, 463, 444); }
 
-	sprintf(chScore,"%07d",g_p1.score);
-			
-	for(Loop=0;;Loop++)
-	{
-		if(chScore[Loop]==NULL)break;
-		chScore[Loop]-=48;
-		cRect.left=chScore[Loop]*22;
-		cRect.right=cRect.left+21;
-		cRect.top=0;
-		cRect.bottom=35;
-		g_pDDSBack->BltFast(20+Loop*22,444,Score,&cRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-	}/* ������� */
-}
+void DrawGauge1p(void) { Renderer::drawGauge(g_p1, 32, 280, -1); }
+void DrawGauge2p(void) { Renderer::drawGauge(g_p2, 352, 352, 1); }
 
-void DrawScore2p(void)
-{
-	Rect	cRect;
-	char chScore[11];
-	int Loop;
-
-	sprintf(chScore,"%07d",g_p2.score);
-			
-	for(Loop=0;;Loop++)
-	{
-		if(chScore[Loop]==NULL)break;
-		chScore[Loop]-=48;
-		cRect.left=chScore[Loop]*22;
-		cRect.right=cRect.left+21;
-		cRect.top=0;
-		cRect.bottom=35;
-		g_pDDSBack->BltFast(463+Loop*22,444,Score,&cRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-	}/* ������� */
-}
-
-void DrawGauge1p(void)
-{
-	int CurG;
-	int i;
-//	static	int	Phase;
-
-	Rect sRect;
-
-	CurG=g_p1.gauge;
-	
-	if(CurG<0)CurG=0;
-
-	g_pDDSBack->BltFast(32,0,GaugeWaku,NULL, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-
-/*	if(Phase==1)
-	{
-		Phase=0;
-		return;
-	}
-	else Phase++;*/
-	
-	sRect.top=0;
-	sRect.left=0;
-	sRect.right=6;
-	sRect.bottom=20;
-
-	for(i=0;i<7;i++)
-	{
-		if(i>CurG)break;
-		g_pDDSBack->BltFast(280-(i*6),20,Gauge,&sRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-	}
-
-	sRect.top=0;
-	sRect.left=6;
-	sRect.right=12;
-	sRect.bottom=20;
-
-	for(i=7;i<21;i++)
-	{
-		if(i>CurG)break;
-		g_pDDSBack->BltFast(280-(i*6),20,Gauge,&sRect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-	}
-
-	sRect.top=0;
-	sRect.left=12;
-	sRect.right=18;
-	sRect.bottom=20;
-
-	for(i=21;i<42;i++)
-	{
-		if(i>CurG)break;
-		g_pDDSBack->BltFast(280-(i*6),20,Gauge,&sRect,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-	}
-
-}
-
-void DrawGauge2p(void)
-{
-	int CurG;
-	int i;
-	Rect sRect;
-//	static	int	Phase;
-
-	CurG=g_p2.gauge;
-	
-	if(CurG<0)CurG=0;
-
-	g_pDDSBack->BltFast(352,0,GaugeWaku,NULL,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-
-/*	if(Phase==1)
-	{
-		Phase=0;
-		return;
-	}
-	else Phase++;*/
-
-	sRect.top=0;
-	sRect.left=0;
-	sRect.right=6;
-	sRect.bottom=20;
-
-	for(i=0;i<7;i++)
-	{
-		if(i>CurG)break;
-		g_pDDSBack->BltFast(352+(i*6),20,Gauge,&sRect,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-	}
-
-	sRect.top=0;
-	sRect.left=6;
-	sRect.right=12;
-	sRect.bottom=20;
-
-	for(i=7;i<21;i++)
-	{
-		if(i>CurG)break;
-		g_pDDSBack->BltFast(352+(i*6),20,Gauge,&sRect,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-	}
-
-	sRect.top=0;
-	sRect.left=12;
-	sRect.right=18;
-	sRect.bottom=20;
-
-	for(i=21;i<42;i++)
-	{
-		if(i>CurG)break;
-		g_pDDSBack->BltFast(352+(i*6),20,Gauge,&sRect,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
-	}
-
-}
 
 void KIU_STAGE(void)
 {
@@ -502,25 +352,15 @@ void KIU_STAGE(void)
 
 	if(start1==0)
 	{
-		if(g_p1.dMix==TRUE)
-		{
-			MaxSpeed = MinSpeed = g_p1.speed1;
-
-			MaxSpeed = max( MaxSpeed, g_p1.speed3);
-			MaxSpeed = max( MaxSpeed, g_p1.speed5);
-			MaxSpeed = max( MaxSpeed, g_p1.speed7);
-			MaxSpeed = max( MaxSpeed, g_p1.speed9);
-			
-			MinSpeed = min( MinSpeed, g_p1.speed3);
-			MinSpeed = min( MinSpeed, g_p1.speed5);
-			MinSpeed = min( MinSpeed, g_p1.speed7);
-			MinSpeed = min( MinSpeed, g_p1.speed9);
-		}
-		else 
-		{
-			MaxSpeed = MinSpeed = g_p1.speedBase;
-			g_p1.speed1 = g_p1.speed3 = g_p1.speed5 = g_p1.speed7 = g_p1.speed9 = g_p1.speedBase;
-		}
+				if(g_p1.dMix==TRUE)
+				{
+					MinSpeed = Renderer::minSpeedOf(g_p1);
+					MaxSpeed = Renderer::maxSpeedOf(g_p1);
+				}
+				else 		{
+					MaxSpeed = MinSpeed = g_p1.speedBase;
+					g_p1.speed1 = g_p1.speed3 = g_p1.speed5 = g_p1.speed7 = g_p1.speed9 = g_p1.speedBase;
+				}
 
 		if(g_p2.dMix)
 		{
@@ -1362,13 +1202,7 @@ void KIU_STAGE(void)
 
 void WaveSet_Loading(void)
 {
-	g_dsOpening=DSLoadSoundBuffer(lpds, "wave/opening.mp3");
-	g_dsDead=DSLoadSoundBuffer(lpds,"wave/dead.mp3");
-	g_dsMode=DSLoadSoundBuffer(lpds,"wave/mode.mp3");
-	g_dsCancel=DSLoadSoundBuffer(lpds,"wave/cancel.mp3");
-	g_dsMove=DSLoadSoundBuffer(lpds,"wave/move.mp3");
-	g_dsBeat=DSLoadSoundBuffer(lpds,"wave/beat.mp3");
-	g_dsSelectSong=DSLoadSoundBuffer(lpds, "wave/musicSelect.mp3");
+	g_audio.loadAll();
 }
 
 void DisplayMessage(int x, int y, char * message)
@@ -1503,111 +1337,6 @@ int	ClpBlt(int x ,int y ,Surface* ds,Rect* srect,uint32_t mode)
 
 }
 
-void StageTitle(void)
-{
-	Rect	lRect;
-
-	if(First==0)
-	{
-		ClearMode();
-
-		g_p1.started=FALSE;
-		g_p2.started=FALSE;
-		First++;
-		if(g_dsOpening)
-			g_dsOpening->Play(0,0,0);
-	}
-
-	ReadGameInput();
-
-	if(g_p1.pressedKey[5]==TRUE)
-		g_p1.started=TRUE;
-
-	if(g_p2.pressedKey[5]==TRUE)
-		g_p2.started=TRUE;
-	
-	// Draw Background image. "KICK IT UP"
-	g_pDDSBack->BltFast(0,0,GameTITLE,NULL, DDBLTFAST_WAIT | DDBLTFAST_NOCOLORKEY);
-
-	// Check Start.
-	if(g_p1.started || g_p2.started)
-	{
-		if(g_p1.started && g_p2.started)
-		{
-			g_p2.pressedKey[0]=3;
-		}
-		else if(g_p1.started)
-		{
-			if(g_p1.pressedKey[5]==TRUE)
-				g_p2.pressedKey[0]=3;
-		}
-		else if(g_p2.started)
-		{
-			if(g_p2.pressedKey[5]==TRUE)
-				g_p2.pressedKey[0]=3;
-		}
-	}
-
-	// if start button is pressed.
-	if(g_p2.pressedKey[0]==3)
-	{
-		Couple = g_p1.started && g_p2.started;
-
-		First=0;
-		if(g_dsOpening)
-			g_dsOpening->Stop();
-		g_p2.pressedKey[0]=0;
-
-		// Change ProgramState to SelectSong Stage
-		g_ProgramState=SELECTSONG;
-
-	}
-
-	// Draw to screen "FREE PLAY!"
-	lRect.top=46;
-	lRect.left=0;
-	lRect.right=220;
-	lRect.bottom=69;
-
-	g_pDDSBack->BltFast(210,450,g_cFont, &lRect, DDBLTFAST_SRCCOLORKEY);
-
-	if(g_p1.started==FALSE)
-	{
-		// Draw to screen (10, 450) "PRESS CENTER BUTTON"
-		lRect.top=0;
-		lRect.left=0;
-		lRect.right=220;
-		lRect.bottom=23;
-
-		TransAlphaImproved(g_cFont, g_pDDSBack, 10, 450, lRect, ALPHA, CKey_CFont, 16);
-	}
-	if(g_p2.started==FALSE)//DisplayMessage(320,480-20,"PRESS CENTER STEP");
-	{
-		// Draw to screen (410, 450) "PRESS CENTER BUTTON"
-		lRect.top=0;
-		lRect.left=0;
-		lRect.right=220;
-		lRect.bottom=23;
-
-		TransAlphaImproved(g_cFont, g_pDDSBack, 410, 450, lRect, ALPHA, CKey_CFont, 16);
-	}
-
-	ALPHA += inc;
-	if (ALPHA > 256)
-	{
-		ALPHA = 256;
-		inc = -20;
-	}
-	else if (ALPHA < 0)
-	{
-		ALPHA = 0;
-		inc = 20;
-	}
-
-
-	Flipp();
-
-}
 
 void DrawJudge1p(void)
 {
@@ -4412,8 +4141,10 @@ int main(int argc, char *argv[])
 		UpdateFrame();
 	}
 
-	KIU_Quit();
-	return 0;
+	g_audio.unloadAll();
+		KIU_Quit();
+		
+		return 0;
 }
 
 

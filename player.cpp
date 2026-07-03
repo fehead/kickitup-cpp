@@ -21,7 +21,7 @@ void Player::resetStats() {
     maxCombo = combo = 0; score = 0; gauge = 10;
 }
 
-char Player::judgeAnaly() {
+char Player::judgeAnaly() const {
     uint32_t total = perfect + great + good + bad + miss;
     if (gauge < 0) return 'F';
     if (good == 0 && bad == 0 && miss == 0) return 'S';

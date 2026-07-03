@@ -64,9 +64,10 @@ void Configuration(void)
 	#define	FONT_SIZE_Y	16
 	#define	START_X		0
 	
-	static	int	cur_x, cur_y;
+		static	int	cur_x, cur_y;
 	
-	BlitFx ddbltfx;
+		ReadGameInput();	
+		BlitFx ddbltfx;
 
 	memset(&ddbltfx, 0, sizeof(ddbltfx));
 	ddbltfx.dwSize = sizeof(ddbltfx);

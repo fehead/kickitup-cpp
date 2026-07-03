@@ -24,6 +24,13 @@ set(SOURCES
     dsutil.cpp
     modeSlct.cpp
     player.cpp
+    game.cpp
+    stepdata.cpp
+    timing.cpp
+    renderer.cpp
+    audio.cpp
+    animator.cpp
+    stage_title.cpp
 )
 
 add_executable(kickitup ${SOURCES})

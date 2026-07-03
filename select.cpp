@@ -20,6 +20,7 @@
 #include "media.h"
 #include "main.h"
 #include "input.h"
+#include "animator.h"
 #include "select.h"
 #include "result.h"
 
@@ -127,7 +128,7 @@ void Read()
 	{
 		for(;;)
 		{
-			if(FindNextFile(hFind,&lpData)==FALSE)break;
+			if(FindNextFile(hFind,&lpData)==false)break;
 			cPathStr=_strupr(_strdup(lpData.cFileName));
 			if(strcmp(cPathStr,"SONG")==0)break;
 		}
@@ -167,7 +168,7 @@ void Read()
 
 		for(;;)
 		{
-			if(FindNextFile(hFind,&lpData)==FALSE)break;
+			if(FindNextFile(hFind,&lpData)==false)break;
 			else
 			{
 				if(lpData.cFileName[0]!='.' && lpData.dwFileAttributes==FILE_ATTRIBUTE_DIRECTORY)
@@ -227,7 +228,8 @@ void SelectSong(void)
 	
 	static	int a,b,c;
 
-	static	int iMove;
+
+	static Animator iMove(240.0);
 
 	Rect DiscSize,Screen;
 
@@ -236,41 +238,41 @@ void SelectSong(void)
 	if(First==0)
 	{
 		startTimer=timeGetTime();
-		if(g_p1.started==FALSE)
+		if(g_p1.started==false)
 		{
 			g_p1.speedBase=1;
-			g_p1.mirror=FALSE;
-			g_p1.nonstep=FALSE;
-			g_p1.synchro=FALSE;
-			g_p1.union_=FALSE;
-			g_p1.random=FALSE;
-			g_p1.dMix=FALSE;
+			g_p1.mirror=false;
+			g_p1.nonstep=false;
+			g_p1.synchro=false;
+			g_p1.union_=false;
+			g_p1.random=false;
+			g_p1.dMix=false;
 			g_p1.speed1=1;
 			g_p1.speed3=1;
 			g_p1.speed5=1;
 			g_p1.speed7=1;
 			g_p1.speed9=1;
-			g_p1.vanish=FALSE;
-			g_p1.suddenR=FALSE;
-			g_p1.randomS=FALSE;
+			g_p1.vanish=false;
+			g_p1.suddenR=false;
+			g_p1.randomS=false;
 
 		}
-		if(g_p2.started==FALSE)
+		if(g_p2.started==false)
 		{
 			g_p2.speedBase=1;
-			g_p2.mirror=FALSE;
-			g_p2.nonstep=FALSE;
-			g_p2.union_=FALSE;
-			g_p2.random=FALSE;
-			g_p2.dMix=FALSE;
+			g_p2.mirror=false;
+			g_p2.nonstep=false;
+			g_p2.union_=false;
+			g_p2.random=false;
+			g_p2.dMix=false;
 			g_p2.speed1=1;
 			g_p2.speed3=1;
 			g_p2.speed5=1;
 			g_p2.speed7=1;
 			g_p2.speed9=1;
-			g_p2.vanish=FALSE;
-			g_p1.suddenR=FALSE;
-			g_p1.randomS=FALSE;
+			g_p2.vanish=false;
+			g_p1.suddenR=false;
+			g_p1.randomS=false;
 		}
 		// paint the background black.
 		DDFillSurface(g_pDDSPrimary,0);
@@ -331,18 +333,18 @@ void SelectSong(void)
 
 	ReadGameInput();
 
-	if(g_p1.pressedKey[5]==TRUE)
+	if(g_p1.pressedKey[5]==true)
 	{
-		if(g_p1.started==FALSE)
+		if(g_p1.started==false)
 		{
-			g_p1.started=TRUE;
+			g_p1.started=true;
 		}
 	}
-	if(g_p2.pressedKey[5]==TRUE)
+	if(g_p2.pressedKey[5]==true)
 	{
-		if(g_p2.started==FALSE)
+		if(g_p2.started==false)
 		{
-			g_p2.started=TRUE;
+			g_p2.started=true;
 		}
 	}
 
@@ -353,20 +355,20 @@ void SelectSong(void)
 		if(IntroFlag){
 			intro->OnMediaStop();
 			delete intro;
-			IntroFlag=FALSE;
+			IntroFlag=false;
 		}
 	}
 
 	switch(ModeTemp1p)
 	{
 		case HMODE_SUDDENR:
-			g_p1.suddenR=TRUE;
-			g_p1.vanish=FALSE;
+			g_p1.suddenR=true;
+			g_p1.vanish=false;
 
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_RANDOMS:
-			g_p1.randomS=TRUE;
+			g_p1.randomS=true;
 			g_p1.speedBase=1;
 
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
@@ -384,23 +386,23 @@ void SelectSong(void)
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_MIRROR:
-			g_p1.mirror=TRUE;
+			g_p1.mirror=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_NONSTEP:
-			g_p1.nonstep=TRUE;
+			g_p1.nonstep=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_SYNCHRO:
-			g_p1.synchro=TRUE;
+			g_p1.synchro=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_UNION:
-			g_p1.union_=TRUE;
+			g_p1.union_=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_RANDOM:
-			g_p1.random=TRUE;
+			g_p1.random=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_4DMIX:
@@ -412,37 +414,37 @@ void SelectSong(void)
 			g_p1.speed7=1+rand()%8;
 			g_p1.speed9=1+rand()%8;
 
-			g_p1.dMix=TRUE;
+			g_p1.dMix=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_VANISH:
-			g_p1.vanish=TRUE;
-			g_p2.suddenR=FALSE;
+			g_p1.vanish=true;
+			g_p2.suddenR=false;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 /*		case HMODE_NONSTOPDOUBLE:
 			if(g_p1.started&&g_p2.started)break;
-			Double=TRUE;
+			Double=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;*/
 		case HMODE_CANCEL:
 			if(g_dsCancel)g_dsCancel->Play(0,0,0);
 			g_p1.speedBase=1;
-			g_p1.mirror=FALSE;
-			g_p1.nonstep=FALSE;
-			g_p1.synchro=FALSE;
-			g_p1.union_=FALSE;
-			g_p1.random=FALSE;
-			g_p1.dMix=FALSE;
+			g_p1.mirror=false;
+			g_p1.nonstep=false;
+			g_p1.synchro=false;
+			g_p1.union_=false;
+			g_p1.random=false;
+			g_p1.dMix=false;
 			g_p1.speed1=1;
 			g_p1.speed3=1;
 			g_p1.speed5=1;
 			g_p1.speed7=1;
 			g_p1.speed9=1;
-			g_p1.vanish=FALSE;
-			g_p1.suddenR=FALSE;
-			g_p1.randomS=FALSE;
-			Double=FALSE;
+			g_p1.vanish=false;
+			g_p1.suddenR=false;
+			g_p1.randomS=false;
+			Double=false;
 			break;
 	default:
 			break;
@@ -450,18 +452,18 @@ void SelectSong(void)
 
 	// Get 2Player hidden mode.
 	ModeTemp2p=ScanHiddenMode2p();
-	if(ModeTemp2p)if(IntroFlag){intro->OnMediaStop();delete intro;IntroFlag=FALSE;}
+	if(ModeTemp2p)if(IntroFlag){intro->OnMediaStop();delete intro;IntroFlag=false;}
 	
 	switch(ModeTemp2p)
 	{
 		case HMODE_SUDDENR:
-			g_p2.suddenR=TRUE;
-			g_p2.vanish=FALSE;
+			g_p2.suddenR=true;
+			g_p2.vanish=false;
 
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_RANDOMS:
-			g_p2.randomS=TRUE;
+			g_p2.randomS=true;
 			g_p2.speedBase=1;
 
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
@@ -479,23 +481,23 @@ void SelectSong(void)
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_MIRROR:
-			g_p2.mirror=TRUE;
+			g_p2.mirror=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_NONSTEP:
-			g_p2.nonstep=TRUE;
+			g_p2.nonstep=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_SYNCHRO:
-			g_p1.synchro=TRUE;
+			g_p1.synchro=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_UNION:
-			g_p2.union_=TRUE;
+			g_p2.union_=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_RANDOM:
-			g_p2.random=TRUE;
+			g_p2.random=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_4DMIX:
@@ -508,56 +510,56 @@ void SelectSong(void)
 			g_p2.speed7 = 1+rand()%8;
 			g_p2.speed9 = 1+rand()%8;
 
-			g_p2.dMix=TRUE;
+			g_p2.dMix=true;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 		case HMODE_VANISH:
-			g_p2.vanish=TRUE;
-			g_p2.suddenR=FALSE;
+			g_p2.vanish=true;
+			g_p2.suddenR=false;
 			if(g_dsMode){g_dsMode->Stop();g_dsMode->SetCurrentPosition(0);g_dsMode->Play(0,0,0);}
 			break;
 
 		case HMODE_CANCEL:
 			if(g_dsCancel)g_dsCancel->Play(0,0,0);
 			g_p2.speedBase=1;
-			g_p2.mirror=FALSE;
-			g_p2.nonstep=FALSE;
-			g_p2.union_=FALSE;
-			g_p2.random=FALSE;
-			g_p2.dMix=FALSE;
+			g_p2.mirror=false;
+			g_p2.nonstep=false;
+			g_p2.union_=false;
+			g_p2.random=false;
+			g_p2.dMix=false;
 			g_p2.speed1=1;
 			g_p2.speed3=1;
 			g_p2.speed5=1;
 			g_p2.speed7=1;
 			g_p2.speed9=1;
-			g_p2.vanish=FALSE;
-			g_p2.suddenR=FALSE;
-			g_p2.randomS=FALSE;
-			Double=FALSE;
+			g_p2.vanish=false;
+			g_p2.suddenR=false;
+			g_p2.randomS=false;
+			Double=false;
 			break;
 	}
 
 	// change screen to left.
 	if((g_p1.started && g_p1.pressedKey[1]) || (g_p2.started && g_p2.pressedKey[1]))
 	{
-		if(IntroFlag){intro->OnMediaStop();delete intro;IntroFlag=FALSE;}
+		if(IntroFlag){intro->OnMediaStop();delete intro;IntroFlag=false;}
 		if(g_dsMove){g_dsMove->Stop();g_dsMove->SetCurrentPosition(0);g_dsMove->Play(0,0,0);}
 
 		Selected=0;
 
-		iMove=1;
+		iMove.start(1);
 		current = CSONG[CSONG[current].Prev].Prev;
 	}
 
 	// change screen to right.
 	if((g_p1.started && g_p1.pressedKey[3]) || (g_p2.started && g_p2.pressedKey[3]))
 	{
-		if(IntroFlag){intro->OnMediaStop();delete intro;IntroFlag=FALSE;}
+		if(IntroFlag){intro->OnMediaStop();delete intro;IntroFlag=false;}
 		if(g_dsMove){g_dsMove->Stop();g_dsMove->SetCurrentPosition(0);g_dsMove->Play(0,0,0);}
 
 		Selected=0;
 
-		iMove=-1;
+		iMove.start(-1);
 		current = CSONG[CSONG[current].Next].Next;
 	}
 	
@@ -575,7 +577,7 @@ void SelectSong(void)
 		{
 			// if intro music is playing then stop.
 			if(IntroFlag){
-				intro->OnMediaStop();delete intro;IntroFlag=FALSE;
+				intro->OnMediaStop();delete intro;IntroFlag=false;
 			}
 
 			// if moving music is playing then stop.
@@ -586,14 +588,14 @@ void SelectSong(void)
 			// start New intro music.
 			if(access(CSONG[current].IntroWavPath,04)==0)
 			{
-				IntroFlag=TRUE;
+				IntroFlag=true;
 				intro= new CMedia;
 				intro->OpenMediaFile(CSONG[current].IntroWavPath);
 				intro->OnMediaPlay();
 			}
 			else if(access(CSONG[current].IntroMp3Path,04)==0)
 			{
-				IntroFlag=TRUE;
+				IntroFlag=true;
 				intro= new CMedia;
 				intro->OpenMediaFile(CSONG[current].IntroMp3Path);
 				intro->OnMediaPlay();
@@ -617,7 +619,7 @@ void SelectSong(void)
 		{
 			// intro sound stop.
 			if(IntroFlag){
-				intro->OnMediaStop();delete intro;IntroFlag=FALSE;
+				intro->OnMediaStop();delete intro;IntroFlag=false;
 			}
 
 			// moving sound stop.
@@ -628,14 +630,14 @@ void SelectSong(void)
 			// selected song intro sound start.
 			if(access(CSONG[CSONG[current].Next].IntroWavPath,04)==0)
 			{
-				IntroFlag=TRUE;
+				IntroFlag=true;
 				intro= new CMedia;
 				intro->OpenMediaFile(CSONG[CSONG[current].Next].IntroWavPath);
 				intro->OnMediaPlay();
 			}
 			else if(access(CSONG[CSONG[current].Next].IntroMp3Path,04)==0)
 			{
-				IntroFlag=TRUE;
+				IntroFlag=true;
 				intro= new CMedia;
 				intro->OpenMediaFile(CSONG[CSONG[current].Next].IntroMp3Path);
 				intro->OnMediaPlay();
@@ -651,20 +653,20 @@ void SelectSong(void)
 		g_p1.pressedKey[0]=0;
 
 		// Game Mode setting.
-		if(CSONG[SelectCurrent].HaveCrazy==TRUE)GameMode=MODE_CRAZY,Double=FALSE;
-	   	else if(CSONG[SelectCurrent].HaveDouble==TRUE)GameMode=MODE_DOUBLE,Double=TRUE;
-	   	else if(CSONG[SelectCurrent].HaveEasy==TRUE)GameMode=MODE_EASY,Double=FALSE;
-	   	else if(CSONG[SelectCurrent].HaveHard==TRUE)GameMode=MODE_HARD,Double=FALSE;
+		if(CSONG[SelectCurrent].HaveCrazy==true)GameMode=MODE_CRAZY,Double=false;
+	   	else if(CSONG[SelectCurrent].HaveDouble==true)GameMode=MODE_DOUBLE,Double=true;
+	   	else if(CSONG[SelectCurrent].HaveEasy==true)GameMode=MODE_EASY,Double=false;
+	   	else if(CSONG[SelectCurrent].HaveHard==true)GameMode=MODE_HARD,Double=false;
 		else return;
 
 		// Couple mode setting.
 		if(g_p1.started && g_p2.started)
 		{
-			Couple=TRUE;
-			if(CSONG[SelectCurrent].HaveCouple==FALSE)
-				g_p1.synchro=TRUE;
+			Couple=true;
+			if(CSONG[SelectCurrent].HaveCouple==false)
+				g_p1.synchro=true;
 		} else
-			Couple=FALSE;
+			Couple=false;
 
 		// Cancel sound restart.
 		if(g_dsCancel)
@@ -714,7 +716,7 @@ void SelectSong(void)
 			memcpy(&Data_Double, &CSONG[SelectCurrent].Data_Double, sizeof(CSONG[SelectCurrent].Data_Double));
 		}
 		// couple mode
-		else if(Couple==TRUE)
+		else if(Couple==true)
 		{
 			switch(GameMode)
 			{
@@ -914,31 +916,31 @@ void SelectSong(void)
 		if(GameMode==MODE_DOUBLE)
 		{
 			if(g_p1.started && g_p2.started)
-				g_p2.started=FALSE;
+				g_p2.started=false;
 		}
 		Selected=0;
 		
 		if(g_dsSelectSong)
 			g_dsSelectSong->Stop();
 		if(IntroFlag){
-			intro->OnMediaStop();delete intro;IntroFlag=FALSE;
+			intro->OnMediaStop();delete intro;IntroFlag=false;
 		}
 		
 		// open play song.
 		if(access(SongName,04)==0)
 		{
-			SongFlag=TRUE;
+			SongFlag=true;
 			song=new CMedia;
 			song->OpenMediaFile(SongName);
 		}
 		else if(access(SongName2,04)==0)
 		{
-			SongFlag=TRUE;
+			SongFlag=true;
 			song=new CMedia;
 			song->OpenMediaFile(SongName2);
 		}
 		else
-			SongFlag=FALSE;
+			SongFlag=false;
 
 		// paint background black.
 		DDFillSurface(g_pDDSBack, 0);
@@ -1013,35 +1015,19 @@ void SelectSong(void)
 		Screen.right = 10 + DISCSIZE_X;
 	}
 	
-	// change right screen.
-	if(iMove<0)
-	{
-		if(iMove<=-640)
-			iMove=0;
-		else 
-		{
-			iMove-=8;
-
-			ClpBlt3(10+iMove,50,CSONG[CSONG[CSONG[current].Prev].Prev].DiskImage, &DiscSize,DDBLTFAST_SRCCOLORKEY);
-			ClpBlt3(650+iMove,50,CSONG[current].DiskImage, &DiscSize,DDBLTFAST_SRCCOLORKEY);
-		}
+	// change right screen (Animator)
+	if(iMove.active()) iMove.update(640);
+	if(iMove.value()<0) {
+		ClpBlt3(10+iMove.value(),50,CSONG[CSONG[CSONG[current].Prev].Prev].DiskImage, &DiscSize,DDBLTFAST_SRCCOLORKEY);
+		ClpBlt3(650+iMove.value(),50,CSONG[current].DiskImage, &DiscSize,DDBLTFAST_SRCCOLORKEY);
 	}
-	// change left screen.
-	else if(iMove>0)
-	{
-		if(iMove>=640)
-			iMove=0;
-		else
-		{
-			iMove+=8;
-		
-			ClpBlt3(-630+iMove,50,CSONG[current].DiskImage, &DiscSize, DDBLTFAST_SRCCOLORKEY);
-			ClpBlt3(10+iMove,50,CSONG[CSONG[CSONG[current].Next].Next].DiskImage, &DiscSize, DDBLTFAST_SRCCOLORKEY);
-		}
+	// change left screen
+	else if(iMove.value()>0) {
+		ClpBlt3(-630+iMove.value(),50,CSONG[current].DiskImage, &DiscSize, DDBLTFAST_SRCCOLORKEY);
+		ClpBlt3(10+iMove.value(),50,CSONG[CSONG[CSONG[current].Next].Next].DiskImage, &DiscSize, DDBLTFAST_SRCCOLORKEY);
 	}
-	else if(iMove==0)
+	else
 		g_pDDSBack->Blt(&Screen,CSONG[current].DiskImage, &DiscSize, DDBLT_KEYSRC,NULL);
-	
 	// selected right song.
 	if(Selected == 9)
 	{
@@ -1062,32 +1048,33 @@ void SelectSong(void)
 	}
 
 	// draw left disk image.
-	if(iMove<0)
+	if(iMove.active()) iMove.update(640);
+	if(iMove.value()<0)
 	{
-		if(iMove<=-640)
-			iMove=0;
+		if(iMove.value()<=-640)
+			iMove.stop();
 		else
 		{
-			iMove-=8;
+		
 
-			ClpBlt3(330+iMove,50,CSONG[CSONG[CSONG[CSONG[current].Prev].Prev].Next].DiskImage, &DiscSize,DDBLTFAST_SRCCOLORKEY);
-			ClpBlt3(970+iMove,50,CSONG[CSONG[current].Next].DiskImage, &DiscSize,DDBLTFAST_SRCCOLORKEY);
+			ClpBlt3(330+iMove.value(),50,CSONG[CSONG[CSONG[CSONG[current].Prev].Prev].Next].DiskImage, &DiscSize,DDBLTFAST_SRCCOLORKEY);
+			ClpBlt3(970+iMove.value(),50,CSONG[CSONG[current].Next].DiskImage, &DiscSize,DDBLTFAST_SRCCOLORKEY);
 		}
 	}
 	// draw right disk image.
-	else if(iMove>0)
+	else if(iMove.value()>0)
 	{
-		if(iMove>=640)
-			iMove=0;
+		if(iMove.value()>=640)
+			iMove.stop();
 		else
 		{
-			iMove+=8;
 		
-			ClpBlt3(-310+iMove,50,CSONG[CSONG[current].Next].DiskImage, &DiscSize, DDBLTFAST_SRCCOLORKEY);
-			ClpBlt3(330+iMove,50,CSONG[CSONG[CSONG[CSONG[current].Next].Next].Next].DiskImage, &DiscSize,DDBLTFAST_SRCCOLORKEY);
+		
+			ClpBlt3(-310+iMove.value(),50,CSONG[CSONG[current].Next].DiskImage, &DiscSize, DDBLTFAST_SRCCOLORKEY);
+			ClpBlt3(330+iMove.value(),50,CSONG[CSONG[CSONG[CSONG[current].Next].Next].Next].DiskImage, &DiscSize,DDBLTFAST_SRCCOLORKEY);
 		}
 	}
-	else if(iMove==0)
+	else if(!iMove.active())
 		g_pDDSBack->Blt(&Screen,CSONG[CSONG[current].Next].DiskImage, &DiscSize, DDBLT_KEYSRC,NULL);
 
 	// draw shiftleft image.
@@ -1133,24 +1120,24 @@ void SelectSong(void)
 		DrawMode(600,160,HMODE_2X);
 
 	// Draw level icon to next to the title image.
-	if(CSONG[current].HaveDouble && iMove==0 )
+	if(CSONG[current].HaveDouble && !iMove.active() )
 		g_pDDSBack->BltFast(0,50, DoubleIcon,NULL, DDBLTFAST_SRCCOLORKEY);
-	if(CSONG[CSONG[current].Next].HaveDouble && iMove==0 )
+	if(CSONG[CSONG[current].Next].HaveDouble && !iMove.active() )
 		g_pDDSBack->BltFast(320,50, DoubleIcon, NULL, DDBLTFAST_SRCCOLORKEY);
 
-	if(CSONG[current].HaveCrazy && iMove==0 )
+	if(CSONG[current].HaveCrazy && !iMove.active() )
 		g_pDDSBack->BltFast(0,50, CrazyIcon,NULL, DDBLTFAST_SRCCOLORKEY);
-	if(CSONG[CSONG[current].Next].HaveCrazy && iMove==0 )
+	if(CSONG[CSONG[current].Next].HaveCrazy && !iMove.active() )
 		g_pDDSBack->BltFast(320,50, CrazyIcon, NULL, DDBLTFAST_SRCCOLORKEY);
 
-	if(CSONG[current].HaveHard && iMove==0 )
+	if(CSONG[current].HaveHard && !iMove.active() )
 		g_pDDSBack->BltFast(0,50, HardIcon,NULL, DDBLTFAST_SRCCOLORKEY);
-	if(CSONG[CSONG[current].Next].HaveHard && iMove==0 )
+	if(CSONG[CSONG[current].Next].HaveHard && !iMove.active() )
 		g_pDDSBack->BltFast(320,50, HardIcon, NULL, DDBLTFAST_SRCCOLORKEY);
 
-	if(CSONG[current].HaveEasy && iMove==0 )
+	if(CSONG[current].HaveEasy && !iMove.active() )
 		g_pDDSBack->BltFast(0,50, EasyIcon,NULL, DDBLTFAST_SRCCOLORKEY);
-	if(CSONG[CSONG[current].Next].HaveEasy && iMove==0 )
+	if(CSONG[CSONG[current].Next].HaveEasy && !iMove.active() )
 		g_pDDSBack->BltFast(320,50, EasyIcon, NULL, DDBLTFAST_SRCCOLORKEY);
 
 	// Draw to screen "FREE PLAY!"
@@ -1166,8 +1153,8 @@ void SelectSong(void)
 		if(a==0)
 		{
 			a++;
-			if(g_p1.started && g_p2.started)Couple=TRUE;
-			else Couple=FALSE;
+			if(g_p1.started && g_p2.started)Couple=true;
+			else Couple=false;
 		}
 	}
 	if(g_p2.started)
@@ -1175,12 +1162,12 @@ void SelectSong(void)
 		if(b==0)
 		{
 			b++;
-			if(g_p1.started && g_p2.started)Couple=TRUE;
-			else Couple=FALSE;
+			if(g_p1.started && g_p2.started)Couple=true;
+			else Couple=false;
 		}
 	}
 
-	if(g_p1.started==FALSE)
+	if(g_p1.started==false)
 	{
 
 		// Draw "PRESS CENTER BUTTON"
@@ -1192,7 +1179,7 @@ void SelectSong(void)
 		TransAlphaImproved(g_cFont, g_pDDSBack, 10, 450, lRect, ALPHA, CKey_CFont, 16);
 	}
 
-	if(g_p2.started==FALSE)
+	if(g_p2.started==false)
 	{
 		// Draw "PRESS CENTER BUTTON"
 		lRect.top=0;

@@ -32,8 +32,12 @@ struct Player {
     Player();
     void  clearModes();
     void  resetStats();
-    char  judgeAnaly();
+    char  judgeAnaly() const;
     bool  isDead() const { return gauge < -40; }
+
+    /* Arrow X base positions for 1P / 2P */
+    static constexpr int x1p[5] = {30, 80, 132, 185, 235};
+    static constexpr int x2p[5] = {350, 400, 452, 505, 555};
 };
 
 extern Player g_p1, g_p2;

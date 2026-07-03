@@ -78,10 +78,6 @@ int KIU_PollEvents(void)
             g_quitRequested = 1;
             return 0;
         }
-        if (ev.type == SDL_EVENT_KEY_DOWN && ev.key.key == SDLK_ESCAPE) {
-            g_quitRequested = 1;
-            return 0;
-        }
     }
     return 1;
 }

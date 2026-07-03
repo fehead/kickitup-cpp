@@ -73,7 +73,6 @@ extern	Surface*	ComboFont;
 extern	Surface*	Gauge;
 extern	Surface*	StageCount;
 
-extern	Sound*	g_dsBeat;
 
 //extern	CWAVE				*WavePrimary;
 

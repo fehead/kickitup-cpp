@@ -11,26 +11,30 @@
 
 #include "sdl3_kick.h"
 #include "media.h"
+#include "game.h"
+#include "config.h"
+#include "stepdata.h"
+#include "timing.h"
 
-#define NORMAL      0
-#define PRESS       1
+#define NORMAL 0
+#define PRESS 1
 
-#define GAMETITLE   0
-#define MODESELECT  1
-#define SELECTSONG  2
-#define STAGE1      3
-#define DOUBLE      4
-#define COUPLE      5
-#define DEAD        6
-#define CONFIG      7
-#define RESULT      8
-#define GAMEOVER    9
-
-#define MODE_EASY   0
-#define MODE_HARD   1
-#define MODE_DOUBLE 2
-#define MODE_CRAZY  3
-#define MODE_REMIX  4
+#define GAMETITLE   GS_TITLE
+#define MODESELECT  GS_MODESELECT
+#define SELECTSONG  GS_SELECTSONG
+#define STAGE1      GS_STAGE1
+#define DOUBLE      GS_DOUBLE
+#define COUPLE      GS_COUPLE
+#define DEAD        GS_DEAD
+#define CONFIG      GS_CONFIG
+#define RESULT      GS_RESULT
+#define GAMEOVER    GS_GAMEOVER
+#define END         GS_END
+#define MODE_EASY   GS_MODE_EASY
+#define MODE_HARD   GS_MODE_HARD
+#define MODE_DOUBLE GS_MODE_DOUBLE
+#define MODE_CRAZY  GS_MODE_CRAZY
+#define MODE_REMIX  GS_MODE_REMIX
 
 #define END         99
 
@@ -75,6 +79,7 @@ extern void *hWnd;
 extern bool  SongFlag;
 
 #include "player.h"
+#include "audio.h"
 
 extern int    MaxSpeed;
 extern int    MinSpeed;
@@ -116,6 +121,12 @@ void        DrawScore2p(void);
 void        DisplayMessage(int x, int y, char *message);
 int     ClpBlt(int x ,int y ,Surface* ds,Rect *srect,uint32_t mode);
 void        StageTitle(void);
+void        SelectSong(void);
+void        KIU_STAGE(void);
+void        KIU_STAGE_DOUBLE(void);
+void        Dead(void);
+void        Result(void);
+void        Configuration(void);
 int     RestoreAll(void);
 void        Flipp(void);
 void        ReleaseAllObjects(void);
