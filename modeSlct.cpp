@@ -96,7 +96,7 @@ void ModeSelect(void)
 		if(ModeSwitch==3)
 		{
 			ModeSwitch=0;
-			GameMode=MODE_HARD; // юс╫ц
+			GameMode=MODE_HARD;
 			g_ProgramState=SELECTSONG;
 		}
 		else ModeSwitch=3;

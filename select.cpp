@@ -66,7 +66,7 @@ extern	char				GameMode;
 
 extern bool Couple;
 extern bool Double;
-// 커플 데이터 끝
+
 
 
 //extern CWAVE				*WavePrimary;
@@ -310,7 +310,7 @@ void SelectSong(void)
 		}
 	}
 
-	if(speed==1) //일단은 변수를 이용합니다. 곧 타이머 형식으로 바꾸도록 합시다. 
+	if(speed==1)
 	{
 		speed=0;
 		if(toggle==0)
@@ -1222,79 +1222,79 @@ int	ScanHiddenMode1p(void)
 	if(g_p1.pressedKey[7])IntKey1p[7]='7';
 	if(g_p1.pressedKey[9])IntKey1p[7]='9';
 
-	// 2배속 입니다.
+
 	if(strcmp(IntKey1p,"55755595")==0)
 	{
 		IntKey1p[7]='0';
 		return HMODE_2X;
 	}
-	// 4배속 입니다.
+
 	else if(strcmp(IntKey1p,"55355755")==0)
 	{
 		IntKey1p[7]='0';
 		return HMODE_4X;
 	}
-	// 8배속 입니다.
+
 	else if(strcmp(IntKey1p,"55153555")==0)
 	{
 		IntKey1p[7]='0';
 		return HMODE_8X;
 	}
-	// 배니쉬 입니다.
+
 	else if(strcmp(IntKey1p,"55975315")==0)
 	{
 		IntKey1p[7]='0';
 		return HMODE_VANISH;
 	}
-	// 미러모드 입니다.
+
 	else if(strcmp(IntKey1p,"55159357")==0)
 	{
 		IntKey1p[7]='0';
 		return HMODE_MIRROR;
 	}
-	// 랜덤모드 입니다.
+
 	else if(strcmp(IntKey1p,"51535957")==0)
 	{
 		IntKey1p[7]='0';
 		return HMODE_RANDOM;
 	}
-/*	// 커플모드 입니다.
-	else if(strcmp(IntKey1p,"55979755")==0)
-	{
-		IntKey1p[7]='0';
-		return HMODE_COUPLE;
-	}
-*/	// 싱크로 모드입니다.
+
+
+
+
+
+
+	// 싱크로 모드입니다.
 	else if(strcmp(IntKey1p,"55797955")==0)
 	{
 		IntKey1p[7]='0';
 		return HMODE_SYNCHRO;
 	}
-	// 논스텝모드 입니다.
+
 	else if(strcmp(IntKey1p,"79579579")==0)
 	{
 		IntKey1p[7]='0';
 		return HMODE_NONSTEP;
 	}
-/*	// 논스톱더블 입니다.
+/*
 	else if(strcmp(IntKey1p,"17159395")==0)
 	{
 		IntKey1p[7]='0';
 		return HMODE_NONSTOPDOUBLE;
 	}*/
-	// 유니온모드 입니다.
+
 	else if(strcmp(IntKey1p,"13573159")==0)
 	{
 		IntKey1p[7]='0';
 		return HMODE_UNION;
 	}
-/*	// 셀렉트올 입니다. 
+/*
 	else if(strcmp(IntKey1p,"95197537")==0)
 	{
 		IntKey1p[7]='0';
 		return HMODE_SELECTALL;
 	}*/
-	// 캔슬 입니다.
+
 	else if(strcmp(IntKey1p,"55555555")==0)
 	{
 		IntKey1p[7]='0';
@@ -1337,67 +1337,67 @@ int	ScanHiddenMode2p(void)
 	{
 		IntKey2p[7]='0';
 		return HMODE_2X;
-	} // 2배속 입니다.
+	}
 	else if(strcmp(IntKey2p,"55355755")==0)
 	{
 		IntKey2p[7]='0';
 		return HMODE_4X;
-	} // 4배속 입니다.
+	}
 	else if(strcmp(IntKey2p,"55153555")==0)
 	{
 		IntKey2p[7]='0';
 		return HMODE_8X;
-	} // 8배속 입니다.
+	}
 	else if(strcmp(IntKey2p,"55975315")==0)
 	{
 		IntKey2p[7]='0';
 		return HMODE_VANISH;
-	} // 배니쉬 입니다.
+	}
 	else if(strcmp(IntKey2p,"55159357")==0)
 	{
 		IntKey2p[7]='0';
 		return HMODE_MIRROR;
-	} // 미러모드 입니다.
+	}
 	else if(strcmp(IntKey2p,"51535957")==0)
 	{
 		IntKey2p[7]='0';
 		return HMODE_RANDOM;
-	} // 랜덤모드 입니다.
-/*	else if(strcmp(IntKey2p,"55979755")==0)
-	{
-		IntKey2p[7]='0';
-		return HMODE_COUPLE;
-	} // 커플모드 입니다.
-*/	else if(strcmp(IntKey2p,"55797955")==0)
+	}
+
+
+
+
+
+	else if(strcmp(IntKey2p,"55797955")==0)
 	{
 		IntKey2p[7]='0';
 		return HMODE_SYNCHRO;
-	} // 싱크로 모드입니다.
+	}
 	else if(strcmp(IntKey2p,"79579579")==0)
 	{
 		IntKey2p[7]='0';
 		return HMODE_NONSTEP;
-	} // 논스텝모드 입니다.
-/*	else if(strcmp(IntKey2p,"17159395")==0)
-	{
-		IntKey2p[7]='0';
-		return HMODE_NONSTOPDOUBLE;
-	} // 논스톱더블 입니다.*/
+	}
+
+
+
+
+
 	else if(strcmp(IntKey2p,"13573159")==0)
 	{
 		IntKey2p[7]='0';
 		return HMODE_UNION;
-	} // 유니온모드 입니다.
-/*	else if(strcmp(IntKey2p,"95197537")==0)
-	{
-		IntKey2p[7]='0';
-		return HMODE_SELECTALL;
-	} // 셀렉트올 입니다. */
+	}
+
+
+
+
+
 	else if(strcmp(IntKey2p,"55555555")==0)
 	{
 		IntKey2p[7]='0';
 		return HMODE_CANCEL;
-	} // 캔슬 입니다.
+	}
 
 	else if(strcmp(IntKey2p,"55955575")==0)
 	{

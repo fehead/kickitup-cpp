@@ -20,7 +20,7 @@ public:
 
 extern AudioManager g_audio;
 
-/* Globals owned by AudioManager — initialized by loadAll() */
+
 extern Sound *g_dsOpening, *g_dsDead, *g_dsMode, *g_dsCancel;
 extern Sound *g_dsMove, *g_dsBeat, *g_dsSelectSong;
 

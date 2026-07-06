@@ -291,7 +291,7 @@ void DrawJudgeDB(void)
 		
 		g_pDDSBack->Blt(&destRect, JudgeFont, &rRect,DDBLT_WAIT | DDBLT_KEYSRC , NULL);
 
-		/* 콤보 출력부 입니다. */
+		
 		if((g_p1.judgement==PERFECT || g_p1.judgement==GREAT) && g_p1.combo>3)
 		{
 			sprintf(chCombo1p,"%03d",g_p1.combo);
@@ -315,7 +315,7 @@ void DrawJudgeDB(void)
 				cRect.bottom=100;
 				if(g_p1.state>10)g_pDDSBack->BltFast(250,320+g_p1.state*2-g_p1.state*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
 				else g_pDDSBack->BltFast(250,320+g_p1.state*2,ComboFont,&cRect, DDBLTFAST_SRCCOLORKEY);
-			}/* 여기까지 */
+			}
 		}
 	}
 
@@ -372,7 +372,7 @@ void DrawArrow_DB(uint32_t cur)
 
 	ReadGameInput();
 
-	// 오토 버튼 지원 부분 
+
 	if(KCFG.auto1_1p==TRUE)
 	{
 		for(count=0;count<10;count++)
@@ -1456,7 +1456,7 @@ void DrawArrow_DB(uint32_t cur)
 
 	g_p1.judgement=JudgeTemp;
 	
-	// 미스처리입니다.
+
 	for(count=0;count<10;count++)
 	if(Data_Double_y[cur+count] < ZONE_U
 		&& (Data_Double_Judge[cur+count][0]!='0' || Data_Double_Judge[cur+count][1]!='0' || Data_Double_Judge[cur+count][2]!='0' || Data_Double_Judge[cur+count][3]!='0' || Data_Double_Judge[cur+count][4]!='0' || Data_Double_Judge[cur+count][5]!='0' || Data_Double_Judge[cur+count][6]!='0' || Data_Double_Judge[cur+count][7]!='0' || Data_Double_Judge[cur+count][8]!='0' || Data_Double_Judge[cur+count][9]!='0')
@@ -2095,7 +2095,7 @@ void KIU_STAGE_DOUBLE(void)
 	delta=cur-last;
 	last=cur;
 
-	DrawArrow_DB(i); //회색 화살표를 말합니다.
+	DrawArrow_DB(i);
 
 	start-=delta;
 
@@ -2135,7 +2135,7 @@ void KIU_STAGE_DOUBLE(void)
 			else delta=(uint32_t)curtime;
 		}
 
-		//1000 Tick당 180/60 -> 1초에 64*(180/60)  즉 1 tick 당 64*(bpm/60)/1000
+
 		temp-=(int)(delta*bpmpix);
 		tail+=(double)((double)(delta*bpmpix)-(int)(delta*bpmpix));
 
@@ -2509,7 +2509,7 @@ void KIU_STAGE_DOUBLE(void)
 			Data_Double_y[i+k+3]=(38+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 		}
 
-// 오른쪽 
+
 		if(tick==2)
 		{
 			if(Data_Double[i+k][5]=='1')

@@ -13,6 +13,7 @@
 #include "main.h"
 #include "player.h"
 #include "renderer.h"
+#include "gameplay.h"
 
 // Dshow ..
 #include "media.h"
@@ -307,28 +308,28 @@ void DrawGauge2p(void) { Renderer::drawGauge(g_p2, 352, 352, 1); }
 
 void KIU_STAGE(void)
 {
-	static int temp;
-	static uint32_t i;
-	static uint32_t cur,last,sec;
+	static int arrowOffset;
+	static uint32_t stepIndex;
+	static uint32_t elapsed,lastTick,tickTimer;
 	static uint32_t starttime, curtime;
 
 	static Rect rect1[7],rect3[7],rect5[7],rect7[7],rect9[7];
 	int k;
 	uint32_t delta;
 
-	static int sta;
+	static int animFrame;
 
-	static double tail;
+	static double fadeAlpha;
 
-	static time_t t;
+	static time_t debugTime;
 
-	static	int	hr;
+	static	int	hitResult;
 
 	char s[50];
 
 	double bpmpix=(PUMP_SPRITE_Y)*bpm/60000;
 
-	DrawBackground(Data,i,temp);
+	DrawBackground(Data,stepIndex,arrowOffset);
 	DisplayStageCount(dwGameCount);
 	
 	
@@ -382,123 +383,123 @@ void KIU_STAGE(void)
 			g_p2.speed1 = g_p2.speed3 = g_p2.speed5 = g_p2.speed7 = g_p2.speed9 = g_p2.speedBase;
 		}
 
-		for(sta=0;sta<6;sta++)
+		for(animFrame=0;animFrame<6;animFrame++)
 		{
-			rect7[sta].top=0;
-			rect7[sta].left=PUMP_SPRITE_NEW*sta;
-			rect7[sta].right=PUMP_SPRITE_NEW+PUMP_SPRITE_NEW*sta;
-			rect7[sta].bottom=PUMP_SPRITE_NEW;
+			rect7[animFrame].top=0;
+			rect7[animFrame].left=PUMP_SPRITE_NEW*animFrame;
+			rect7[animFrame].right=PUMP_SPRITE_NEW+PUMP_SPRITE_NEW*animFrame;
+			rect7[animFrame].bottom=PUMP_SPRITE_NEW;
 
-			rect9[sta].top=PUMP_SPRITE_NEW;
-			rect9[sta].left=PUMP_SPRITE_NEW*sta;
-			rect9[sta].right=PUMP_SPRITE_NEW+PUMP_SPRITE_NEW*sta;
-			rect9[sta].bottom=PUMP_SPRITE_NEW*2;
+			rect9[animFrame].top=PUMP_SPRITE_NEW;
+			rect9[animFrame].left=PUMP_SPRITE_NEW*animFrame;
+			rect9[animFrame].right=PUMP_SPRITE_NEW+PUMP_SPRITE_NEW*animFrame;
+			rect9[animFrame].bottom=PUMP_SPRITE_NEW*2;
 
-			rect5[sta].top=PUMP_SPRITE_NEW*2;
-			rect5[sta].left=PUMP_SPRITE_NEW*sta;
-			rect5[sta].right=PUMP_SPRITE_NEW+PUMP_SPRITE_NEW*sta;
-			rect5[sta].bottom=PUMP_SPRITE_NEW*3;
+			rect5[animFrame].top=PUMP_SPRITE_NEW*2;
+			rect5[animFrame].left=PUMP_SPRITE_NEW*animFrame;
+			rect5[animFrame].right=PUMP_SPRITE_NEW+PUMP_SPRITE_NEW*animFrame;
+			rect5[animFrame].bottom=PUMP_SPRITE_NEW*3;
 
-			rect3[sta].top=PUMP_SPRITE_NEW*3;
-			rect3[sta].left=PUMP_SPRITE_NEW*sta;
-			rect3[sta].right=PUMP_SPRITE_NEW+PUMP_SPRITE_NEW*sta;
-			rect3[sta].bottom=PUMP_SPRITE_NEW*4;
+			rect3[animFrame].top=PUMP_SPRITE_NEW*3;
+			rect3[animFrame].left=PUMP_SPRITE_NEW*animFrame;
+			rect3[animFrame].right=PUMP_SPRITE_NEW+PUMP_SPRITE_NEW*animFrame;
+			rect3[animFrame].bottom=PUMP_SPRITE_NEW*4;
 
-			rect1[sta].top=PUMP_SPRITE_NEW*4;
-			rect1[sta].left=PUMP_SPRITE_NEW*sta;
-			rect1[sta].right=PUMP_SPRITE_NEW+PUMP_SPRITE_NEW*sta;
-			rect1[sta].bottom=PUMP_SPRITE_NEW*5;
+			rect1[animFrame].top=PUMP_SPRITE_NEW*4;
+			rect1[animFrame].left=PUMP_SPRITE_NEW*animFrame;
+			rect1[animFrame].right=PUMP_SPRITE_NEW+PUMP_SPRITE_NEW*animFrame;
+			rect1[animFrame].bottom=PUMP_SPRITE_NEW*5;
 		}
-		sta=0;
+		animFrame=0;
 
 		g_p1.gauge=10;
 		g_p2.gauge=10;
 
 		if(g_p1.random)
 		{
-			srand((unsigned) time(&t));
+			srand((unsigned) time(&debugTime));
 			
-			for(i=0;i<MAX_DATA;i++)
+			for(stepIndex=0;stepIndex<MAX_DATA;stepIndex++)
 			{
-				Data[MAX_DATA][0]=Data[i][0];
-				Data[MAX_DATA][1]=Data[i][1];
-				Data[MAX_DATA][2]=Data[i][2];
-				Data[MAX_DATA][3]=Data[i][3];
-				Data[MAX_DATA][4]=Data[i][4];
+				Data[MAX_DATA][0]=Data[stepIndex][0];
+				Data[MAX_DATA][1]=Data[stepIndex][1];
+				Data[MAX_DATA][2]=Data[stepIndex][2];
+				Data[MAX_DATA][3]=Data[stepIndex][3];
+				Data[MAX_DATA][4]=Data[stepIndex][4];
 
-				if(Data[i][0]=='2')break;
+				if(Data[stepIndex][0]=='2')break;
 				
-				Data[i][0]=Data[i][1]=Data[i][2]=Data[i][3]=Data[i][4]='0';
+				Data[stepIndex][0]=Data[stepIndex][1]=Data[stepIndex][2]=Data[stepIndex][3]=Data[stepIndex][4]='0';
 
-				if(Data[MAX_DATA][0]=='1')Data[i][rand()%5]='1';
-				if(Data[MAX_DATA][1]=='1')Data[i][rand()%5]='1';
-				if(Data[MAX_DATA][2]=='1')Data[i][rand()%5]='1';
-				if(Data[MAX_DATA][3]=='1')Data[i][rand()%5]='1';
-				if(Data[MAX_DATA][4]=='1')Data[i][rand()%5]='1';
+				if(Data[MAX_DATA][0]=='1')Data[stepIndex][rand()%5]='1';
+				if(Data[MAX_DATA][1]=='1')Data[stepIndex][rand()%5]='1';
+				if(Data[MAX_DATA][2]=='1')Data[stepIndex][rand()%5]='1';
+				if(Data[MAX_DATA][3]=='1')Data[stepIndex][rand()%5]='1';
+				if(Data[MAX_DATA][4]=='1')Data[stepIndex][rand()%5]='1';
 			}
 		}
 		
 		if(g_p2.random)
 		{
-			if(!g_p1.random)srand((unsigned) time(&t));
+			if(!g_p1.random)srand((unsigned) time(&debugTime));
 			
-			for(i=0;i<MAX_DATA;i++)
+			for(stepIndex=0;stepIndex<MAX_DATA;stepIndex++)
 			{
-				Data1[MAX_DATA][5]=Data1[i][5];
-				Data1[MAX_DATA][6]=Data1[i][6];
-				Data1[MAX_DATA][7]=Data1[i][7];
-				Data1[MAX_DATA][8]=Data1[i][8];
-				Data1[MAX_DATA][9]=Data1[i][9];
+				Data1[MAX_DATA][5]=Data1[stepIndex][5];
+				Data1[MAX_DATA][6]=Data1[stepIndex][6];
+				Data1[MAX_DATA][7]=Data1[stepIndex][7];
+				Data1[MAX_DATA][8]=Data1[stepIndex][8];
+				Data1[MAX_DATA][9]=Data1[stepIndex][9];
 
-				if(Data1[i][0]=='2')break;
+				if(Data1[stepIndex][0]=='2')break;
 				
-				Data1[i][5]=Data1[i][6]=Data1[i][7]=Data1[i][8]=Data1[i][9]='0';
+				Data1[stepIndex][5]=Data1[stepIndex][6]=Data1[stepIndex][7]=Data1[stepIndex][8]=Data1[stepIndex][9]='0';
 
-				if(Data1[MAX_DATA][5]=='1')Data1[i][5+rand()%5]='1';
-				if(Data1[MAX_DATA][6]=='1')Data1[i][5+rand()%5]='1';
-				if(Data1[MAX_DATA][7]=='1')Data1[i][5+rand()%5]='1';
-				if(Data1[MAX_DATA][8]=='1')Data1[i][5+rand()%5]='1';
-				if(Data1[MAX_DATA][9]=='1')Data1[i][5+rand()%5]='1';
+				if(Data1[MAX_DATA][5]=='1')Data1[stepIndex][5+rand()%5]='1';
+				if(Data1[MAX_DATA][6]=='1')Data1[stepIndex][5+rand()%5]='1';
+				if(Data1[MAX_DATA][7]=='1')Data1[stepIndex][5+rand()%5]='1';
+				if(Data1[MAX_DATA][8]=='1')Data1[stepIndex][5+rand()%5]='1';
+				if(Data1[MAX_DATA][9]=='1')Data1[stepIndex][5+rand()%5]='1';
 			}
 		}
 
 		if(g_p1.mirror)
 		{
-			for(i=0;i<MAX_DATA;i++)
+			for(stepIndex=0;stepIndex<MAX_DATA;stepIndex++)
 			{
-				Data[MAX_DATA][0]=Data[i][0];
-				Data[MAX_DATA][1]=Data[i][1];
-				Data[MAX_DATA][2]=Data[i][2];
-				Data[MAX_DATA][3]=Data[i][3];
-				Data[MAX_DATA][4]=Data[i][4];
+				Data[MAX_DATA][0]=Data[stepIndex][0];
+				Data[MAX_DATA][1]=Data[stepIndex][1];
+				Data[MAX_DATA][2]=Data[stepIndex][2];
+				Data[MAX_DATA][3]=Data[stepIndex][3];
+				Data[MAX_DATA][4]=Data[stepIndex][4];
 
-				if(Data[i][0]=='2')break;
+				if(Data[stepIndex][0]=='2')break;
 
-				if(Data[MAX_DATA][0]=='1')Data[i][3]='1'; else Data[i][3]='0'; 
-				if(Data[MAX_DATA][1]=='1')Data[i][4]='1'; else Data[i][4]='0'; 
-				if(Data[MAX_DATA][2]=='1')Data[i][2]='1'; else Data[i][2]='0'; 
-				if(Data[MAX_DATA][3]=='1')Data[i][0]='1'; else Data[i][0]='0'; 
-				if(Data[MAX_DATA][4]=='1')Data[i][1]='1'; else Data[i][1]='0'; 
+				if(Data[MAX_DATA][0]=='1')Data[stepIndex][3]='1'; else Data[stepIndex][3]='0'; 
+				if(Data[MAX_DATA][1]=='1')Data[stepIndex][4]='1'; else Data[stepIndex][4]='0'; 
+				if(Data[MAX_DATA][2]=='1')Data[stepIndex][2]='1'; else Data[stepIndex][2]='0'; 
+				if(Data[MAX_DATA][3]=='1')Data[stepIndex][0]='1'; else Data[stepIndex][0]='0'; 
+				if(Data[MAX_DATA][4]=='1')Data[stepIndex][1]='1'; else Data[stepIndex][1]='0'; 
 
 			}
 		}
 		if(g_p2.mirror)
 		{
-			for(i=0;i<MAX_DATA;i++)
+			for(stepIndex=0;stepIndex<MAX_DATA;stepIndex++)
 			{
-				Data1[MAX_DATA][5]=Data1[i][5];
-				Data1[MAX_DATA][6]=Data1[i][6];
-				Data1[MAX_DATA][7]=Data1[i][7];
-				Data1[MAX_DATA][8]=Data1[i][8];
-				Data1[MAX_DATA][9]=Data1[i][9];
+				Data1[MAX_DATA][5]=Data1[stepIndex][5];
+				Data1[MAX_DATA][6]=Data1[stepIndex][6];
+				Data1[MAX_DATA][7]=Data1[stepIndex][7];
+				Data1[MAX_DATA][8]=Data1[stepIndex][8];
+				Data1[MAX_DATA][9]=Data1[stepIndex][9];
 
-				if(Data1[i][0]=='2')break;
+				if(Data1[stepIndex][0]=='2')break;
 
-				if(Data1[MAX_DATA][5]=='1')Data1[i][8]='1'; else Data1[i][8]='0'; 
-				if(Data1[MAX_DATA][6]=='1')Data1[i][9]='1'; else Data1[i][9]='0'; 
-				if(Data1[MAX_DATA][7]=='1')Data1[i][7]='1'; else Data1[i][7]='0'; 
-				if(Data1[MAX_DATA][8]=='1')Data1[i][5]='1'; else Data1[i][5]='0'; 
-				if(Data1[MAX_DATA][9]=='1')Data1[i][6]='1'; else Data1[i][6]='0'; 
+				if(Data1[MAX_DATA][5]=='1')Data1[stepIndex][8]='1'; else Data1[stepIndex][8]='0'; 
+				if(Data1[MAX_DATA][6]=='1')Data1[stepIndex][9]='1'; else Data1[stepIndex][9]='0'; 
+				if(Data1[MAX_DATA][7]=='1')Data1[stepIndex][7]='1'; else Data1[stepIndex][7]='0'; 
+				if(Data1[MAX_DATA][8]=='1')Data1[stepIndex][5]='1'; else Data1[stepIndex][5]='0'; 
+				if(Data1[MAX_DATA][9]=='1')Data1[stepIndex][6]='1'; else Data1[stepIndex][6]='0'; 
 
 			}
 		}
@@ -508,21 +509,21 @@ void KIU_STAGE(void)
 	
 		if(g_p1.nonstep)
 		{
-			for(i=0;i<MAX_DATA;i++)
+			for(stepIndex=0;stepIndex<MAX_DATA;stepIndex++)
 			{
-				if(!(Data[i][0]=='0' && Data[i][1]=='0' && Data[i][2]=='0' && Data[i][3]=='0' && Data[i][4]=='0'))
+				if(!(Data[stepIndex][0]=='0' && Data[stepIndex][1]=='0' && Data[stepIndex][2]=='0' && Data[stepIndex][3]=='0' && Data[stepIndex][4]=='0'))
 				{
-					i++;
-					for(;i<MAX_DATA;i++)
+					stepIndex++;
+					for(;stepIndex<MAX_DATA;stepIndex++)
 					{
-						if(Data[i][0]=='2')i=MAX_DATA;
+						if(Data[stepIndex][0]=='2')stepIndex=MAX_DATA;
 						else
 						{
-							Data[i][0]='3';
-							Data[i][1]='3';
-							Data[i][2]='3';
-							Data[i][3]='3';
-							Data[i][4]='3';
+							Data[stepIndex][0]='3';
+							Data[stepIndex][1]='3';
+							Data[stepIndex][2]='3';
+							Data[stepIndex][3]='3';
+							Data[stepIndex][4]='3';
 						}
 					}
 				}
@@ -531,21 +532,21 @@ void KIU_STAGE(void)
 		
 		if(g_p2.nonstep)
 		{
-			for(i=0;i<MAX_DATA;i++)
+			for(stepIndex=0;stepIndex<MAX_DATA;stepIndex++)
 			{
-				if(!(Data1[i][5]=='0' && Data1[i][6]=='0' && Data1[i][7]=='0' && Data1[i][8]=='0' && Data1[i][9]=='0'))
+				if(!(Data1[stepIndex][5]=='0' && Data1[stepIndex][6]=='0' && Data1[stepIndex][7]=='0' && Data1[stepIndex][8]=='0' && Data1[stepIndex][9]=='0'))
 				{
-					i++;
-					for(;i<MAX_DATA;i++)
+					stepIndex++;
+					for(;stepIndex<MAX_DATA;stepIndex++)
 					{
-						if(Data1[i][0]=='2')i=MAX_DATA;
+						if(Data1[stepIndex][0]=='2')stepIndex=MAX_DATA;
 						else
 						{
-							Data1[i][5]='3';
-							Data1[i][6]='3';
-							Data1[i][7]='3';
-							Data1[i][8]='3';
-							Data1[i][9]='3';
+							Data1[stepIndex][5]='3';
+							Data1[stepIndex][6]='3';
+							Data1[stepIndex][7]='3';
+							Data1[stepIndex][8]='3';
+							Data1[stepIndex][9]='3';
 						}
 					}
 				}
@@ -564,22 +565,22 @@ void KIU_STAGE(void)
 		start2*=10;start3*=10;
 		bunki*=10;bunki2*=10;
 		
-		last=cur=timeGetTime();
-		tail=0;
-		i=0;
-		temp=0;
+		lastTick=elapsed=timeGetTime();
+		fadeAlpha=0;
+		stepIndex=0;
+		arrowOffset=0;
 		start1++;
-		temp+=55;
+		arrowOffset+=55;
 		starttime=start;
 		curtime=0;
 	}
 	
-	cur=timeGetTime();        // 130/ 600000
-	delta=cur-last;
-	last=cur;
+	elapsed=timeGetTime();        // 130/ 600000
+	delta=elapsed-lastTick;
+	lastTick=elapsed;
 
-	if(g_p1.started)DrawArrow1p(i); //ȸ�� ȭ��ǥ�� ���մϴ�.
-	if(g_p2.started)DrawArrow2p(i);
+	if(g_p1.started)DrawArrow1p(stepIndex); //ȸ�� ȭ��ǥ�� ���մϴ�.
+	if(g_p2.started)DrawArrow2p(stepIndex);
 
 	start-=delta;
 
@@ -607,9 +608,9 @@ void KIU_STAGE(void)
 		start=0;
 		if(SongFlag)
 		{
-			i=0;
-			temp=+55;
-			tail=0;
+			stepIndex=0;
+			arrowOffset=+55;
+			fadeAlpha=0;
 
 			curtime=(uint32_t)(song->GetCurrentPosition()*1000);
 
@@ -619,37 +620,37 @@ void KIU_STAGE(void)
 		}
 
 		//1000 Tick�� 180/60 -> 1�ʿ� 64*(180/60)  �� 1 tick �� 64*(bpm/60)/1000
-		temp-=(int)(delta*bpmpix);
-		tail+=(double)((double)(delta*bpmpix)-(int)(delta*bpmpix));
+		arrowOffset-=(int)(delta*bpmpix);
+		fadeAlpha+=(double)((double)(delta*bpmpix)-(int)(delta*bpmpix));
 
-		if(tail>=1)
+		if(fadeAlpha>=1)
 		{
-			temp-=(int)tail;
-			tail-=(int)tail;
+			arrowOffset-=(int)fadeAlpha;
+			fadeAlpha-=(int)fadeAlpha;
 		}
 
-		if(temp<-100)
+		if(arrowOffset<-100)
 		{
-			while(temp<-100)
+			while(arrowOffset<-100)
 			{
-				temp+=(PUMP_SPRITE_Y);
+				arrowOffset+=(PUMP_SPRITE_Y);
 
-				i+=tick;
+				stepIndex+=tick;
 			}
 		}
 
 	}
-	if(timeGetTime()-sec>50)
+	if(timeGetTime()-tickTimer>50)
 	{
-		sec=timeGetTime();
-		if(sta==5)sta=0;
-		else sta++;
+		tickTimer=timeGetTime();
+		if(animFrame==5)animFrame=0;
+		else animFrame++;
 	}
 
 	if(g_p1.started)
 	for(k=0;k<48;k+=tick) 
 	{
-		if(Data[i][0]=='2' || Data[i+1][0]=='2' || Data[i+2][0]=='2' || Data[i+3][0]=='2')
+		if(Data[stepIndex][0]=='2' || Data[stepIndex+1][0]=='2' || Data[stepIndex+2][0]=='2' || Data[stepIndex+3][0]=='2')
 		{
 			k=48;
 			if(SongFlag)
@@ -665,241 +666,241 @@ void KIU_STAGE(void)
 
 		if(tick==2)
 		{
-			if(Data[i+k][0]=='1')
-				ClpBlt(LP1_X,(temp+PUMP_SPRITE_Y*k/2)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k][1]=='1')
-				ClpBlt(LP7_X,(temp+PUMP_SPRITE_Y*k/2)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k][2]=='1')
-				ClpBlt(LP5_X,(temp+PUMP_SPRITE_Y*k/2)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k][3]=='1')
-				ClpBlt(LP9_X,(temp+PUMP_SPRITE_Y*k/2)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k][4]=='1')
-				ClpBlt(LP3_X,(temp+PUMP_SPRITE_Y*k/2)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k][0]=='1')
+				ClpBlt(LP1_X,(arrowOffset+PUMP_SPRITE_Y*k/2)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k][1]=='1')
+				ClpBlt(LP7_X,(arrowOffset+PUMP_SPRITE_Y*k/2)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k][2]=='1')
+				ClpBlt(LP5_X,(arrowOffset+PUMP_SPRITE_Y*k/2)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k][3]=='1')
+				ClpBlt(LP9_X,(arrowOffset+PUMP_SPRITE_Y*k/2)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k][4]=='1')
+				ClpBlt(LP3_X,(arrowOffset+PUMP_SPRITE_Y*k/2)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			
-			Data_y[i+k]=(temp+PUMP_SPRITE_Y*k/2)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
+			Data_y[stepIndex+k]=(arrowOffset+PUMP_SPRITE_Y*k/2)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 			
-			if(Data[i+k+1][0]=='1')
-				ClpBlt(LP1_X,(25+temp+PUMP_SPRITE_Y*k/2)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+1][1]=='1')
-				ClpBlt(LP7_X,(25+temp+PUMP_SPRITE_Y*k/2)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+1][2]=='1')
-				ClpBlt(LP5_X,(25+temp+PUMP_SPRITE_Y*k/2)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+1][3]=='1')
-				ClpBlt(LP9_X,(25+temp+PUMP_SPRITE_Y*k/2)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+1][4]=='1')
-				ClpBlt(LP3_X,(25+temp+PUMP_SPRITE_Y*k/2)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+1][0]=='1')
+				ClpBlt(LP1_X,(25+arrowOffset+PUMP_SPRITE_Y*k/2)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+1][1]=='1')
+				ClpBlt(LP7_X,(25+arrowOffset+PUMP_SPRITE_Y*k/2)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+1][2]=='1')
+				ClpBlt(LP5_X,(25+arrowOffset+PUMP_SPRITE_Y*k/2)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+1][3]=='1')
+				ClpBlt(LP9_X,(25+arrowOffset+PUMP_SPRITE_Y*k/2)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+1][4]=='1')
+				ClpBlt(LP3_X,(25+arrowOffset+PUMP_SPRITE_Y*k/2)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
-			Data_y[i+k+1]=(25+temp+PUMP_SPRITE_Y*k/2)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
+			Data_y[stepIndex+k+1]=(25+arrowOffset+PUMP_SPRITE_Y*k/2)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
 			if(g_p1.suddenR)
 			{
-				if(Data_y[i+k]>240 && Data_y[i+k]<290)
+				if(Data_y[stepIndex+k]>240 && Data_y[stepIndex+k]<290)
 				{
-					Data[MAX_DATA][0]=Data[i+k][0];
-					Data[MAX_DATA][1]=Data[i+k][1];
-					Data[MAX_DATA][2]=Data[i+k][2];
-					Data[MAX_DATA][3]=Data[i+k][3];
-					Data[MAX_DATA][4]=Data[i+k][4];
+					Data[MAX_DATA][0]=Data[stepIndex+k][0];
+					Data[MAX_DATA][1]=Data[stepIndex+k][1];
+					Data[MAX_DATA][2]=Data[stepIndex+k][2];
+					Data[MAX_DATA][3]=Data[stepIndex+k][3];
+					Data[MAX_DATA][4]=Data[stepIndex+k][4];
 
 					if(Data[MAX_DATA][0]!='2')
 					{
-						Data[i+k][0]=Data[i+k][1]=Data[i+k][2]=Data[i+k][3]=Data[i+k][4]='0';
+						Data[stepIndex+k][0]=Data[stepIndex+k][1]=Data[stepIndex+k][2]=Data[stepIndex+k][3]=Data[stepIndex+k][4]='0';
 
-						if(Data[MAX_DATA][0]=='1')Data[i+k][rand()%5]='1';
-						if(Data[MAX_DATA][1]=='1')Data[i+k][rand()%5]='1';
-						if(Data[MAX_DATA][2]=='1')Data[i+k][rand()%5]='1';
-						if(Data[MAX_DATA][3]=='1')Data[i+k][rand()%5]='1';
-						if(Data[MAX_DATA][4]=='1')Data[i+k][rand()%5]='1';
+						if(Data[MAX_DATA][0]=='1')Data[stepIndex+k][rand()%5]='1';
+						if(Data[MAX_DATA][1]=='1')Data[stepIndex+k][rand()%5]='1';
+						if(Data[MAX_DATA][2]=='1')Data[stepIndex+k][rand()%5]='1';
+						if(Data[MAX_DATA][3]=='1')Data[stepIndex+k][rand()%5]='1';
+						if(Data[MAX_DATA][4]=='1')Data[stepIndex+k][rand()%5]='1';
 
-						Data_Judge[i+k][0]=Data[i+k][0];
-						Data_Judge[i+k][1]=Data[i+k][1];
-						Data_Judge[i+k][2]=Data[i+k][2];
-						Data_Judge[i+k][3]=Data[i+k][3];
-						Data_Judge[i+k][4]=Data[i+k][4];
+						Data_Judge[stepIndex+k][0]=Data[stepIndex+k][0];
+						Data_Judge[stepIndex+k][1]=Data[stepIndex+k][1];
+						Data_Judge[stepIndex+k][2]=Data[stepIndex+k][2];
+						Data_Judge[stepIndex+k][3]=Data[stepIndex+k][3];
+						Data_Judge[stepIndex+k][4]=Data[stepIndex+k][4];
 					}
 				}
 
-				if(Data_y[i+k+1]>240 && Data_y[i+k+1]<290)
+				if(Data_y[stepIndex+k+1]>240 && Data_y[stepIndex+k+1]<290)
 				{
-					Data[MAX_DATA][0]=Data[i+k+1][0];
-					Data[MAX_DATA][1]=Data[i+k+1][1];
-					Data[MAX_DATA][2]=Data[i+k+1][2];
-					Data[MAX_DATA][3]=Data[i+k+1][3];
-					Data[MAX_DATA][4]=Data[i+k+1][4];
+					Data[MAX_DATA][0]=Data[stepIndex+k+1][0];
+					Data[MAX_DATA][1]=Data[stepIndex+k+1][1];
+					Data[MAX_DATA][2]=Data[stepIndex+k+1][2];
+					Data[MAX_DATA][3]=Data[stepIndex+k+1][3];
+					Data[MAX_DATA][4]=Data[stepIndex+k+1][4];
 
 					if(Data[MAX_DATA][0]!='2')
 					{
-						Data[i+k+1][0]=Data[i+k+1][1]=Data[i+k+1][2]=Data[i+k+1][3]=Data[i+k+1][4]='0';
+						Data[stepIndex+k+1][0]=Data[stepIndex+k+1][1]=Data[stepIndex+k+1][2]=Data[stepIndex+k+1][3]=Data[stepIndex+k+1][4]='0';
 
-						if(Data[MAX_DATA][0]=='1')Data[i+k+1][rand()%5]='1';
-						if(Data[MAX_DATA][1]=='1')Data[i+k+1][rand()%5]='1';
-						if(Data[MAX_DATA][2]=='1')Data[i+k+1][rand()%5]='1';
-						if(Data[MAX_DATA][3]=='1')Data[i+k+1][rand()%5]='1';
-						if(Data[MAX_DATA][4]=='1')Data[i+k+1][rand()%5]='1';
+						if(Data[MAX_DATA][0]=='1')Data[stepIndex+k+1][rand()%5]='1';
+						if(Data[MAX_DATA][1]=='1')Data[stepIndex+k+1][rand()%5]='1';
+						if(Data[MAX_DATA][2]=='1')Data[stepIndex+k+1][rand()%5]='1';
+						if(Data[MAX_DATA][3]=='1')Data[stepIndex+k+1][rand()%5]='1';
+						if(Data[MAX_DATA][4]=='1')Data[stepIndex+k+1][rand()%5]='1';
 
-						Data_Judge[i+k+1][0]=Data[i+k+1][0];
-						Data_Judge[i+k+1][1]=Data[i+k+1][1];
-						Data_Judge[i+k+1][2]=Data[i+k+1][2];
-						Data_Judge[i+k+1][3]=Data[i+k+1][3];
-						Data_Judge[i+k+1][4]=Data[i+k+1][4];
+						Data_Judge[stepIndex+k+1][0]=Data[stepIndex+k+1][0];
+						Data_Judge[stepIndex+k+1][1]=Data[stepIndex+k+1][1];
+						Data_Judge[stepIndex+k+1][2]=Data[stepIndex+k+1][2];
+						Data_Judge[stepIndex+k+1][3]=Data[stepIndex+k+1][3];
+						Data_Judge[stepIndex+k+1][4]=Data[stepIndex+k+1][4];
 					}
 				}
 			}
 		}	
 		else if(tick==4)
 		{
-			if(Data[i+k][0]=='1')
-				ClpBlt(LP1_X,(temp+PUMP_SPRITE_Y*k/4)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k][1]=='1')
-				ClpBlt(LP7_X,(temp+PUMP_SPRITE_Y*k/4)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k][2]=='1')
-				ClpBlt(LP5_X,(temp+PUMP_SPRITE_Y*k/4)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k][3]=='1')
-				ClpBlt(LP9_X,(temp+PUMP_SPRITE_Y*k/4)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k][4]=='1')
-				ClpBlt(LP3_X,(temp+PUMP_SPRITE_Y*k/4)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k][0]=='1')
+				ClpBlt(LP1_X,(arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k][1]=='1')
+				ClpBlt(LP7_X,(arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k][2]=='1')
+				ClpBlt(LP5_X,(arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k][3]=='1')
+				ClpBlt(LP9_X,(arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k][4]=='1')
+				ClpBlt(LP3_X,(arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
-			Data_y[i+k]=(temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
+			Data_y[stepIndex+k]=(arrowOffset+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
-			if(Data[i+k+1][0]=='1')
-				ClpBlt(LP1_X,(12+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+1][1]=='1')
-				ClpBlt(LP7_X,(12+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+1][2]=='1')
-				ClpBlt(LP5_X,(12+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+1][3]=='1')
-				ClpBlt(LP9_X,(12+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+1][4]=='1')
-				ClpBlt(LP3_X,(12+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+1][0]=='1')
+				ClpBlt(LP1_X,(12+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+1][1]=='1')
+				ClpBlt(LP7_X,(12+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+1][2]=='1')
+				ClpBlt(LP5_X,(12+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+1][3]=='1')
+				ClpBlt(LP9_X,(12+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+1][4]=='1')
+				ClpBlt(LP3_X,(12+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
-			Data_y[i+k+1]=(12+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
+			Data_y[stepIndex+k+1]=(12+arrowOffset+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
-			if(Data[i+k+2][0]=='1')
-				ClpBlt(LP1_X,(25+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+2][1]=='1')
-				ClpBlt(LP7_X,(25+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+2][2]=='1')
-				ClpBlt(LP5_X,(25+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+2][3]=='1')
-				ClpBlt(LP9_X,(25+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+2][4]=='1')
-				ClpBlt(LP3_X,(25+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+2][0]=='1')
+				ClpBlt(LP1_X,(25+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+2][1]=='1')
+				ClpBlt(LP7_X,(25+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+2][2]=='1')
+				ClpBlt(LP5_X,(25+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+2][3]=='1')
+				ClpBlt(LP9_X,(25+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+2][4]=='1')
+				ClpBlt(LP3_X,(25+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
-			Data_y[i+k+2]=(25+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
+			Data_y[stepIndex+k+2]=(25+arrowOffset+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 		
-			if(Data[i+k+3][0]=='1')
-				ClpBlt(LP1_X,(38+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+3][1]=='1')
-				ClpBlt(LP7_X,(38+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+3][2]=='1')
-				ClpBlt(LP5_X,(38+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+3][3]=='1')
-				ClpBlt(LP9_X,(38+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data[i+k+3][4]=='1')
-				ClpBlt(LP3_X,(38+temp+PUMP_SPRITE_Y*k/4)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+3][0]=='1')
+				ClpBlt(LP1_X,(38+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed1-(PUMP_SPRITE_Y)*(g_p1.speed1-1),wArrow,&rect1[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+3][1]=='1')
+				ClpBlt(LP7_X,(38+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed7-(PUMP_SPRITE_Y)*(g_p1.speed7-1),wArrow,&rect7[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+3][2]=='1')
+				ClpBlt(LP5_X,(38+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed5-(PUMP_SPRITE_Y)*(g_p1.speed5-1),wArrow,&rect5[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+3][3]=='1')
+				ClpBlt(LP9_X,(38+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed9-(PUMP_SPRITE_Y)*(g_p1.speed9-1),wArrow,&rect9[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data[stepIndex+k+3][4]=='1')
+				ClpBlt(LP3_X,(38+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p1.speed3-(PUMP_SPRITE_Y)*(g_p1.speed3-1),wArrow,&rect3[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
-			Data_y[i+k+3]=(38+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
+			Data_y[stepIndex+k+3]=(38+arrowOffset+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
 			if(g_p1.suddenR)
 			{
-				if(Data_y[i+k]>240 && Data_y[i+k]<290)
+				if(Data_y[stepIndex+k]>240 && Data_y[stepIndex+k]<290)
 				{
-					Data[MAX_DATA][0]=Data[i+k][0];
-					Data[MAX_DATA][1]=Data[i+k][1];
-					Data[MAX_DATA][2]=Data[i+k][2];
-					Data[MAX_DATA][3]=Data[i+k][3];
-					Data[MAX_DATA][4]=Data[i+k][4];
+					Data[MAX_DATA][0]=Data[stepIndex+k][0];
+					Data[MAX_DATA][1]=Data[stepIndex+k][1];
+					Data[MAX_DATA][2]=Data[stepIndex+k][2];
+					Data[MAX_DATA][3]=Data[stepIndex+k][3];
+					Data[MAX_DATA][4]=Data[stepIndex+k][4];
 
 					if(Data[MAX_DATA][0]!='2')
 					{
-						Data[i+k][0]=Data[i+k][1]=Data[i+k][2]=Data[i+k][3]=Data[i+k][4]='0';
+						Data[stepIndex+k][0]=Data[stepIndex+k][1]=Data[stepIndex+k][2]=Data[stepIndex+k][3]=Data[stepIndex+k][4]='0';
 
-						if(Data[MAX_DATA][0]=='1')Data[i+k][rand()%5]='1';
-						if(Data[MAX_DATA][1]=='1')Data[i+k][rand()%5]='1';
-						if(Data[MAX_DATA][2]=='1')Data[i+k][rand()%5]='1';
-						if(Data[MAX_DATA][3]=='1')Data[i+k][rand()%5]='1';
-						if(Data[MAX_DATA][4]=='1')Data[i+k][rand()%5]='1';
+						if(Data[MAX_DATA][0]=='1')Data[stepIndex+k][rand()%5]='1';
+						if(Data[MAX_DATA][1]=='1')Data[stepIndex+k][rand()%5]='1';
+						if(Data[MAX_DATA][2]=='1')Data[stepIndex+k][rand()%5]='1';
+						if(Data[MAX_DATA][3]=='1')Data[stepIndex+k][rand()%5]='1';
+						if(Data[MAX_DATA][4]=='1')Data[stepIndex+k][rand()%5]='1';
 
-						Data_Judge[i+k][0]=Data[i+k][0];
-						Data_Judge[i+k][1]=Data[i+k][1];
-						Data_Judge[i+k][2]=Data[i+k][2];
-						Data_Judge[i+k][3]=Data[i+k][3];
-						Data_Judge[i+k][4]=Data[i+k][4];
+						Data_Judge[stepIndex+k][0]=Data[stepIndex+k][0];
+						Data_Judge[stepIndex+k][1]=Data[stepIndex+k][1];
+						Data_Judge[stepIndex+k][2]=Data[stepIndex+k][2];
+						Data_Judge[stepIndex+k][3]=Data[stepIndex+k][3];
+						Data_Judge[stepIndex+k][4]=Data[stepIndex+k][4];
 					}
 				}
-				if(Data_y[i+k+1]>240 && Data_y[i+k+1]<290)
+				if(Data_y[stepIndex+k+1]>240 && Data_y[stepIndex+k+1]<290)
 				{
-					Data[MAX_DATA][0]=Data[i+k+1][0];
-					Data[MAX_DATA][1]=Data[i+k+1][1];
-					Data[MAX_DATA][2]=Data[i+k+1][2];
-					Data[MAX_DATA][3]=Data[i+k+1][3];
-					Data[MAX_DATA][4]=Data[i+k+1][4];
+					Data[MAX_DATA][0]=Data[stepIndex+k+1][0];
+					Data[MAX_DATA][1]=Data[stepIndex+k+1][1];
+					Data[MAX_DATA][2]=Data[stepIndex+k+1][2];
+					Data[MAX_DATA][3]=Data[stepIndex+k+1][3];
+					Data[MAX_DATA][4]=Data[stepIndex+k+1][4];
 
 					if(Data[MAX_DATA][0]!='2')
 					{
-						Data[i+k+1][0]=Data[i+k+1][1]=Data[i+k+1][2]=Data[i+k+1][3]=Data[i+k+1][4]='0';
+						Data[stepIndex+k+1][0]=Data[stepIndex+k+1][1]=Data[stepIndex+k+1][2]=Data[stepIndex+k+1][3]=Data[stepIndex+k+1][4]='0';
 
-						if(Data[MAX_DATA][0]=='1')Data[i+k+1][rand()%5]='1';
-						if(Data[MAX_DATA][1]=='1')Data[i+k+1][rand()%5]='1';
-						if(Data[MAX_DATA][2]=='1')Data[i+k+1][rand()%5]='1';
-						if(Data[MAX_DATA][3]=='1')Data[i+k+1][rand()%5]='1';
-						if(Data[MAX_DATA][4]=='1')Data[i+k+1][rand()%5]='1';
+						if(Data[MAX_DATA][0]=='1')Data[stepIndex+k+1][rand()%5]='1';
+						if(Data[MAX_DATA][1]=='1')Data[stepIndex+k+1][rand()%5]='1';
+						if(Data[MAX_DATA][2]=='1')Data[stepIndex+k+1][rand()%5]='1';
+						if(Data[MAX_DATA][3]=='1')Data[stepIndex+k+1][rand()%5]='1';
+						if(Data[MAX_DATA][4]=='1')Data[stepIndex+k+1][rand()%5]='1';
 
-						Data_Judge[i+k+1][0]=Data[i+k+1][0];
-						Data_Judge[i+k+1][1]=Data[i+k+1][1];
-						Data_Judge[i+k+1][2]=Data[i+k+1][2];
-						Data_Judge[i+k+1][3]=Data[i+k+1][3];
-						Data_Judge[i+k+1][4]=Data[i+k+1][4];
+						Data_Judge[stepIndex+k+1][0]=Data[stepIndex+k+1][0];
+						Data_Judge[stepIndex+k+1][1]=Data[stepIndex+k+1][1];
+						Data_Judge[stepIndex+k+1][2]=Data[stepIndex+k+1][2];
+						Data_Judge[stepIndex+k+1][3]=Data[stepIndex+k+1][3];
+						Data_Judge[stepIndex+k+1][4]=Data[stepIndex+k+1][4];
 					}
 				}
-				if(Data_y[i+k+2]>240 && Data_y[i+k+2]<290)
+				if(Data_y[stepIndex+k+2]>240 && Data_y[stepIndex+k+2]<290)
 				{
-					Data[MAX_DATA][0]=Data[i+k+2][0];
-					Data[MAX_DATA][1]=Data[i+k+2][1];
-					Data[MAX_DATA][2]=Data[i+k+2][2];
-					Data[MAX_DATA][3]=Data[i+k+2][3];
-					Data[MAX_DATA][4]=Data[i+k+2][4];
+					Data[MAX_DATA][0]=Data[stepIndex+k+2][0];
+					Data[MAX_DATA][1]=Data[stepIndex+k+2][1];
+					Data[MAX_DATA][2]=Data[stepIndex+k+2][2];
+					Data[MAX_DATA][3]=Data[stepIndex+k+2][3];
+					Data[MAX_DATA][4]=Data[stepIndex+k+2][4];
 
 					if(Data[MAX_DATA][0]!='2')
 					{
-						Data[i+k+2][0]=Data[i+k+2][1]=Data[i+k+2][2]=Data[i+k+2][3]=Data[i+k+2][4]='0';
+						Data[stepIndex+k+2][0]=Data[stepIndex+k+2][1]=Data[stepIndex+k+2][2]=Data[stepIndex+k+2][3]=Data[stepIndex+k+2][4]='0';
 
-						if(Data[MAX_DATA][0]=='1')Data[i+k+2][rand()%5]='1';
-						if(Data[MAX_DATA][1]=='1')Data[i+k+2][rand()%5]='1';
-						if(Data[MAX_DATA][2]=='1')Data[i+k+2][rand()%5]='1';
-						if(Data[MAX_DATA][3]=='1')Data[i+k+2][rand()%5]='1';
-						if(Data[MAX_DATA][4]=='1')Data[i+k+2][rand()%5]='1';
+						if(Data[MAX_DATA][0]=='1')Data[stepIndex+k+2][rand()%5]='1';
+						if(Data[MAX_DATA][1]=='1')Data[stepIndex+k+2][rand()%5]='1';
+						if(Data[MAX_DATA][2]=='1')Data[stepIndex+k+2][rand()%5]='1';
+						if(Data[MAX_DATA][3]=='1')Data[stepIndex+k+2][rand()%5]='1';
+						if(Data[MAX_DATA][4]=='1')Data[stepIndex+k+2][rand()%5]='1';
 
-						Data_Judge[i+k+2][0]=Data[i+k+2][0];
-						Data_Judge[i+k+2][1]=Data[i+k+2][1];
-						Data_Judge[i+k+2][2]=Data[i+k+2][2];
-						Data_Judge[i+k+2][3]=Data[i+k+2][3];
-						Data_Judge[i+k+2][4]=Data[i+k+2][4];
+						Data_Judge[stepIndex+k+2][0]=Data[stepIndex+k+2][0];
+						Data_Judge[stepIndex+k+2][1]=Data[stepIndex+k+2][1];
+						Data_Judge[stepIndex+k+2][2]=Data[stepIndex+k+2][2];
+						Data_Judge[stepIndex+k+2][3]=Data[stepIndex+k+2][3];
+						Data_Judge[stepIndex+k+2][4]=Data[stepIndex+k+2][4];
 					}
 				}
-				if(Data_y[i+k+3]>240 && Data_y[i+k+3]<290)
+				if(Data_y[stepIndex+k+3]>240 && Data_y[stepIndex+k+3]<290)
 				{
-					Data[MAX_DATA][0]=Data[i+k+3][0];
-					Data[MAX_DATA][1]=Data[i+k+3][1];
-					Data[MAX_DATA][2]=Data[i+k+3][2];
-					Data[MAX_DATA][3]=Data[i+k+3][3];
-					Data[MAX_DATA][4]=Data[i+k+3][4];
+					Data[MAX_DATA][0]=Data[stepIndex+k+3][0];
+					Data[MAX_DATA][1]=Data[stepIndex+k+3][1];
+					Data[MAX_DATA][2]=Data[stepIndex+k+3][2];
+					Data[MAX_DATA][3]=Data[stepIndex+k+3][3];
+					Data[MAX_DATA][4]=Data[stepIndex+k+3][4];
 
 					if(Data[MAX_DATA][0]!='2')
 					{
-						Data[i+k+3][0]=Data[i+k+3][1]=Data[i+k+3][2]=Data[i+k+3][3]=Data[i+k+3][4]='0';
+						Data[stepIndex+k+3][0]=Data[stepIndex+k+3][1]=Data[stepIndex+k+3][2]=Data[stepIndex+k+3][3]=Data[stepIndex+k+3][4]='0';
 
-						if(Data[MAX_DATA][0]=='1')Data[i+k+3][rand()%5]='1';
-						if(Data[MAX_DATA][1]=='1')Data[i+k+3][rand()%5]='1';
-						if(Data[MAX_DATA][2]=='1')Data[i+k+3][rand()%5]='1';
-						if(Data[MAX_DATA][3]=='1')Data[i+k+3][rand()%5]='1';
-						if(Data[MAX_DATA][4]=='1')Data[i+k+3][rand()%5]='1';
+						if(Data[MAX_DATA][0]=='1')Data[stepIndex+k+3][rand()%5]='1';
+						if(Data[MAX_DATA][1]=='1')Data[stepIndex+k+3][rand()%5]='1';
+						if(Data[MAX_DATA][2]=='1')Data[stepIndex+k+3][rand()%5]='1';
+						if(Data[MAX_DATA][3]=='1')Data[stepIndex+k+3][rand()%5]='1';
+						if(Data[MAX_DATA][4]=='1')Data[stepIndex+k+3][rand()%5]='1';
 
-						Data_Judge[i+k+3][0]=Data[i+k+3][0];
-						Data_Judge[i+k+3][1]=Data[i+k+3][1];
-						Data_Judge[i+k+3][2]=Data[i+k+3][2];
-						Data_Judge[i+k+3][3]=Data[i+k+3][3];
-						Data_Judge[i+k+3][4]=Data[i+k+3][4];
+						Data_Judge[stepIndex+k+3][0]=Data[stepIndex+k+3][0];
+						Data_Judge[stepIndex+k+3][1]=Data[stepIndex+k+3][1];
+						Data_Judge[stepIndex+k+3][2]=Data[stepIndex+k+3][2];
+						Data_Judge[stepIndex+k+3][3]=Data[stepIndex+k+3][3];
+						Data_Judge[stepIndex+k+3][4]=Data[stepIndex+k+3][4];
 					}
 				}
 			}
@@ -909,7 +910,7 @@ void KIU_STAGE(void)
 	if(g_p2.started)
 	for(k=0;k<48;k+=tick) 
 	{
-		if(Data1[i][0]=='2' || Data1[i+1][0]=='2' || Data1[i+2][0]=='2' || Data1[i+3][0]=='2')
+		if(Data1[stepIndex][0]=='2' || Data1[stepIndex+1][0]=='2' || Data1[stepIndex+2][0]=='2' || Data1[stepIndex+3][0]=='2')
 		{
 			k=48;
 			if(SongFlag)
@@ -925,82 +926,82 @@ void KIU_STAGE(void)
 
 		if(tick==2)
 		{
-			if(Data1[i+k][5]=='1')
-				ClpBlt(LP1_X1,(temp+PUMP_SPRITE_Y*k/2)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k][6]=='1')
-				ClpBlt(LP7_X1,(temp+PUMP_SPRITE_Y*k/2)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k][7]=='1')
-				ClpBlt(LP5_X1,(temp+PUMP_SPRITE_Y*k/2)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k][8]=='1')
-				ClpBlt(LP9_X1,(temp+PUMP_SPRITE_Y*k/2)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k][9]=='1')
-				ClpBlt(LP3_X1,(temp+PUMP_SPRITE_Y*k/2)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k][5]=='1')
+				ClpBlt(LP1_X1,(arrowOffset+PUMP_SPRITE_Y*k/2)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k][6]=='1')
+				ClpBlt(LP7_X1,(arrowOffset+PUMP_SPRITE_Y*k/2)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k][7]=='1')
+				ClpBlt(LP5_X1,(arrowOffset+PUMP_SPRITE_Y*k/2)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k][8]=='1')
+				ClpBlt(LP9_X1,(arrowOffset+PUMP_SPRITE_Y*k/2)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k][9]=='1')
+				ClpBlt(LP3_X1,(arrowOffset+PUMP_SPRITE_Y*k/2)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 			
-			Data_y1[i+k]=(temp+PUMP_SPRITE_Y*k/2)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
+			Data_y1[stepIndex+k]=(arrowOffset+PUMP_SPRITE_Y*k/2)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 			
-			if(Data1[i+k+1][5]=='1')
-				ClpBlt(LP1_X1,(25+temp+PUMP_SPRITE_Y*k/2)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+1][6]=='1')
-				ClpBlt(LP7_X1,(25+temp+PUMP_SPRITE_Y*k/2)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+1][7]=='1')
-				ClpBlt(LP5_X1,(25+temp+PUMP_SPRITE_Y*k/2)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+1][8]=='1')
-				ClpBlt(LP9_X1,(25+temp+PUMP_SPRITE_Y*k/2)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+1][9]=='1')
-				ClpBlt(LP3_X1,(25+temp+PUMP_SPRITE_Y*k/2)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+1][5]=='1')
+				ClpBlt(LP1_X1,(25+arrowOffset+PUMP_SPRITE_Y*k/2)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+1][6]=='1')
+				ClpBlt(LP7_X1,(25+arrowOffset+PUMP_SPRITE_Y*k/2)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+1][7]=='1')
+				ClpBlt(LP5_X1,(25+arrowOffset+PUMP_SPRITE_Y*k/2)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+1][8]=='1')
+				ClpBlt(LP9_X1,(25+arrowOffset+PUMP_SPRITE_Y*k/2)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+1][9]=='1')
+				ClpBlt(LP3_X1,(25+arrowOffset+PUMP_SPRITE_Y*k/2)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
-			Data_y1[i+k+1]=(25+temp+PUMP_SPRITE_Y*k/2)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
+			Data_y1[stepIndex+k+1]=(25+arrowOffset+PUMP_SPRITE_Y*k/2)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
 			if(g_p2.suddenR)
 			{
-				if(Data_y1[i+k]>240 && Data_y1[i+k]<290)
+				if(Data_y1[stepIndex+k]>240 && Data_y1[stepIndex+k]<290)
 				{
-					Data1[MAX_DATA][5]=Data1[i+k][5];
-					Data1[MAX_DATA][6]=Data1[i+k][6];
-					Data1[MAX_DATA][7]=Data1[i+k][7];
-					Data1[MAX_DATA][8]=Data1[i+k][8];
-					Data1[MAX_DATA][9]=Data1[i+k][9];
+					Data1[MAX_DATA][5]=Data1[stepIndex+k][5];
+					Data1[MAX_DATA][6]=Data1[stepIndex+k][6];
+					Data1[MAX_DATA][7]=Data1[stepIndex+k][7];
+					Data1[MAX_DATA][8]=Data1[stepIndex+k][8];
+					Data1[MAX_DATA][9]=Data1[stepIndex+k][9];
 
 					if(Data1[MAX_DATA][0]!='2')
 					{
-						Data1[i+k][5]=Data1[i+k][6]=Data1[i+k][7]=Data1[i+k][8]=Data1[i+k][9]='0';
+						Data1[stepIndex+k][5]=Data1[stepIndex+k][6]=Data1[stepIndex+k][7]=Data1[stepIndex+k][8]=Data1[stepIndex+k][9]='0';
 
-						if(Data1[MAX_DATA][5]=='1')Data1[i+k][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][6]=='1')Data1[i+k][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][7]=='1')Data1[i+k][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][8]=='1')Data1[i+k][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][9]=='1')Data1[i+k][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][5]=='1')Data1[stepIndex+k][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][6]=='1')Data1[stepIndex+k][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][7]=='1')Data1[stepIndex+k][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][8]=='1')Data1[stepIndex+k][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][9]=='1')Data1[stepIndex+k][5 + rand()%5]='1';
 
-						Data_Judge1[i+k][5]=Data1[i+k][5];
-						Data_Judge1[i+k][6]=Data1[i+k][6];
-						Data_Judge1[i+k][7]=Data1[i+k][7];
-						Data_Judge1[i+k][8]=Data1[i+k][8];
-						Data_Judge1[i+k][9]=Data1[i+k][9];
+						Data_Judge1[stepIndex+k][5]=Data1[stepIndex+k][5];
+						Data_Judge1[stepIndex+k][6]=Data1[stepIndex+k][6];
+						Data_Judge1[stepIndex+k][7]=Data1[stepIndex+k][7];
+						Data_Judge1[stepIndex+k][8]=Data1[stepIndex+k][8];
+						Data_Judge1[stepIndex+k][9]=Data1[stepIndex+k][9];
 					}
 				}
-				if(Data_y1[i+k+1]>240 && Data_y1[i+k+1]<290)
+				if(Data_y1[stepIndex+k+1]>240 && Data_y1[stepIndex+k+1]<290)
 				{
-					Data1[MAX_DATA][5]=Data1[i+k+1][5];
-					Data1[MAX_DATA][6]=Data1[i+k+1][6];
-					Data1[MAX_DATA][7]=Data1[i+k+1][7];
-					Data1[MAX_DATA][8]=Data1[i+k+1][8];
-					Data1[MAX_DATA][9]=Data1[i+k+1][9];
+					Data1[MAX_DATA][5]=Data1[stepIndex+k+1][5];
+					Data1[MAX_DATA][6]=Data1[stepIndex+k+1][6];
+					Data1[MAX_DATA][7]=Data1[stepIndex+k+1][7];
+					Data1[MAX_DATA][8]=Data1[stepIndex+k+1][8];
+					Data1[MAX_DATA][9]=Data1[stepIndex+k+1][9];
 
 					if(Data1[MAX_DATA][0]!='2')
 					{
-						Data1[i+k+1][5]=Data1[i+k+1][6]=Data1[i+k+1][7]=Data1[i+k+1][8]=Data1[i+k+1][9]='0';
+						Data1[stepIndex+k+1][5]=Data1[stepIndex+k+1][6]=Data1[stepIndex+k+1][7]=Data1[stepIndex+k+1][8]=Data1[stepIndex+k+1][9]='0';
 
-						if(Data1[MAX_DATA][5]=='1')Data1[i+k+1][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][6]=='1')Data1[i+k+1][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][7]=='1')Data1[i+k+1][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][8]=='1')Data1[i+k+1][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][9]=='1')Data1[i+k+1][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][5]=='1')Data1[stepIndex+k+1][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][6]=='1')Data1[stepIndex+k+1][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][7]=='1')Data1[stepIndex+k+1][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][8]=='1')Data1[stepIndex+k+1][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][9]=='1')Data1[stepIndex+k+1][5 + rand()%5]='1';
 
-						Data_Judge1[i+k+1][5]=Data1[i+k+1][5];
-						Data_Judge1[i+k+1][6]=Data1[i+k+1][6];
-						Data_Judge1[i+k+1][7]=Data1[i+k+1][7];
-						Data_Judge1[i+k+1][8]=Data1[i+k+1][8];
-						Data_Judge1[i+k+1][9]=Data1[i+k+1][9];
+						Data_Judge1[stepIndex+k+1][5]=Data1[stepIndex+k+1][5];
+						Data_Judge1[stepIndex+k+1][6]=Data1[stepIndex+k+1][6];
+						Data_Judge1[stepIndex+k+1][7]=Data1[stepIndex+k+1][7];
+						Data_Judge1[stepIndex+k+1][8]=Data1[stepIndex+k+1][8];
+						Data_Judge1[stepIndex+k+1][9]=Data1[stepIndex+k+1][9];
 					}
 				}
 			}
@@ -1008,158 +1009,158 @@ void KIU_STAGE(void)
 		else if(tick==4)
 		{
 
-			if(Data1[i+k][5]=='1')
-				ClpBlt(LP1_X1,(temp+PUMP_SPRITE_Y*k/4)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k][6]=='1')
-				ClpBlt(LP7_X1,(temp+PUMP_SPRITE_Y*k/4)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k][7]=='1')
-				ClpBlt(LP5_X1,(temp+PUMP_SPRITE_Y*k/4)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k][8]=='1')
-				ClpBlt(LP9_X1,(temp+PUMP_SPRITE_Y*k/4)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k][9]=='1')
-				ClpBlt(LP3_X1,(temp+PUMP_SPRITE_Y*k/4)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k][5]=='1')
+				ClpBlt(LP1_X1,(arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k][6]=='1')
+				ClpBlt(LP7_X1,(arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k][7]=='1')
+				ClpBlt(LP5_X1,(arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k][8]=='1')
+				ClpBlt(LP9_X1,(arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k][9]=='1')
+				ClpBlt(LP3_X1,(arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
-			Data_y1[i+k]=(temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
+			Data_y1[stepIndex+k]=(arrowOffset+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
-			if(Data1[i+k+1][5]=='1')
-				ClpBlt(LP1_X1,(12+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+1][6]=='1')
-				ClpBlt(LP7_X1,(12+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+1][7]=='1')
-				ClpBlt(LP5_X1,(12+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+1][8]=='1')
-				ClpBlt(LP9_X1,(12+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+1][9]=='1')
-				ClpBlt(LP3_X1,(12+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+1][5]=='1')
+				ClpBlt(LP1_X1,(12+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+1][6]=='1')
+				ClpBlt(LP7_X1,(12+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+1][7]=='1')
+				ClpBlt(LP5_X1,(12+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+1][8]=='1')
+				ClpBlt(LP9_X1,(12+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+1][9]=='1')
+				ClpBlt(LP3_X1,(12+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
-			Data_y1[i+k+1]=(12+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
+			Data_y1[stepIndex+k+1]=(12+arrowOffset+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
-			if(Data1[i+k+2][5]=='1')
-				ClpBlt(LP1_X1,(25+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+2][6]=='1')
-				ClpBlt(LP7_X1,(25+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+2][7]=='1')
-				ClpBlt(LP5_X1,(25+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+2][8]=='1')
-				ClpBlt(LP9_X1,(25+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+2][9]=='1')
-				ClpBlt(LP3_X1,(25+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+2][5]=='1')
+				ClpBlt(LP1_X1,(25+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+2][6]=='1')
+				ClpBlt(LP7_X1,(25+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+2][7]=='1')
+				ClpBlt(LP5_X1,(25+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+2][8]=='1')
+				ClpBlt(LP9_X1,(25+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+2][9]=='1')
+				ClpBlt(LP3_X1,(25+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
-			Data_y1[i+k+2]=(25+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
+			Data_y1[stepIndex+k+2]=(25+arrowOffset+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 		
-			if(Data1[i+k+3][5]=='1')
-				ClpBlt(LP1_X1,(38+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+3][6]=='1')
-				ClpBlt(LP7_X1,(38+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+3][7]=='1')
-				ClpBlt(LP5_X1,(38+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+3][8]=='1')
-				ClpBlt(LP9_X1,(38+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
-			if(Data1[i+k+3][9]=='1')
-				ClpBlt(LP3_X1,(38+temp+PUMP_SPRITE_Y*k/4)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[sta],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+3][5]=='1')
+				ClpBlt(LP1_X1,(38+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed1-(PUMP_SPRITE_Y)*(g_p2.speed1-1),wArrow,&rect1[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+3][6]=='1')
+				ClpBlt(LP7_X1,(38+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed7-(PUMP_SPRITE_Y)*(g_p2.speed7-1),wArrow,&rect7[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+3][7]=='1')
+				ClpBlt(LP5_X1,(38+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed5-(PUMP_SPRITE_Y)*(g_p2.speed5-1),wArrow,&rect5[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+3][8]=='1')
+				ClpBlt(LP9_X1,(38+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed9-(PUMP_SPRITE_Y)*(g_p2.speed9-1),wArrow,&rect9[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
+			if(Data1[stepIndex+k+3][9]=='1')
+				ClpBlt(LP3_X1,(38+arrowOffset+PUMP_SPRITE_Y*k/4)*g_p2.speed3-(PUMP_SPRITE_Y)*(g_p2.speed3-1),wArrow,&rect3[animFrame],DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY );
 
-			Data_y1[i+k+3]=(38+temp+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
+			Data_y1[stepIndex+k+3]=(38+arrowOffset+PUMP_SPRITE_Y*k/4)*MinSpeed-(PUMP_SPRITE_Y)*(MinSpeed-1);
 
 			if(g_p2.suddenR)
 			{
-				if(Data_y1[i+k]>240 && Data_y1[i+k]<290)
+				if(Data_y1[stepIndex+k]>240 && Data_y1[stepIndex+k]<290)
 				{
-					Data1[MAX_DATA][5]=Data1[i+k][5];
-					Data1[MAX_DATA][6]=Data1[i+k][6];
-					Data1[MAX_DATA][7]=Data1[i+k][7];
-					Data1[MAX_DATA][8]=Data1[i+k][8];
-					Data1[MAX_DATA][9]=Data1[i+k][9];
+					Data1[MAX_DATA][5]=Data1[stepIndex+k][5];
+					Data1[MAX_DATA][6]=Data1[stepIndex+k][6];
+					Data1[MAX_DATA][7]=Data1[stepIndex+k][7];
+					Data1[MAX_DATA][8]=Data1[stepIndex+k][8];
+					Data1[MAX_DATA][9]=Data1[stepIndex+k][9];
 
 					if(Data1[MAX_DATA][0]!='2')
 					{
-						Data1[i+k][5]=Data1[i+k][6]=Data1[i+k][7]=Data1[i+k][8]=Data1[i+k][9]='0';
+						Data1[stepIndex+k][5]=Data1[stepIndex+k][6]=Data1[stepIndex+k][7]=Data1[stepIndex+k][8]=Data1[stepIndex+k][9]='0';
 
-						if(Data1[MAX_DATA][5]=='1')Data1[i+k][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][6]=='1')Data1[i+k][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][7]=='1')Data1[i+k][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][8]=='1')Data1[i+k][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][9]=='1')Data1[i+k][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][5]=='1')Data1[stepIndex+k][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][6]=='1')Data1[stepIndex+k][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][7]=='1')Data1[stepIndex+k][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][8]=='1')Data1[stepIndex+k][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][9]=='1')Data1[stepIndex+k][5 + rand()%5]='1';
 
-						Data_Judge1[i+k][5]=Data1[i+k][5];
-						Data_Judge1[i+k][6]=Data1[i+k][6];
-						Data_Judge1[i+k][7]=Data1[i+k][7];
-						Data_Judge1[i+k][8]=Data1[i+k][8];
-						Data_Judge1[i+k][9]=Data1[i+k][9];
+						Data_Judge1[stepIndex+k][5]=Data1[stepIndex+k][5];
+						Data_Judge1[stepIndex+k][6]=Data1[stepIndex+k][6];
+						Data_Judge1[stepIndex+k][7]=Data1[stepIndex+k][7];
+						Data_Judge1[stepIndex+k][8]=Data1[stepIndex+k][8];
+						Data_Judge1[stepIndex+k][9]=Data1[stepIndex+k][9];
 					}
 				}
-				if(Data_y1[i+k+1]>240 && Data_y1[i+k+1]<290)
+				if(Data_y1[stepIndex+k+1]>240 && Data_y1[stepIndex+k+1]<290)
 				{
-					Data1[MAX_DATA][5]=Data1[i+k+1][5];
-					Data1[MAX_DATA][6]=Data1[i+k+1][6];
-					Data1[MAX_DATA][7]=Data1[i+k+1][7];
-					Data1[MAX_DATA][8]=Data1[i+k+1][8];
-					Data1[MAX_DATA][9]=Data1[i+k+1][9];
+					Data1[MAX_DATA][5]=Data1[stepIndex+k+1][5];
+					Data1[MAX_DATA][6]=Data1[stepIndex+k+1][6];
+					Data1[MAX_DATA][7]=Data1[stepIndex+k+1][7];
+					Data1[MAX_DATA][8]=Data1[stepIndex+k+1][8];
+					Data1[MAX_DATA][9]=Data1[stepIndex+k+1][9];
 
 					if(Data1[MAX_DATA][0]!='2')
 					{
-						Data1[i+k+1][5]=Data1[i+k+1][6]=Data1[i+k+1][7]=Data1[i+k+1][8]=Data1[i+k+1][9]='0';
+						Data1[stepIndex+k+1][5]=Data1[stepIndex+k+1][6]=Data1[stepIndex+k+1][7]=Data1[stepIndex+k+1][8]=Data1[stepIndex+k+1][9]='0';
 
-						if(Data1[MAX_DATA][5]=='1')Data1[i+k+1][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][6]=='1')Data1[i+k+1][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][7]=='1')Data1[i+k+1][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][8]=='1')Data1[i+k+1][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][9]=='1')Data1[i+k+1][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][5]=='1')Data1[stepIndex+k+1][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][6]=='1')Data1[stepIndex+k+1][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][7]=='1')Data1[stepIndex+k+1][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][8]=='1')Data1[stepIndex+k+1][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][9]=='1')Data1[stepIndex+k+1][5 + rand()%5]='1';
 
-						Data_Judge1[i+k+1][5]=Data1[i+k+1][5];
-						Data_Judge1[i+k+1][6]=Data1[i+k+1][6];
-						Data_Judge1[i+k+1][7]=Data1[i+k+1][7];
-						Data_Judge1[i+k+1][8]=Data1[i+k+1][8];
-						Data_Judge1[i+k+1][9]=Data1[i+k+1][9];
+						Data_Judge1[stepIndex+k+1][5]=Data1[stepIndex+k+1][5];
+						Data_Judge1[stepIndex+k+1][6]=Data1[stepIndex+k+1][6];
+						Data_Judge1[stepIndex+k+1][7]=Data1[stepIndex+k+1][7];
+						Data_Judge1[stepIndex+k+1][8]=Data1[stepIndex+k+1][8];
+						Data_Judge1[stepIndex+k+1][9]=Data1[stepIndex+k+1][9];
 					}
 				}
-				if(Data_y1[i+k+2]>240 && Data_y1[i+k+2]<290)
+				if(Data_y1[stepIndex+k+2]>240 && Data_y1[stepIndex+k+2]<290)
 				{
-					Data1[MAX_DATA][5]=Data1[i+k+2][5];
-					Data1[MAX_DATA][6]=Data1[i+k+2][6];
-					Data1[MAX_DATA][7]=Data1[i+k+2][7];
-					Data1[MAX_DATA][8]=Data1[i+k+2][8];
-					Data1[MAX_DATA][9]=Data1[i+k+2][9];
+					Data1[MAX_DATA][5]=Data1[stepIndex+k+2][5];
+					Data1[MAX_DATA][6]=Data1[stepIndex+k+2][6];
+					Data1[MAX_DATA][7]=Data1[stepIndex+k+2][7];
+					Data1[MAX_DATA][8]=Data1[stepIndex+k+2][8];
+					Data1[MAX_DATA][9]=Data1[stepIndex+k+2][9];
 
 					if(Data1[MAX_DATA][0]!='2')
 					{
-						Data1[i+k+2][5]=Data1[i+k+2][6]=Data1[i+k+2][7]=Data1[i+k+2][8]=Data1[i+k+2][9]='0';
+						Data1[stepIndex+k+2][5]=Data1[stepIndex+k+2][6]=Data1[stepIndex+k+2][7]=Data1[stepIndex+k+2][8]=Data1[stepIndex+k+2][9]='0';
 
-						if(Data1[MAX_DATA][5]=='1')Data1[i+k+2][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][6]=='1')Data1[i+k+2][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][7]=='1')Data1[i+k+2][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][8]=='1')Data1[i+k+2][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][9]=='1')Data1[i+k+2][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][5]=='1')Data1[stepIndex+k+2][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][6]=='1')Data1[stepIndex+k+2][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][7]=='1')Data1[stepIndex+k+2][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][8]=='1')Data1[stepIndex+k+2][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][9]=='1')Data1[stepIndex+k+2][5 + rand()%5]='1';
 
-						Data_Judge1[i+k+2][5]=Data1[i+k+2][5];
-						Data_Judge1[i+k+2][6]=Data1[i+k+2][6];
-						Data_Judge1[i+k+2][7]=Data1[i+k+2][7];
-						Data_Judge1[i+k+2][8]=Data1[i+k+2][8];
-						Data_Judge1[i+k+2][9]=Data1[i+k+2][9];
+						Data_Judge1[stepIndex+k+2][5]=Data1[stepIndex+k+2][5];
+						Data_Judge1[stepIndex+k+2][6]=Data1[stepIndex+k+2][6];
+						Data_Judge1[stepIndex+k+2][7]=Data1[stepIndex+k+2][7];
+						Data_Judge1[stepIndex+k+2][8]=Data1[stepIndex+k+2][8];
+						Data_Judge1[stepIndex+k+2][9]=Data1[stepIndex+k+2][9];
 					}
 				}
-				if(Data_y1[i+k+3]>240 && Data_y1[i+k+3]<290)
+				if(Data_y1[stepIndex+k+3]>240 && Data_y1[stepIndex+k+3]<290)
 				{
-					Data1[MAX_DATA][5]=Data1[i+k+3][5];
-					Data1[MAX_DATA][6]=Data1[i+k+3][6];
-					Data1[MAX_DATA][7]=Data1[i+k+3][7];
-					Data1[MAX_DATA][8]=Data1[i+k+3][8];
-					Data1[MAX_DATA][9]=Data1[i+k+3][9];
+					Data1[MAX_DATA][5]=Data1[stepIndex+k+3][5];
+					Data1[MAX_DATA][6]=Data1[stepIndex+k+3][6];
+					Data1[MAX_DATA][7]=Data1[stepIndex+k+3][7];
+					Data1[MAX_DATA][8]=Data1[stepIndex+k+3][8];
+					Data1[MAX_DATA][9]=Data1[stepIndex+k+3][9];
 
 					if(Data1[MAX_DATA][0]!='2')
 					{
-						Data1[i+k+3][5]=Data1[i+k+3][6]=Data1[i+k+3][7]=Data1[i+k+3][8]=Data1[i+k+3][9]='0';
+						Data1[stepIndex+k+3][5]=Data1[stepIndex+k+3][6]=Data1[stepIndex+k+3][7]=Data1[stepIndex+k+3][8]=Data1[stepIndex+k+3][9]='0';
 
-						if(Data1[MAX_DATA][5]=='1')Data1[i+k+3][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][6]=='1')Data1[i+k+3][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][7]=='1')Data1[i+k+3][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][8]=='1')Data1[i+k+3][5 + rand()%5]='1';
-						if(Data1[MAX_DATA][9]=='1')Data1[i+k+3][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][5]=='1')Data1[stepIndex+k+3][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][6]=='1')Data1[stepIndex+k+3][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][7]=='1')Data1[stepIndex+k+3][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][8]=='1')Data1[stepIndex+k+3][5 + rand()%5]='1';
+						if(Data1[MAX_DATA][9]=='1')Data1[stepIndex+k+3][5 + rand()%5]='1';
 
-						Data_Judge1[i+k+3][5]=Data1[i+k+3][5];
-						Data_Judge1[i+k+3][6]=Data1[i+k+3][6];
-						Data_Judge1[i+k+3][7]=Data1[i+k+3][7];
-						Data_Judge1[i+k+3][8]=Data1[i+k+3][8];
-						Data_Judge1[i+k+3][9]=Data1[i+k+3][9];
+						Data_Judge1[stepIndex+k+3][5]=Data1[stepIndex+k+3][5];
+						Data_Judge1[stepIndex+k+3][6]=Data1[stepIndex+k+3][6];
+						Data_Judge1[stepIndex+k+3][7]=Data1[stepIndex+k+3][7];
+						Data_Judge1[stepIndex+k+3][8]=Data1[stepIndex+k+3][8];
+						Data_Judge1[stepIndex+k+3][9]=Data1[stepIndex+k+3][9];
 					}
 				}
 			}
@@ -1609,13 +1610,14 @@ void DrawJudge2p(void)
 }
 
 
+static const int ARROW_L[20]={0,0,72,72,144,144,216,216,288,288,360,360,432,432,504,504,576,576,648,648};
+static const int ARROW_R[20]={72,72,144,144,216,216,288,288,360,360,432,432,504,504,576,576,648,648,720,720};
+static const int CARROW_L[20]={0,0,80,80,160,160,240,240,320,320,400,400,480,480,560,560,640,640};
+static const int CARROW_R[20]={80,80,160,160,240,240,320,320,400,400,480,480,560,560,640,640,720,720};
+
 void DrawArrow1p(uint32_t cur)
 {
-	static int arrow_l[20]={0,0,72,72,144,144,216,216,288,288,360,360,432,432,504,504,576,576,648,648};
-	static int arrow_r[20]={72,72,144,144,216,216,288,288,360,360,432,432,504,504,576,576,648,648,720,720};
 
-	static int Carrow_l[20]={0,0,80,80,160,160,240,240,320,320,400,400,480,480,560,560,640,640};
-	static int Carrow_r[20]={80,80,160,160,240,240,320,320,400,400,480,480,560,560,640,640,720,720};
 
 	static uint8_t s1,s3,s5,s7,s9;
 	static uint32_t stat1,stat3,stat5,stat7,stat9;
@@ -2333,53 +2335,53 @@ void DrawArrow1p(uint32_t cur)
 	else g_pDDSBack->BltFast(32,50,Arrow1,NULL,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
 
 	pArr1.top=0;
-	pArr1.left=arrow_l[s1];
-	pArr1.right=arrow_r[s1];
+	pArr1.left=ARROW_L[s1];
+	pArr1.right=ARROW_R[s1];
 	pArr1.bottom=70;
 
 	pArr3.top=0;
-	pArr3.left=arrow_l[s3];
-	pArr3.right=arrow_r[s3];
+	pArr3.left=ARROW_L[s3];
+	pArr3.right=ARROW_R[s3];
 	pArr3.bottom=70;
 
 	pArr5.top=0;
-	pArr5.left=arrow_l[s5];
-	pArr5.right=arrow_r[s5];
+	pArr5.left=ARROW_L[s5];
+	pArr5.right=ARROW_R[s5];
 	pArr5.bottom=70;
 
 	pArr7.top=0;
-	pArr7.left=arrow_l[s7];
-	pArr7.right=arrow_r[s7];
+	pArr7.left=ARROW_L[s7];
+	pArr7.right=ARROW_R[s7];
 	pArr7.bottom=70;
 
 	pArr9.top=0;
-	pArr9.left=arrow_l[s9];
-	pArr9.right=arrow_r[s9];
+	pArr9.left=ARROW_L[s9];
+	pArr9.right=ARROW_R[s9];
 	pArr9.bottom=70;
 
 	cArr1.top=0;
-	cArr1.left=Carrow_l[s1];
-	cArr1.right=Carrow_r[s1];
+	cArr1.left=CARROW_L[s1];
+	cArr1.right=CARROW_R[s1];
 	cArr1.bottom=80;
 
 	cArr3.top=0;
-	cArr3.left=Carrow_l[s3];
-	cArr3.right=Carrow_r[s3];
+	cArr3.left=CARROW_L[s3];
+	cArr3.right=CARROW_R[s3];
 	cArr3.bottom=80;
 
 	cArr5.top=0;
-	cArr5.left=Carrow_l[s5];
-	cArr5.right=Carrow_r[s5];
+	cArr5.left=CARROW_L[s5];
+	cArr5.right=CARROW_R[s5];
 	cArr5.bottom=80;
 
 	cArr7.top=0;
-	cArr7.left=Carrow_l[s7];
-	cArr7.right=Carrow_r[s7];
+	cArr7.left=CARROW_L[s7];
+	cArr7.right=CARROW_R[s7];
 	cArr7.bottom=80;
 
 	cArr9.top=0;
-	cArr9.left=Carrow_l[s9];
-	cArr9.right=Carrow_r[s9];
+	cArr9.left=CARROW_L[s9];
+	cArr9.right=CARROW_R[s9];
 	cArr9.bottom=80;
 
 	if(Crash1)g_pDDSBack->BltFast(25,43,cArrow1,&cArr1,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
@@ -2400,11 +2402,7 @@ void DrawArrow1p(uint32_t cur)
 
 void DrawArrow2p(uint32_t cur)
 {
-	static int arrow_l[20]={0,0,72,72,144,144,216,216,288,288,360,360,432,432,504,504,576,576,648,648};
-	static int arrow_r[20]={72,72,144,144,216,216,288,288,360,360,432,432,504,504,576,576,648,648,720,720};
 
-	static int Carrow_l[20]={0,0,80,80,160,160,240,240,320,320,400,400,480,480,560,560,640,640};
-	static int Carrow_r[20]={80,80,160,160,240,240,320,320,400,400,480,480,560,560,640,640,720,720};
 
 	static uint8_t s1,s3,s5,s7,s9;
 	static uint32_t stat1,stat3,stat5,stat7,stat9;
@@ -3122,53 +3120,53 @@ void DrawArrow2p(uint32_t cur)
 	else g_pDDSBack->BltFast(352,50,Arrow1,NULL,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);
 
 	pArr1.top=0;
-	pArr1.left=arrow_l[s1];
-	pArr1.right=arrow_r[s1];
+	pArr1.left=ARROW_L[s1];
+	pArr1.right=ARROW_R[s1];
 	pArr1.bottom=70;
 
 	pArr3.top=0;
-	pArr3.left=arrow_l[s3];
-	pArr3.right=arrow_r[s3];
+	pArr3.left=ARROW_L[s3];
+	pArr3.right=ARROW_R[s3];
 	pArr3.bottom=70;
 
 	pArr5.top=0;
-	pArr5.left=arrow_l[s5];
-	pArr5.right=arrow_r[s5];
+	pArr5.left=ARROW_L[s5];
+	pArr5.right=ARROW_R[s5];
 	pArr5.bottom=70;
 
 	pArr7.top=0;
-	pArr7.left=arrow_l[s7];
-	pArr7.right=arrow_r[s7];
+	pArr7.left=ARROW_L[s7];
+	pArr7.right=ARROW_R[s7];
 	pArr7.bottom=70;
 
 	pArr9.top=0;
-	pArr9.left=arrow_l[s9];
-	pArr9.right=arrow_r[s9];
+	pArr9.left=ARROW_L[s9];
+	pArr9.right=ARROW_R[s9];
 	pArr9.bottom=70;
 
 	cArr1.top=0;
-	cArr1.left=Carrow_l[s1];
-	cArr1.right=Carrow_r[s1];
+	cArr1.left=CARROW_L[s1];
+	cArr1.right=CARROW_R[s1];
 	cArr1.bottom=80;
 
 	cArr3.top=0;
-	cArr3.left=Carrow_l[s3];
-	cArr3.right=Carrow_r[s3];
+	cArr3.left=CARROW_L[s3];
+	cArr3.right=CARROW_R[s3];
 	cArr3.bottom=80;
 
 	cArr5.top=0;
-	cArr5.left=Carrow_l[s5];
-	cArr5.right=Carrow_r[s5];
+	cArr5.left=CARROW_L[s5];
+	cArr5.right=CARROW_R[s5];
 	cArr5.bottom=80;
 
 	cArr7.top=0;
-	cArr7.left=Carrow_l[s7];
-	cArr7.right=Carrow_r[s7];
+	cArr7.left=CARROW_L[s7];
+	cArr7.right=CARROW_R[s7];
 	cArr7.bottom=80;
 
 	cArr9.top=0;
-	cArr9.left=Carrow_l[s9];
-	cArr9.right=Carrow_r[s9];
+	cArr9.left=CARROW_L[s9];
+	cArr9.right=CARROW_R[s9];
 	cArr9.bottom=80;
 
 	if(Crash1)g_pDDSBack->BltFast(345,43,cArrow1,&cArr1,DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY);

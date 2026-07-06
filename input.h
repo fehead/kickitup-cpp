@@ -8,10 +8,10 @@
 #include "sdl3_kick.h"
 #include "player.h"
 
-struct KeyMap { int dikIndex; int lane; };  // DIK code → arrow lane (1,3,5,7,9)
+struct KeyMap { int dikIndex; int lane; };
 
 class InputManager {
-    /* DIK scan code → arrow lane mapping for 1P/2P */
+    
     static const KeyMap k1p[5], k2p[5];
 
     /* Edge-trigger state for special keys */
@@ -20,7 +20,7 @@ class InputManager {
 public:
     InputManager();
 
-    /* Called once per frame — fills Player::pressedKey[] and handles special keys */
+    
     void poll();
 
     /* Cleanup */

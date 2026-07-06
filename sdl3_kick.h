@@ -26,7 +26,7 @@
 #define max std::max
 #define min std::min
 
-/* ── Platform-neutral types ── */
+
 #define timeGetTime()   SDL_GetTicks()
 #define MAX_PATH        260
 
@@ -50,7 +50,7 @@ typedef struct {
 
 typedef Rect* LPRECT;
 
-/* ── Blit flags ── */
+
 #define DDBLTFAST_NOCOLORKEY   0x0000
 #define DDBLTFAST_SRCCOLORKEY  0x0001
 #define DDBLTFAST_WAIT         0x0010
@@ -70,7 +70,7 @@ typedef uint32_t ColorKey;
 #define SUCCEEDED(hr)  (((int)(hr)) >= 0)
 #define FAILED(hr)     (((int)(hr)) < 0)
 
-/* ── Wave format ── */
+
 typedef struct {
     uint16_t  wFormatTag;
     uint16_t  nChannels;
@@ -81,14 +81,14 @@ typedef struct {
     uint16_t  cbSize;
 } WaveFmt;
 
-/* ── mmioFOURCC ── */
+
 #define mmioFOURCC(a,b,c,d) \
     ((uint32_t)(uint8_t)(a) | ((uint32_t)(uint8_t)(b) << 8) | \
      ((uint32_t)(uint8_t)(c) << 16) | ((uint32_t)(uint8_t)(d) << 24))
 
-/* ═══════════════════════════════════════════════════════════════════════
- * C++ Wrapper: Surface (replaces Surface*)
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 
 /* Forward declarations */
 struct SurfaceDesc {
@@ -164,9 +164,9 @@ public:
     void Release() { delete this; }
 };
 
-/* ═══════════════════════════════════════════════════════════════════════
- * C++ Wrapper: Sound (replaces Sound*)
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 
 class Sound {
 public:
@@ -211,10 +211,10 @@ struct SoundDesc {
 #define DSBPLAY_LOOPING  1
 #define DSBPLAY_TOEND    0
 
-/* ═══════════════════════════════════════════════════════════════════════
- * C++ Wrapper: CMedia — replaces DirectShow Media.cpp
- * Now uses mpg123 for MP3 playback
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
+
 
 enum State { Uninitialized, Stopped, Paused, Playing };
 
@@ -240,18 +240,18 @@ public:
     void DeleteContents();
 };
 
-/* ═══════════════════════════════════════════════════════════════════════
- * SDL3 Global State
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 extern SDL_Window    *g_sdlWindow;
 extern SDL_Renderer  *g_sdlRenderer;
 extern int            g_screenWidth;
 extern int            g_screenHeight;
 extern int            g_quitRequested;
 
-/* ═══════════════════════════════════════════════════════════════════════
- * KIU Engine API
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 int  KIU_Init(const char *title, int w, int h, int fullscreen);
 void KIU_Quit(void);
 int  KIU_PollEvents(void);
@@ -264,20 +264,20 @@ void KIU_ReadKeyboard(void);
 void KIU_CleanupInput(void);
 int  KIU_KeyStateDIK(int dik);
 
-/* Old DIK constants — redefined as SDL scancodes directly */
+
 /* We keep the original hex values but remap inside KIU_KeyStateDIK */
 
-/* ═══════════════════════════════════════════════════════════════════════
- * DirectInput Key Code Compatibility (DIK_* constants)
- *
- * The original game uses dinput.h DIK_* constants as indices into a
- * char rgKeyData[256] array. We provide all needed DIK_* macros and
- * a shared keyboard buffer.
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
+
+
+
+
 
 #define KEYBUFSIZE    256
 
-/* Keyboard state buffer — filled by KIU_ReadKeyboard */
+
 extern unsigned char rgKeyData[KEYBUFSIZE];
 
 /* Input device types */
@@ -402,9 +402,9 @@ extern unsigned char rgKeyData[KEYBUFSIZE];
 extern int g_cpdevFound;
 #define MAX_DINPUT_DEVICES  10
 
-/* ═══════════════════════════════════════════════════════════════════════
- * Windows API Stubs for POSIX/Linux
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 
 #include <unistd.h>
 #include <dirent.h>

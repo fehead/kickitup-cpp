@@ -12,7 +12,7 @@ extern char First;
 extern int  g_quitRequested;
 extern bool SongFlag, IntroFlag;
 
-/* ── DIK scan code → arrow lane mapping ── */
+
 const KeyMap InputManager::k1p[5] = {
     {DIK_Z, 1}, {DIK_C, 3}, {DIK_S, 5}, {DIK_Q, 7}, {DIK_E, 9}
 };
@@ -25,7 +25,7 @@ const KeyMap InputManager::k2p[5] = {
     uint8_t c = (rgKeyData[dik] & 0x80) ? 1 : 0; \
     uint8_t r = c && !prev; prev = c; r; })
 
-/* ── Global instance ── */
+
 InputManager g_input;
 
 InputManager::InputManager() {
@@ -67,7 +67,7 @@ void InputManager::poll() {
         }
     }
 
-    /* ── Special keys ── */
+    
 
     /* F2: Toggle config */
     if (EDGE(DIK_F2, _prevF2)) {
@@ -116,7 +116,7 @@ void InputManager::close() {
     KIU_CleanupInput();
 }
 
-/* ── Backward-compat function pointers ── */
+
 static void compatPoll() { g_input.poll(); }
 
 void (*ReadGameInput)(void)      = compatPoll;

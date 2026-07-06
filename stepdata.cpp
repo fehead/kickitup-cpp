@@ -21,7 +21,7 @@ void StepData::fromStepNew(const void *stepNew, double bpm, int tick) {
     /* STEP_NEW layout: char step[2048][14], then double BPM/BPM2/BPM3, int start/start2/start3/tick/bunki/bunki2, int _dummy, char name[64] */
     const char *src = (const char *)stepNew;
     double bpmCount = 60.0 / bpm * 100.0;
-    int bunki = ((const int *)(src + 2048*14 + sizeof(double)*3))[3 + 1];  // after BPM,BPM2,BPM3,start,start2,start3,tick → bunki
+    int bunki = ((const int *)(src + 2048*14 + sizeof(double)*3))[3 + 1];
 
     /* Copy step data */
     for (int i = 0; i < MAX_DATA; i++) {

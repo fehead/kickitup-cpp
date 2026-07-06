@@ -157,7 +157,7 @@ void	DisplayNumber(int x, int y, char *message)
 		cRect.bottom=38;
 
 		g_pDDSBack->BltFast(x+Loop*30,y,NumberFont,&cRect,DDBLTFAST_SRCCOLORKEY);
-	}/* 여기까지 */
+	}
 }
 
 void Result(void)

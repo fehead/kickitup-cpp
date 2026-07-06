@@ -23,7 +23,7 @@ public:
     bool active() const { return _active; }
     int  value() const { return (int)_value; }
 
-    /* Call each frame — returns current value */
+    
     int  update(double maxVal = 640.0);
 };
 

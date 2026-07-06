@@ -9,9 +9,9 @@
 #include "sdl3_kick.h"
 #include <SDL3_ttf/SDL_ttf.h>
 
-/* ═══════════════════════════════════════════════════════════════════════
- * SDL3 Global State
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 SDL_Window   *g_sdlWindow   = nullptr;
 SDL_Renderer *g_sdlRenderer = nullptr;
 int           g_screenWidth  = 640;
@@ -21,9 +21,9 @@ int           g_quitRequested = 0;
 static SDL_AudioDeviceID g_audioDevice = 0;
 static bool g_ttfAvailable = false;
 
-/* ═══════════════════════════════════════════════════════════════════════
- * KIU Engine Init / Quit
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 
 int KIU_Init(const char *title, int width, int height, int fullscreen)
 {
@@ -87,9 +87,9 @@ void KIU_Present(void)
     SDL_RenderPresent(g_sdlRenderer);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
- * Surface Implementation
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 
 Surface *Surface::LoadBitmap(const char *path, int dx, int dy)
 {
@@ -232,9 +232,9 @@ int Surface::SetColorKey(uint32_t flag, ColorKey *ck)
     return DD_OK;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
- * GfxDevice Implementation
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 
 int GfxDevice::CreateSurface(SurfaceDesc *d, Surface* *surf, void *u)
 {
@@ -269,9 +269,9 @@ void KIU_FillSurface(Surface* pdds, uint32_t color)
     SDL_RenderClear(g_sdlRenderer);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
- * Sound Implementation (WAV effects via SDL3 audio)
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 
 Sound::~Sound()
 {
@@ -406,9 +406,9 @@ int Sound::SetCurrentPosition(uint32_t pos)
     return DD_OK;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
- * CMedia Implementation (MP3 via mpg123)
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 
 struct CMedia::Impl {
     mpg123_handle   *mh;
@@ -448,8 +448,8 @@ CMedia::~CMedia()
 
 BOOL CMedia::CreateFilterGraph()
 {
-    /* mpg123 doesn't need filter graphs — just initialize the library.
-     * Already done in KIU_Init. */
+    
+
     return TRUE;
 }
 
@@ -491,7 +491,7 @@ BOOL CMedia::RenderFile(char *szFile)
 
     if (buf_size == 0) { free(buf); return FALSE; }
 
-    p->mh        = nullptr; /* no longer needed — decoded to PCM */
+    p->mh        = nullptr; 
     p->rate      = rate;
     p->channels  = ch;
     p->pcmData   = buf;
@@ -600,9 +600,9 @@ void CMedia::DeleteContents()
     p->state = Uninitialized;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
- * Keyboard input — fills rgKeyData[] buffer like DirectInput
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 
 unsigned char rgKeyData[KEYBUFSIZE];
 int g_cpdevFound = 0;  /* Stub for Input.cpp */
@@ -729,9 +729,9 @@ int KIU_KeyStateDIK(int dik)
     return rgKeyData[dik];
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
- * Debug Text Display
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 
 static TTF_Font *g_debugFont = nullptr;
 
@@ -761,9 +761,9 @@ void KIU_DisplayMessage(int x, int y, const char *msg)
     SDL_DestroySurface(textSurf);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
- * Missing stubs
- * ═══════════════════════════════════════════════════════════════════════ */
+
+
+
 
 void KIU_CleanupInput(void)
 {

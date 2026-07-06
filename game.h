@@ -1,7 +1,7 @@
-/*
- * game.h - Game state machine and flow control
- * Minimal dependencies — no include of main.h
- */
+
+
+
+
 
 #ifndef __GAME_H__
 #define __GAME_H__

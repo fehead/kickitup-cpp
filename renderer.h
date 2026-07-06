@@ -10,7 +10,7 @@
 
 class Renderer {
 public:
-    /* Gauge bar — unified 1P/2P */
+    
     static void drawGauge(const Player &p, int xWaku, int xBar, int dir);
 
     /* Score display */
@@ -19,7 +19,7 @@ public:
     /* Judgement combo text */
     static void drawJudge(const Player &p, int x, int y);
 
-    /* Arrow drawing — compute Y and call ClpBlt for one lane */
+    
     static void blitArrow(int lane, int xOff, int temp, int k, int tickDiv,
                           int speed, Surface *arrowTex, const Rect *rects, int sta);
 
