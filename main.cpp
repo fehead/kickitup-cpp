@@ -83,7 +83,7 @@ char				ArrowState_Joy[10];
 
 uint32_t				PressedKey_Joy[10];
 
-BOOL				g_bActive;
+bool				g_bActive;
 
 
 
@@ -189,12 +189,12 @@ uint32_t	CKey_Arr;
 // Data of configuration
 KIUCONFIG	KCFG;
 
-uint32_t		dwGameCount;
+uint32_t		gameCount;
 
-BOOL debugflag=TRUE;
+bool debugflag=true;
 char g_szDebugName[MAX_PATH];
 
-BOOL	g_fullscreen=FALSE;
+bool	g_fullscreen=false;
 
 CMedia *intro;
 CMedia *song;
@@ -246,36 +246,36 @@ void	DisplayStageCount(uint32_t Count)
 void ClearMode(void)
 {
 		g_p1.speedBase=1;
-		g_p1.mirror=FALSE;
-		g_p1.nonstep=FALSE;
-		g_p1.synchro=FALSE;
-		g_p1.union_=FALSE;
-		g_p1.random=FALSE;
-		g_p1.dMix=FALSE;
+		g_p1.mirror=false;
+		g_p1.nonstep=false;
+		g_p1.synchro=false;
+		g_p1.union_=false;
+		g_p1.random=false;
+		g_p1.dMix=false;
 		g_p1.speed1=1;
 		g_p1.speed3=1;
 		g_p1.speed5=1;
 		g_p1.speed7=1;
 		g_p1.speed9=1;
-		g_p1.vanish=FALSE;
-		g_p1.randomS=FALSE;
-		g_p1.suddenR=FALSE;
+		g_p1.vanish=false;
+		g_p1.randomS=false;
+		g_p1.suddenR=false;
 
 		g_p2.speedBase=1;
-		g_p2.mirror=FALSE;
-		g_p2.nonstep=FALSE;
-		g_p2.union_=FALSE;
-		g_p2.random=FALSE;
-		g_p2.dMix=FALSE;
+		g_p2.mirror=false;
+		g_p2.nonstep=false;
+		g_p2.union_=false;
+		g_p2.random=false;
+		g_p2.dMix=false;
 		g_p2.speed1=1;
 		g_p2.speed3=1;
 		g_p2.speed5=1;
 		g_p2.speed7=1;
 		g_p2.speed9=1;
-		g_p2.vanish=FALSE;
-		Double=FALSE;
-		g_p2.randomS=FALSE;
-		g_p2.suddenR=FALSE;
+		g_p2.vanish=false;
+		Double=false;
+		g_p2.randomS=false;
+		g_p2.suddenR=false;
 }
 
 void	GameOver1(void)
@@ -330,7 +330,7 @@ void KIU_STAGE(void)
 	double bpmpix=(PUMP_SPRITE_Y)*bpm/60000;
 
 	DrawBackground(Data,stepIndex,arrowOffset);
-	DisplayStageCount(dwGameCount);
+	DisplayStageCount(gameCount);
 	
 	
 	// Display debug msg.
@@ -353,7 +353,7 @@ void KIU_STAGE(void)
 
 	if(start1==0)
 	{
-				if(g_p1.dMix==TRUE)
+				if(g_p1.dMix==true)
 				{
 					MinSpeed = Renderer::minSpeedOf(g_p1);
 					MaxSpeed = Renderer::maxSpeedOf(g_p1);
@@ -556,13 +556,13 @@ void KIU_STAGE(void)
 		//FadeToSurface(SongBack);
 		g_pDDSBack->BltFast(0,0, SongBack, NULL, DDBLTFAST_NOCOLORKEY);
 
-		if(SongFlag==TRUE)
+		if(SongFlag==true)
 		{
 			song->OnMediaPlay();
 		}
 
-		start*=10;
-		start2*=10;start3*=10;
+		start*=1;
+		start2*=1; start3*=1;
 		bunki*=10;bunki2*=10;
 		
 		lastTick=elapsed=timeGetTime();
@@ -657,7 +657,7 @@ void KIU_STAGE(void)
 			{
 				song->OnMediaStop();
 				delete song;
-				SongFlag=FALSE;
+				SongFlag=false;
 			}
 			g_ProgramState=RESULT;
 
@@ -917,7 +917,7 @@ void KIU_STAGE(void)
 			{
 				song->OnMediaStop();
 				delete song;
-				SongFlag=FALSE;
+				SongFlag=false;
 			}
 			g_ProgramState=RESULT;
 
@@ -1624,8 +1624,8 @@ void DrawArrow1p(uint32_t cur)
 	static uint32_t cur2;
 	static int beat;
 
-	static BOOL Crash1, Crash3, Crash5, Crash7, Crash9;
-	static BOOL	On1, On3, On5, On7, On9;
+	static bool Crash1, Crash3, Crash5, Crash7, Crash9;
+	static bool	On1, On3, On5, On7, On9;
 
 	static Rect pArr1,pArr3,pArr5,pArr7,pArr9;
 	static Rect cArr1,cArr3,cArr5,cArr7,cArr9;
@@ -1636,7 +1636,7 @@ void DrawArrow1p(uint32_t cur)
 
 	if(cur2!=cur)
 	{
-		if(g_p1.randomS == TRUE)
+		if(g_p1.randomS == true)
 		{
 			g_p1.speed1 = g_p1.speed3 = g_p1.speed5 = g_p1.speed7 = g_p1.speed9 = 1 + rand() % 8 ;
 		}
@@ -1651,7 +1651,7 @@ void DrawArrow1p(uint32_t cur)
 
 	ReadGameInput();
 // ���� ��ư ���� �κ� 
-	if(KCFG.auto1_1p==TRUE)
+	if(KCFG.auto1_1p==true)
 	{
 		for(count=0;count<10;count++)
 		{
@@ -1662,7 +1662,7 @@ void DrawArrow1p(uint32_t cur)
 					Data_Judge[cur+count][0]='0';
 					stat1=cur+count;
 					s1=1;
-					Crash1=TRUE;
+					Crash1=true;
 					break;
 				}
 			}
@@ -1670,7 +1670,7 @@ void DrawArrow1p(uint32_t cur)
 		}
 	}
 
-	if(KCFG.auto7_1p==TRUE)
+	if(KCFG.auto7_1p==true)
 	{
 		for(count=0;count<10;count++)
 		{
@@ -1681,7 +1681,7 @@ void DrawArrow1p(uint32_t cur)
 					Data_Judge[cur+count][1]='0';
 					stat7=cur+count;
 					s7=1;
-					Crash7=TRUE;
+					Crash7=true;
 					break;
 				}
 			}
@@ -1689,7 +1689,7 @@ void DrawArrow1p(uint32_t cur)
 		}
 	}
 
-	if(KCFG.auto5_1p==TRUE)
+	if(KCFG.auto5_1p==true)
 	{
 		for(count=0;count<10;count++)
 		{
@@ -1700,7 +1700,7 @@ void DrawArrow1p(uint32_t cur)
 					Data_Judge[cur+count][2]='0';
 					stat5=cur+count;
 					s5=1;
-					Crash5=TRUE;
+					Crash5=true;
 					break;
 				}
 			}
@@ -1708,7 +1708,7 @@ void DrawArrow1p(uint32_t cur)
 		}
 	}
 
-	if(KCFG.auto9_1p==TRUE)
+	if(KCFG.auto9_1p==true)
 	{
 		for(count=0;count<10;count++)
 		{
@@ -1719,14 +1719,14 @@ void DrawArrow1p(uint32_t cur)
 					Data_Judge[cur+count][3]='0';
 					stat9=cur+count;
 					s9=1;
-					Crash9=TRUE;
+					Crash9=true;
 					break;
 				}
 			}
 		}
 	}
 
-	if(KCFG.auto3_1p==TRUE)
+	if(KCFG.auto3_1p==true)
 	{
 		for(count=0;count<10;count++)
 		{
@@ -1737,7 +1737,7 @@ void DrawArrow1p(uint32_t cur)
 					Data_Judge[cur+count][4]='0';
 					stat3=cur+count;
 					s3=1;
-					Crash3=TRUE;
+					Crash3=true;
 					break;
 				}
 			}
@@ -1745,18 +1745,18 @@ void DrawArrow1p(uint32_t cur)
 		}
 	}
 
-	if(s1 || (g_p1.pressedKey[1]==TRUE) )
+	if(s1 || (g_p1.pressedKey[1]==true) )
 	{
 		if(s1==20)
 		{
 			s1=0;
-			Crash1=FALSE;
+			Crash1=false;
 		}
 		else
 		{
 			s1++;
 		}
-		if(g_p1.pressedKey[1]==TRUE)
+		if(g_p1.pressedKey[1]==true)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*g_p1.speed1 < Data_y[cur+count] && 
@@ -1769,11 +1769,11 @@ void DrawArrow1p(uint32_t cur)
 					{
 						Data_Judge[cur+count][0]='0';
 						stat1=cur+count;
-						On1=TRUE;
+						On1=true;
 						s1=1;
 						if(Data_Judge[stat1][0]=='0' && Data_Judge[stat1][1]=='0' && Data_Judge[stat1][2]=='0' && Data_Judge[stat1][3]=='0' && Data_Judge[stat1][4]=='0' )
 						{
-							Crash1=TRUE;
+							Crash1=true;
 							JudgeTemp=PERFECT;
 						}
 						break;
@@ -1786,11 +1786,11 @@ void DrawArrow1p(uint32_t cur)
 					{
 						Data_Judge[cur+count][0]='0';
 						stat1=cur+count;
-						On1=TRUE;
+						On1=true;
 						s1=1;
 						if(Data_Judge[stat1][0]=='0' && Data_Judge[stat1][1]=='0' && Data_Judge[stat1][2]=='0' && Data_Judge[stat1][3]=='0' && Data_Judge[stat1][4]=='0' )
 						{
-							Crash1=TRUE;
+							Crash1=true;
 							JudgeTemp=GREAT;
 						}
 						break;
@@ -1830,18 +1830,18 @@ void DrawArrow1p(uint32_t cur)
 		}
 	}
 
-	if(s3 || (g_p1.pressedKey[3]==TRUE))
+	if(s3 || (g_p1.pressedKey[3]==true))
 	{
 		if(s3==20)
 		{
 			s3=0;
-			Crash3=FALSE;
+			Crash3=false;
 		}
 		else
 		{
 			s3++;
 		}
-		if(g_p1.pressedKey[3]==TRUE)
+		if(g_p1.pressedKey[3]==true)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*g_p1.speed3 < Data_y[cur+count] &&
@@ -1854,11 +1854,11 @@ void DrawArrow1p(uint32_t cur)
 					{
 						Data_Judge[cur+count][4]='0';
 						stat3=cur+count;
-						On3=TRUE;
+						On3=true;
 						s3=1;
 						if(Data_Judge[stat3][0]=='0' && Data_Judge[stat3][1]=='0' && Data_Judge[stat3][2]=='0' && Data_Judge[stat3][3]=='0' && Data_Judge[stat3][4]=='0' )
 						{
-							Crash3=TRUE;
+							Crash3=true;
 							JudgeTemp=PERFECT;
 						}
 						break;
@@ -1871,11 +1871,11 @@ void DrawArrow1p(uint32_t cur)
 					{
 						Data_Judge[cur+count][4]='0';
 						stat3=cur+count;
-						On3=TRUE;
+						On3=true;
 						s3=1;
 						if(Data_Judge[stat3][0]=='0' && Data_Judge[stat3][1]=='0' && Data_Judge[stat3][2]=='0' && Data_Judge[stat3][3]=='0' && Data_Judge[stat3][4]=='0' )
 						{
-							Crash3=TRUE;
+							Crash3=true;
 							JudgeTemp=GREAT;
 						}
 						break;
@@ -1915,18 +1915,18 @@ void DrawArrow1p(uint32_t cur)
 		}
 	}
 
-	if(s5 || (g_p1.pressedKey[5]==TRUE))
+	if(s5 || (g_p1.pressedKey[5]==true))
 	{
 		if(s5==20)
 		{
 			s5=0;
-			Crash5=FALSE;
+			Crash5=false;
 		}
 		else
 		{
 			s5++;
 		}
-		if(g_p1.pressedKey[5]==TRUE)
+		if(g_p1.pressedKey[5]==true)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*g_p1.speed5<Data_y[cur+count] &&
@@ -1939,11 +1939,11 @@ void DrawArrow1p(uint32_t cur)
 					{
 						Data_Judge[cur+count][2]='0';
 						stat5=cur+count;
-						On5=TRUE;
+						On5=true;
 						s5=1;
 						if(Data_Judge[stat5][0]=='0' && Data_Judge[stat5][1]=='0' && Data_Judge[stat5][2]=='0' && Data_Judge[stat5][3]=='0' && Data_Judge[stat5][4]=='0' )
 						{
-							Crash5=TRUE;
+							Crash5=true;
 							JudgeTemp=PERFECT;
 						}
 						break;
@@ -1956,11 +1956,11 @@ void DrawArrow1p(uint32_t cur)
 					{
 						Data_Judge[cur+count][2]='0';
 						stat5=cur+count;
-						On5=TRUE;
+						On5=true;
 						s5=1;
 						if(Data_Judge[stat5][0]=='0' && Data_Judge[stat5][1]=='0' && Data_Judge[stat5][2]=='0' && Data_Judge[stat5][3]=='0' && Data_Judge[stat5][4]=='0' )
 						{
-							Crash5=TRUE;
+							Crash5=true;
 							JudgeTemp=GREAT;
 						}
 						break;
@@ -2002,18 +2002,18 @@ void DrawArrow1p(uint32_t cur)
 
 	}
 
-	if(s7 || (g_p1.pressedKey[7]==TRUE) )
+	if(s7 || (g_p1.pressedKey[7]==true) )
 	{
 		if(s7==20)
 		{
 			s7=0;
-			Crash7=FALSE;
+			Crash7=false;
 		}
 		else
 		{
 			s7++;
 		}
-		if(g_p1.pressedKey[7]==TRUE)
+		if(g_p1.pressedKey[7]==true)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*g_p1.speed7 < Data_y[cur+count] &&
@@ -2026,11 +2026,11 @@ void DrawArrow1p(uint32_t cur)
 					{
 						Data_Judge[cur+count][1]='0';
 						stat7=cur+count;
-						On7=TRUE;
+						On7=true;
 						s7=1;
 						if(Data_Judge[stat7][0]=='0' && Data_Judge[stat7][1]=='0' && Data_Judge[stat7][2]=='0' && Data_Judge[stat7][3]=='0' && Data_Judge[stat7][4]=='0' )
 						{
-							Crash7=TRUE;
+							Crash7=true;
 							JudgeTemp=PERFECT;
 						}
 						break;
@@ -2043,11 +2043,11 @@ void DrawArrow1p(uint32_t cur)
 					{
 						Data_Judge[cur+count][1]='0';
 						stat7=cur+count;
-						On7=TRUE;
+						On7=true;
 						s7=1;
 						if(Data_Judge[stat7][0]=='0' && Data_Judge[stat7][1]=='0' && Data_Judge[stat7][2]=='0' && Data_Judge[stat7][3]=='0' && Data_Judge[stat7][4]=='0' )
 						{
-							Crash7=TRUE;
+							Crash7=true;
 							JudgeTemp=GREAT;
 						}
 						break;
@@ -2088,19 +2088,19 @@ void DrawArrow1p(uint32_t cur)
 		}
 	}
 
-	if(s9 || (g_p1.pressedKey[9]==TRUE))
+	if(s9 || (g_p1.pressedKey[9]==true))
 	{
 		if(s9==20)
 		{
 
 			s9=0;
-			Crash9=FALSE;
+			Crash9=false;
 		}
 		else
 		{
 			s9++;
 		}
-		if(g_p1.pressedKey[9]==TRUE)
+		if(g_p1.pressedKey[9]==true)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*g_p1.speed9<Data_y[cur+count] &&
@@ -2113,11 +2113,11 @@ void DrawArrow1p(uint32_t cur)
 					{
 						Data_Judge[cur+count][3]='0';
 						stat9=cur+count;
-						On9=TRUE;
+						On9=true;
 						s9=1;
 						if(Data_Judge[stat9][0]=='0' && Data_Judge[stat9][1]=='0' && Data_Judge[stat9][2]=='0' && Data_Judge[stat9][3]=='0' && Data_Judge[stat9][4]=='0' )
 						{
-							Crash9=TRUE;
+							Crash9=true;
 							JudgeTemp=PERFECT;
 						}
 						break;
@@ -2130,11 +2130,11 @@ void DrawArrow1p(uint32_t cur)
 					{
 						Data_Judge[cur+count][3]='0';
 						stat9=cur+count;
-						On9=TRUE;
+						On9=true;
 						s9=1;
 						if(Data_Judge[stat9][0]=='0' && Data_Judge[stat9][1]=='0' && Data_Judge[stat9][2]=='0' && Data_Judge[stat9][3]=='0' && Data_Judge[stat9][4]=='0' )
 						{
-							Crash9=TRUE;
+							Crash9=true;
 							JudgeTemp=GREAT;
 						}
 						break;
@@ -2266,7 +2266,7 @@ void DrawArrow1p(uint32_t cur)
 		Crash7=On7;
 		Crash9=On9;
 
-		On1=On3=On5=On7=On9=FALSE;
+		On1=On3=On5=On7=On9=false;
 	}
 	else if(g_p1.judgement==GOOD || g_p1.judgement==BAD || g_p1.judgement==MISS)
 	{
@@ -2309,7 +2309,7 @@ void DrawArrow1p(uint32_t cur)
 				{
 					song->OnMediaStop();
 					delete song;
-					SongFlag=FALSE;
+					SongFlag=false;
 				}
 				g_ProgramState=DEAD;
 			}
@@ -2322,7 +2322,7 @@ void DrawArrow1p(uint32_t cur)
 				{
 					song->OnMediaStop();
 					delete song;
-					SongFlag=FALSE;
+					SongFlag=false;
 				}
 				g_ProgramState=DEAD;
 			}
@@ -2409,8 +2409,8 @@ void DrawArrow2p(uint32_t cur)
 	static uint32_t cur2;
 	static int beat;
 
-	static BOOL Crash1, Crash3, Crash5, Crash7, Crash9;
-	static BOOL	On1, On3, On5, On7, On9;
+	static bool Crash1, Crash3, Crash5, Crash7, Crash9;
+	static bool	On1, On3, On5, On7, On9;
 
 	static Rect pArr1,pArr3,pArr5,pArr7,pArr9;
 	static Rect cArr1,cArr3,cArr5,cArr7,cArr9;
@@ -2420,10 +2420,10 @@ void DrawArrow2p(uint32_t cur)
 	uint8_t	count;
 
 	
-	if(g_p2.started==TRUE && g_p1.started==FALSE)ReadGameInput();
+	if(g_p2.started==true && g_p1.started==false)ReadGameInput();
 	if(cur2!=cur)
 	{
-		if(g_p2.randomS == TRUE)
+		if(g_p2.randomS == true)
 		{
 			g_p2.speed1 = g_p2.speed3 = g_p2.speed5 = g_p2.speed7 = g_p2.speed9 = 1 + rand() % 8 ;
 		}
@@ -2436,7 +2436,7 @@ void DrawArrow2p(uint32_t cur)
 		if(beat<=0)beat=0;
 	}
 // ���� ��ư ���� �κ� 
-	if(KCFG.auto1_2p==TRUE)
+	if(KCFG.auto1_2p==true)
 	{
 		for(count=0;count<10;count++)
 		{
@@ -2447,7 +2447,7 @@ void DrawArrow2p(uint32_t cur)
 					Data_Judge1[cur+count][5]='0';
 					stat1=cur+count;
 					s1=1;
-					Crash1=TRUE;
+					Crash1=true;
 					break;
 				}
 			}
@@ -2455,7 +2455,7 @@ void DrawArrow2p(uint32_t cur)
 		}
 	}
 
-	if(KCFG.auto7_2p==TRUE)
+	if(KCFG.auto7_2p==true)
 	{
 		for(count=0;count<10;count++)
 		{
@@ -2466,7 +2466,7 @@ void DrawArrow2p(uint32_t cur)
 					Data_Judge1[cur+count][6]='0';
 					stat7=cur+count;
 					s7=1;
-					Crash7=TRUE;
+					Crash7=true;
 					break;
 				}
 			}
@@ -2474,7 +2474,7 @@ void DrawArrow2p(uint32_t cur)
 		}
 	}
 
-	if(KCFG.auto5_2p==TRUE)
+	if(KCFG.auto5_2p==true)
 	{
 		for(count=0;count<10;count++)
 		{
@@ -2485,7 +2485,7 @@ void DrawArrow2p(uint32_t cur)
 					Data_Judge1[cur+count][7]='0';
 					stat5=cur+count;
 					s5=1;
-					Crash5=TRUE;
+					Crash5=true;
 					break;
 				}
 			}
@@ -2493,7 +2493,7 @@ void DrawArrow2p(uint32_t cur)
 		}
 	}
 
-	if(KCFG.auto9_2p==TRUE)
+	if(KCFG.auto9_2p==true)
 	{
 		for(count=0;count<10;count++)
 		{
@@ -2504,7 +2504,7 @@ void DrawArrow2p(uint32_t cur)
 					Data_Judge1[cur+count][8]='0';
 					stat9=cur+count;
 					s9=1;
-					Crash9=TRUE;
+					Crash9=true;
 					break;
 				}
 			}
@@ -2512,7 +2512,7 @@ void DrawArrow2p(uint32_t cur)
 		}
 	}
 
-	if(KCFG.auto3_2p==TRUE)
+	if(KCFG.auto3_2p==true)
 	{
 		for(count=0;count<10;count++)
 		{
@@ -2523,7 +2523,7 @@ void DrawArrow2p(uint32_t cur)
 					Data_Judge1[cur+count][9]='0';
 					stat3=cur+count;
 					s3=1;
-					Crash3=TRUE;
+					Crash3=true;
 					break;
 				}
 			}
@@ -2531,18 +2531,18 @@ void DrawArrow2p(uint32_t cur)
 		}
 	}
 
-	if(s1 || (g_p2.pressedKey[1]==TRUE) )
+	if(s1 || (g_p2.pressedKey[1]==true) )
 	{
 		if(s1==20)
 		{
 			s1=0;
-			Crash1=FALSE;
+			Crash1=false;
 		}
 		else
 		{
 			s1++;
 		}
-		if(g_p2.pressedKey[1]==TRUE)
+		if(g_p2.pressedKey[1]==true)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*g_p2.speed1 < Data_y1[cur+count] && 
@@ -2555,11 +2555,11 @@ void DrawArrow2p(uint32_t cur)
 					{
 						Data_Judge1[cur+count][5]='0';
 						stat1=cur+count;
-						On1=TRUE;
+						On1=true;
 						s1=1;
 						if(Data_Judge1[stat1][5]=='0' && Data_Judge1[stat1][6]=='0' && Data_Judge1[stat1][7]=='0' && Data_Judge1[stat1][8]=='0' && Data_Judge1[stat1][9]=='0' )
 						{
-							Crash1=TRUE;
+							Crash1=true;
 							JudgeTemp=PERFECT;
 						}
 						break;
@@ -2572,11 +2572,11 @@ void DrawArrow2p(uint32_t cur)
 					{
 						Data_Judge1[cur+count][5]='0';
 						stat1=cur+count;
-						On1=TRUE;
+						On1=true;
 						s1=1;
 						if(Data_Judge1[stat1][5]=='0' && Data_Judge1[stat1][6]=='0' && Data_Judge1[stat1][7]=='0' && Data_Judge1[stat1][8]=='0' && Data_Judge1[stat1][9]=='0' )
 						{
-							Crash1=TRUE;
+							Crash1=true;
 							JudgeTemp=GREAT;
 						}
 						break;
@@ -2616,18 +2616,18 @@ void DrawArrow2p(uint32_t cur)
 		}
 	}
 
-	if(s3 || (g_p2.pressedKey[3]==TRUE))
+	if(s3 || (g_p2.pressedKey[3]==true))
 	{
 		if(s3==20)
 		{
 			s3=0;
-			Crash3=FALSE;
+			Crash3=false;
 		}
 		else
 		{
 			s3++;
 		}
-		if(g_p2.pressedKey[3]==TRUE)
+		if(g_p2.pressedKey[3]==true)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*g_p2.speed3 < Data_y1[cur+count] &&
@@ -2640,11 +2640,11 @@ void DrawArrow2p(uint32_t cur)
 					{
 						Data_Judge1[cur+count][9]='0';
 						stat3=cur+count;
-						On3=TRUE;
+						On3=true;
 						s3=1;
 						if(Data_Judge1[stat3][5]=='0' && Data_Judge1[stat3][6]=='0' && Data_Judge1[stat3][7]=='0' && Data_Judge1[stat3][8]=='0' && Data_Judge1[stat3][9]=='0' )
 						{
-							Crash3=TRUE;
+							Crash3=true;
 							JudgeTemp=PERFECT;
 						}
 						break;
@@ -2657,11 +2657,11 @@ void DrawArrow2p(uint32_t cur)
 					{
 						Data_Judge1[cur+count][9]='0';
 						stat3=cur+count;
-						On3=TRUE;
+						On3=true;
 						s3=1;
 						if(Data_Judge1[stat3][5]=='0' && Data_Judge1[stat3][6]=='0' && Data_Judge1[stat3][7]=='0' && Data_Judge1[stat3][8]=='0' && Data_Judge1[stat3][9]=='0' )
 						{
-							Crash3=TRUE;
+							Crash3=true;
 							JudgeTemp=GREAT;
 						}
 						break;
@@ -2701,18 +2701,18 @@ void DrawArrow2p(uint32_t cur)
 		}
 	}
 
-	if(s5 || (g_p2.pressedKey[5]==TRUE))
+	if(s5 || (g_p2.pressedKey[5]==true))
 	{
 		if(s5==20)
 		{
 			s5=0;
-			Crash5=FALSE;
+			Crash5=false;
 		}
 		else
 		{
 			s5++;
 		}
-		if(g_p2.pressedKey[5]==TRUE)
+		if(g_p2.pressedKey[5]==true)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*g_p2.speed5<Data_y1[cur+count] &&
@@ -2725,11 +2725,11 @@ void DrawArrow2p(uint32_t cur)
 					{
 						Data_Judge1[cur+count][7]='0';
 						stat5=cur+count;
-						On5=TRUE;
+						On5=true;
 						s5=1;
 						if(Data_Judge1[stat5][5]=='0' && Data_Judge1[stat5][6]=='0' && Data_Judge1[stat5][7]=='0' && Data_Judge1[stat5][8]=='0' && Data_Judge1[stat5][9]=='0' )
 						{
-							Crash5=TRUE;
+							Crash5=true;
 							JudgeTemp=PERFECT;
 						}
 						break;
@@ -2742,11 +2742,11 @@ void DrawArrow2p(uint32_t cur)
 					{
 						Data_Judge1[cur+count][7]='0';
 						stat5=cur+count;
-						On5=TRUE;
+						On5=true;
 						s5=1;
 						if(Data_Judge1[stat5][5]=='0' && Data_Judge1[stat5][6]=='0' && Data_Judge1[stat5][7]=='0' && Data_Judge1[stat5][8]=='0' && Data_Judge1[stat5][9]=='0' )
 						{
-							Crash5=TRUE;
+							Crash5=true;
 							JudgeTemp=GREAT;
 						}
 						break;
@@ -2788,18 +2788,18 @@ void DrawArrow2p(uint32_t cur)
 
 	}
 
-	if(s7 || (g_p2.pressedKey[7]==TRUE) )
+	if(s7 || (g_p2.pressedKey[7]==true) )
 	{
 		if(s7==20)
 		{
 			s7=0;
-			Crash7=FALSE;
+			Crash7=false;
 		}
 		else
 		{
 			s7++;
 		}
-		if(g_p2.pressedKey[7]==TRUE)
+		if(g_p2.pressedKey[7]==true)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*g_p2.speed7 < Data_y1[cur+count] &&
@@ -2812,11 +2812,11 @@ void DrawArrow2p(uint32_t cur)
 					{
 						Data_Judge1[cur+count][6]='0';
 						stat7=cur+count;
-						On7=TRUE;
+						On7=true;
 						s7=1;
 						if(Data_Judge1[stat7][5]=='0' && Data_Judge1[stat7][6]=='0' && Data_Judge1[stat7][7]=='0' && Data_Judge1[stat7][8]=='0' && Data_Judge1[stat7][9]=='0' )
 						{
-							Crash7=TRUE;
+							Crash7=true;
 							JudgeTemp=PERFECT;
 						}
 						break;
@@ -2829,11 +2829,11 @@ void DrawArrow2p(uint32_t cur)
 					{
 						Data_Judge1[cur+count][6]='0';
 						stat7=cur+count;
-						On7=TRUE;
+						On7=true;
 						s7=1;
 						if(Data_Judge1[stat7][5]=='0' && Data_Judge1[stat7][6]=='0' && Data_Judge1[stat7][7]=='0' && Data_Judge1[stat7][8]=='0' && Data_Judge1[stat7][9]=='0' )
 						{
-							Crash7=TRUE;
+							Crash7=true;
 							JudgeTemp=GREAT;
 						}
 						break;
@@ -2874,19 +2874,19 @@ void DrawArrow2p(uint32_t cur)
 		}
 	}
 
-	if(s9 || (g_p2.pressedKey[9]==TRUE))
+	if(s9 || (g_p2.pressedKey[9]==true))
 	{
 		if(s9==20)
 		{
 
 			s9=0;
-			Crash9=FALSE;
+			Crash9=false;
 		}
 		else
 		{
 			s9++;
 		}
-		if(g_p2.pressedKey[9]==TRUE)
+		if(g_p2.pressedKey[9]==true)
 		for(count=0;count<18;count++)
 		{
 			if( ZONE_U*g_p2.speed9<Data_y1[cur+count] &&
@@ -2899,11 +2899,11 @@ void DrawArrow2p(uint32_t cur)
 					{
 						Data_Judge1[cur+count][8]='0';
 						stat9=cur+count;
-						On9=TRUE;
+						On9=true;
 						s9=1;
 						if(Data_Judge1[stat9][5]=='0' && Data_Judge1[stat9][6]=='0' && Data_Judge1[stat9][7]=='0' && Data_Judge1[stat9][8]=='0' && Data_Judge1[stat9][9]=='0' )
 						{
-							Crash9=TRUE;
+							Crash9=true;
 							JudgeTemp=PERFECT;
 						}
 						break;
@@ -2916,11 +2916,11 @@ void DrawArrow2p(uint32_t cur)
 					{
 						Data_Judge1[cur+count][8]='0';
 						stat9=cur+count;
-						On9=TRUE;
+						On9=true;
 						s9=1;
 						if(Data_Judge1[stat9][5]=='0' && Data_Judge1[stat9][6]=='0' && Data_Judge1[stat9][7]=='0' && Data_Judge1[stat9][8]=='0' && Data_Judge1[stat9][9]=='0' )
 						{
-							Crash9=TRUE;
+							Crash9=true;
 							JudgeTemp=GREAT;
 						}
 						break;
@@ -3051,7 +3051,7 @@ void DrawArrow2p(uint32_t cur)
 		Crash7=On7;
 		Crash9=On9;
 
-		On1=On3=On5=On7=On9=FALSE;
+		On1=On3=On5=On7=On9=false;
 	}
 	else if(g_p2.judgement==GOOD || g_p2.judgement==BAD || g_p2.judgement==MISS)
 	{
@@ -3094,7 +3094,7 @@ void DrawArrow2p(uint32_t cur)
 				{
 					song->OnMediaStop();
 					delete song;
-					SongFlag=FALSE;
+					SongFlag=false;
 				}
 				g_ProgramState=DEAD;
 			}
@@ -3107,7 +3107,7 @@ void DrawArrow2p(uint32_t cur)
 				{
 					song->OnMediaStop();
 					delete song;
-					SongFlag=FALSE;
+					SongFlag=false;
 				}
 				g_ProgramState=DEAD;
 			}
@@ -3200,11 +3200,11 @@ void Flipp(void)
 }
 
 
-BOOL InitDSound(void *hWnd, int Samples, int Bits, int nChannels)
+bool InitDSound(void *hWnd, int Samples, int Bits, int nChannels)
 {
 	(void)hWnd; (void)Samples; (void)Bits; (void)nChannels;
 	DisplayMessage(0,16,"Loading Music Intro File.. please Wait...");
-	return TRUE;
+	return true;
 }
 
 void ReleaseDSound(void)
@@ -3590,7 +3590,7 @@ long WindowProc(void *hWnd, unsigned message, unsigned long wParam, long lParam)
 
 						case SELECTSONG:
 							g_ProgramState=CONFIG;
-							if(IntroFlag){intro->OnMediaStop();delete intro;IntroFlag=FALSE;}
+							if(IntroFlag){intro->OnMediaStop();delete intro;IntroFlag=false;}
 							if(g_dsSelectSong)g_dsSelectSong->Stop();
 							First=0;
 							break;
@@ -3600,7 +3600,7 @@ long WindowProc(void *hWnd, unsigned message, unsigned long wParam, long lParam)
 							{
 								song->OnMediaStop();
 								delete song;
-								SongFlag=FALSE;
+								SongFlag=false;
 							}
 							g_ProgramState=CONFIG;
 							break;
@@ -3609,7 +3609,7 @@ long WindowProc(void *hWnd, unsigned message, unsigned long wParam, long lParam)
 							{
 								song->OnMediaStop();
 								delete song;
-								SongFlag=FALSE;
+								SongFlag=false;
 							}
 							g_ProgramState=CONFIG;
 							break;
@@ -3618,7 +3618,7 @@ long WindowProc(void *hWnd, unsigned message, unsigned long wParam, long lParam)
 							{
 								song->OnMediaStop();
 								delete song;
-								SongFlag=FALSE;
+								SongFlag=false;
 							}
 							g_ProgramState=CONFIG;
 							break;
@@ -3705,7 +3705,7 @@ long WindowProc(void *hWnd, unsigned message, unsigned long wParam, long lParam)
 
 						case SELECTSONG:
 							g_ProgramState=GAMETITLE;
-							if(IntroFlag){intro->OnMediaStop();delete intro;IntroFlag=FALSE;}
+							if(IntroFlag){intro->OnMediaStop();delete intro;IntroFlag=false;}
 							if(g_dsSelectSong)g_dsSelectSong->Stop();
 							First=0;
 							break;
@@ -3715,7 +3715,7 @@ long WindowProc(void *hWnd, unsigned message, unsigned long wParam, long lParam)
 							{
 								song->OnMediaStop();
 								delete song;
-								SongFlag=FALSE;
+								SongFlag=false;
 							}
 							First=0;
 							g_ProgramState=RESULT;
@@ -3725,7 +3725,7 @@ long WindowProc(void *hWnd, unsigned message, unsigned long wParam, long lParam)
 							{
 								song->OnMediaStop();
 								delete song;
-								SongFlag=FALSE;
+								SongFlag=false;
 							}
 							First=0;
 							g_ProgramState=RESULT;
@@ -3735,7 +3735,7 @@ long WindowProc(void *hWnd, unsigned message, unsigned long wParam, long lParam)
 							{
 								song->OnMediaStop();
 								delete song;
-								SongFlag=FALSE;
+								SongFlag=false;
 							}
 							First=0;
 							g_ProgramState=RESULT;
@@ -3762,7 +3762,7 @@ long WindowProc(void *hWnd, unsigned message, unsigned long wParam, long lParam)
 			case WM_SETCURSOR:
             // Turn off the cursor since this is a full-screen app
 	            SetCursor(NULL);
-            return TRUE;
+            return true;
 
     }
     return DefWindowProc(hWnd, message, wParam, lParam);
@@ -3819,7 +3819,7 @@ int KLoadImage(void)
 	if(SmallFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Font.","ERROR",0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(SmallFont,CLR_INVALID);
 
@@ -3829,28 +3829,28 @@ int KLoadImage(void)
 	if(GameTITLE == NULL)
 	{
 		MessageBox(hWnd,"Cannot Load GAMETITLE","ERROR",0);
-		return FALSE;
+		return false;
 	}
 
 	Background = DDLoadBitmap(g_pDD,"images/back.png",0,0);
 	if(Background==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Background.","ERROR",0);
-		return FALSE;
+		return false;
 	}
 
 	SelectBack = DDLoadBitmap(g_pDD,"images/selectBack.png",0,0);
 	if(SelectBack==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Select Background.","ERROR",0);
-		return FALSE;
+		return false;
 	}
 
 	JudgeFont = DDLoadBitmap(g_pDD,"images/judgement.png",0,0);
 	if(JudgeFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Judgement Font.","ERROR",0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(JudgeFont,CLR_INVALID);
 	
@@ -3858,7 +3858,7 @@ int KLoadImage(void)
 	if(NumberFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Number Font.","ERROR",0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(NumberFont,CLR_INVALID);
 
@@ -3866,7 +3866,7 @@ int KLoadImage(void)
 	if(ComboFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Combo Font.","ERROR",0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(ComboFont,CLR_INVALID);
 
@@ -3874,7 +3874,7 @@ int KLoadImage(void)
 	if(NoDISC==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load NoDISC.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(NoDISC,CLR_INVALID);
 
@@ -3882,7 +3882,7 @@ int KLoadImage(void)
 	if(ShiftLeft==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Shiftl.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(ShiftLeft,CLR_INVALID);
 
@@ -3890,7 +3890,7 @@ int KLoadImage(void)
 	if(ShiftRight==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Shiftr.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(ShiftRight,CLR_INVALID);
 
@@ -3898,7 +3898,7 @@ int KLoadImage(void)
 	if(GaugeWaku==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load gaugeWaku.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(GaugeWaku,CLR_INVALID);
 
@@ -3906,7 +3906,7 @@ int KLoadImage(void)
 	if(Gauge==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load gauge.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(Gauge,CLR_INVALID);
 	
@@ -3914,14 +3914,14 @@ int KLoadImage(void)
 	if(Arrow1==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Arrow1.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(Arrow1,CLR_INVALID);
 	Arrow2=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_ARROW2),0,0);
 	if(Arrow2==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load arrow2.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(Arrow2,CLR_INVALID);
 
@@ -3929,7 +3929,7 @@ int KLoadImage(void)
 	if(wArrow==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load arrow.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(wArrow,CLR_INVALID);
 	CKey_Arr=DDColorMatch(wArrow,CLR_INVALID);
@@ -3938,7 +3938,7 @@ int KLoadImage(void)
 	if(pArrow1==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load pArrow.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(pArrow1,CLR_INVALID);
 
@@ -3946,7 +3946,7 @@ int KLoadImage(void)
 	if(pArrow3==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load pArrow.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(pArrow3,CLR_INVALID);
 
@@ -3954,7 +3954,7 @@ int KLoadImage(void)
 	if(pArrow5==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load pArrow5.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(pArrow5,CLR_INVALID);
 
@@ -3962,14 +3962,14 @@ int KLoadImage(void)
 	if(pArrow7==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load pArrow7.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(pArrow7,CLR_INVALID);
 	pArrow9=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_PARROW9),0,0);
 	if(pArrow9==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load pArrow9.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(pArrow9,CLR_INVALID);
 
@@ -3977,14 +3977,14 @@ int KLoadImage(void)
 	if(cArrow1==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load cArrow.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(cArrow1,CLR_INVALID);
 	cArrow3=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_CARROW3),0,0);
 	if(cArrow3==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load cArrow.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(cArrow3,CLR_INVALID);
 
@@ -3992,7 +3992,7 @@ int KLoadImage(void)
 	if(cArrow5==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load cArrow5.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(cArrow5,CLR_INVALID);
 
@@ -4000,28 +4000,28 @@ int KLoadImage(void)
 	if(cArrow7==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load cArrow7.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(cArrow7,CLR_INVALID);
 	cArrow9=DDLoadBitmap(g_pDD,MAKEINTRESOURCE(IDB_CARROW9),0,0);
 	if(cArrow9==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load cArrow9.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(cArrow9,CLR_INVALID);
 	ModeIcon=DDLoadBitmap(g_pDD, "images/modeIcon.png",0,0);
 	if(ModeIcon==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load modeIcon.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(ModeIcon, CLR_INVALID);
 	g_cFont=DDLoadBitmap(g_pDD, "images/cFont.png",0,0);
 	if(g_cFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load CFont.png",0,0);
-		return	FALSE;
+		return	false;
 	}
 	DDSetColorKey(g_cFont, CLR_INVALID);
 	CKey_CFont=DDColorMatch(g_cFont,CLR_INVALID);
@@ -4030,20 +4030,20 @@ int KLoadImage(void)
 	if(ResultFont==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load resFont.png",0,0);
-		return	FALSE;
+		return	false;
 	}
 	DDSetColorKey(ResultFont, CLR_INVALID);
 	ResultBack=DDLoadBitmap(g_pDD, "images/resBack.png",0,0);
 	if(ResultBack==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load Resback.png",0,0);
-		return FALSE;
+		return false;
 	}
 	StageCount=DDLoadBitmap(g_pDD, "images/stageCount.png",0,0);
 	if(StageCount==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load stageCount.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(StageCount, CLR_INVALID);
 
@@ -4051,7 +4051,7 @@ int KLoadImage(void)
 	if(Score==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load score.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(Score,CLR_INVALID);
 
@@ -4059,54 +4059,54 @@ int KLoadImage(void)
 	if(DeadScreen==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load DeadScreen.png",0,0);
-		return FALSE;
+		return false;
 	}
 	GameOver=DDLoadBitmap(g_pDD,"images/gameOver.png",0,0);
 	if(GameOver==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load GameOver.png",0,0);
-		return FALSE;
+		return false;
 	}
 	Logo=DDLoadBitmap(g_pDD,"images/logo.png",0,0);
 	if(Logo==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load logo.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(Logo,CLR_INVALID);
 	Diff=DDLoadBitmap(g_pDD,"images/diff.png",0,0);
 	if(Diff==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load diff.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(Diff,CLR_INVALID);
 	DoubleIcon=DDLoadBitmap(g_pDD,"images/doubleIcon.png",0,0);
 	if(DoubleIcon==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load doubleIcon.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(DoubleIcon,CLR_INVALID);
 	CrazyIcon=DDLoadBitmap(g_pDD,"images/crazyIcon.png",0,0);
 	if(CrazyIcon==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load crazyIcon.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(CrazyIcon,CLR_INVALID);
 	EasyIcon=DDLoadBitmap(g_pDD,"images/easyIcon.png",0,0);
 	if(EasyIcon==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load easyIcon.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(EasyIcon,CLR_INVALID);
 	HardIcon=DDLoadBitmap(g_pDD,"images/hardIcon.png",0,0);
 	if(HardIcon==NULL)
 	{
 		MessageBox(hWnd,"Cannot Load hardIcon.png",0,0);
-		return FALSE;
+		return false;
 	}
 	DDSetColorKey(HardIcon,CLR_INVALID);
 
@@ -4117,18 +4117,18 @@ int main(int argc, char *argv[])
 {
 	(void)argc; (void)argv;
 
-	g_bActive = TRUE;
+	g_bActive = true;
 
-	if(FAILED(InitWin(NULL, 640, 480, 0)))return FALSE;
+	if(FAILED(InitWin(NULL, 640, 480, 0)))return false;
 
-	if(FAILED(InitDD()))return FALSE;
-	if(FAILED(KLoadImage()))return FALSE;
+	if(FAILED(InitDD()))return false;
+	if(FAILED(KLoadImage()))return false;
 
 	Read();
- 	if(FAILED(InitDSound(NULL,22050,8,2)))return FALSE;
+ 	if(FAILED(InitDSound(NULL,22050,8,2)))return false;
 	
 	WaveSet_Loading();
- 	if(FAILED(InitDI(NULL)))return FALSE;
+ 	if(FAILED(InitDI(NULL)))return false;
 
 	CFGInitialize();
 

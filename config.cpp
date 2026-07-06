@@ -17,20 +17,20 @@ void	CFGInitialize(void)
 {
 	FILE *F;
 
-	KCFG.bcDead = TRUE;
-	KCFG.auto1_1p = FALSE;
-	KCFG.auto3_1p = FALSE;
-	KCFG.auto5_1p = FALSE;
-	KCFG.auto7_1p = FALSE;
-	KCFG.auto9_1p = FALSE;
+	KCFG.bcDead = true;
+	KCFG.auto1_1p = false;
+	KCFG.auto3_1p = false;
+	KCFG.auto5_1p = false;
+	KCFG.auto7_1p = false;
+	KCFG.auto9_1p = false;
 
-	KCFG.auto1_2p = FALSE;
-	KCFG.auto3_2p = FALSE;
-	KCFG.auto5_2p = FALSE;
-	KCFG.auto7_2p = FALSE;
-	KCFG.auto9_2p = FALSE;
+	KCFG.auto1_2p = false;
+	KCFG.auto3_2p = false;
+	KCFG.auto5_2p = false;
+	KCFG.auto7_2p = false;
+	KCFG.auto9_2p = false;
 	KCFG.KeySet   = NORMAL;
-	KCFG.OptJudge = TRUE;
+	KCFG.OptJudge = true;
 
 	ReadGameInput = ReadKeyboardInput;
 
@@ -146,12 +146,12 @@ void Configuration(void)
 			switch(cur_y)
 			{
 				case 0:
-					if(KCFG.bcDead)KCFG.bcDead=FALSE;
-					else KCFG.bcDead=TRUE;
+					if(KCFG.bcDead)KCFG.bcDead=false;
+					else KCFG.bcDead=true;
 					break;
 				case 1:
-					if(KCFG.OptJudge)KCFG.OptJudge=FALSE;
-					else KCFG.OptJudge=TRUE;
+					if(KCFG.OptJudge)KCFG.OptJudge=false;
+					else KCFG.OptJudge=true;
 					break;
 				case 2:
 					if(KCFG.KeySet == NORMAL)KCFG.KeySet=FUSION, ReadGameInput = ReadFusionInput;
@@ -162,44 +162,44 @@ void Configuration(void)
 					else if(KCFG.JoySet == KOINS) KCFG.JoySet=DDR, ReadJoystickInput2 = ReadDDRInput;
 					break;
 				case 7:
-					if(KCFG.auto1_1p)KCFG.auto1_1p=FALSE;
-					else KCFG.auto1_1p=TRUE;
+					if(KCFG.auto1_1p)KCFG.auto1_1p=false;
+					else KCFG.auto1_1p=true;
 					break;
 				case 8:
-					if(KCFG.auto7_1p)KCFG.auto7_1p=FALSE;
-					else KCFG.auto7_1p=TRUE;
+					if(KCFG.auto7_1p)KCFG.auto7_1p=false;
+					else KCFG.auto7_1p=true;
 					break;
 				case 9:
-					if(KCFG.auto5_1p)KCFG.auto5_1p=FALSE;
-					else KCFG.auto5_1p=TRUE;
+					if(KCFG.auto5_1p)KCFG.auto5_1p=false;
+					else KCFG.auto5_1p=true;
 					break;
 				case 10:
-					if(KCFG.auto9_1p)KCFG.auto9_1p=FALSE;
-					else KCFG.auto9_1p=TRUE;
+					if(KCFG.auto9_1p)KCFG.auto9_1p=false;
+					else KCFG.auto9_1p=true;
 					break;
 				case 11:
-					if(KCFG.auto3_1p)KCFG.auto3_1p=FALSE;
-					else KCFG.auto3_1p=TRUE;
+					if(KCFG.auto3_1p)KCFG.auto3_1p=false;
+					else KCFG.auto3_1p=true;
 					break;
 				case 13:
-					if(KCFG.auto1_2p)KCFG.auto1_2p=FALSE;
-					else KCFG.auto1_2p=TRUE;
+					if(KCFG.auto1_2p)KCFG.auto1_2p=false;
+					else KCFG.auto1_2p=true;
 					break;
 				case 14:
-					if(KCFG.auto7_2p)KCFG.auto7_2p=FALSE;
-					else KCFG.auto7_2p=TRUE;
+					if(KCFG.auto7_2p)KCFG.auto7_2p=false;
+					else KCFG.auto7_2p=true;
 					break;
 				case 15:
-					if(KCFG.auto5_2p)KCFG.auto5_2p=FALSE;
-					else KCFG.auto5_2p=TRUE;
+					if(KCFG.auto5_2p)KCFG.auto5_2p=false;
+					else KCFG.auto5_2p=true;
 					break;
 				case 16:
-					if(KCFG.auto9_2p)KCFG.auto9_2p=FALSE;
-					else KCFG.auto9_2p=TRUE;
+					if(KCFG.auto9_2p)KCFG.auto9_2p=false;
+					else KCFG.auto9_2p=true;
 					break;
 				case 17:
-					if(KCFG.auto3_2p)KCFG.auto3_2p=FALSE;
-					else KCFG.auto3_2p=TRUE;
+					if(KCFG.auto3_2p)KCFG.auto3_2p=false;
+					else KCFG.auto3_2p=true;
 					break;
 			}
 			g_p2.pressedKey[0]=0;

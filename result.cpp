@@ -18,7 +18,7 @@ extern	Surface*	NumberFont;
 
 extern	char First;
 extern bool Double;
-extern	uint32_t dwGameCount;
+extern	uint32_t gameCount;
 
 int	ClpBlt2(int x ,int y ,Surface* ds,Rect* srect,uint32_t mode)
 {
@@ -614,13 +614,13 @@ void Result(void)
 		{
 			First=0;
 			// MaxState is 4
-			if(dwGameCount==3 || (Judge1p=='F' && Judge2p=='F') ) {
+			if(gameCount==3 || (Judge1p=='F' && Judge2p=='F') ) {
 				g_ProgramState=GAMEOVER;
-				dwGameCount=0;
+				gameCount=0;
 			}
 			else
 			{
-				dwGameCount++;
+				gameCount++;
 				g_ProgramState=SELECTSONG;
 			}
 		}

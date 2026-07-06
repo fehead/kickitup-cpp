@@ -30,13 +30,6 @@
 #define timeGetTime()   SDL_GetTicks()
 #define MAX_PATH        260
 
-typedef int   BOOL;
-#ifndef TRUE
-#define TRUE   1
-#endif
-#ifndef FALSE
-#define FALSE  0
-#endif
 
 typedef unsigned UINT;
 
@@ -232,11 +225,11 @@ public:
     void OnMediaAbortStop();
     double GetCurrentPosition();
     void ChangeStateTo(State s);
-    BOOL CanPlay();
-    BOOL CanStop();
-    BOOL CanPause();
-    BOOL CreateFilterGraph();
-    BOOL RenderFile(char *szFile);
+    bool CanPlay();
+    bool CanStop();
+    bool CanPause();
+    bool CreateFilterGraph();
+    bool RenderFile(char *szFile);
     void DeleteContents();
 };
 
@@ -474,9 +467,9 @@ static inline HANDLE FindFirstFile(const char *pattern, WIN32_FIND_DATA *data) {
     closedir(d);
     return INVALID_HANDLE_VALUE;
 }
-static inline BOOL FindNextFile(HANDLE h, WIN32_FIND_DATA *data) {
+static inline bool FindNextFile(HANDLE h, WIN32_FIND_DATA *data) {
     DIR *d = (DIR *)h;
-    if (!d) return FALSE;
+    if (!d) return false;
     struct dirent *entry;
     while ((entry = readdir(d)) != NULL) {
         if (entry->d_name[0] == '.') continue;
@@ -491,9 +484,9 @@ static inline BOOL FindNextFile(HANDLE h, WIN32_FIND_DATA *data) {
             else
                 data->dwFileAttributes = 0;
         }
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 static inline void FindClose(HANDLE h) { if (h && h != INVALID_HANDLE_VALUE) closedir((DIR*)h); }
 

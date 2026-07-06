@@ -446,26 +446,26 @@ CMedia::~CMedia()
     delete p;
 }
 
-BOOL CMedia::CreateFilterGraph()
+bool CMedia::CreateFilterGraph()
 {
     
 
-    return TRUE;
+    return true;
 }
 
-BOOL CMedia::RenderFile(char *szFile)
+bool CMedia::RenderFile(char *szFile)
 {
     int err;
     mpg123_handle *mh = mpg123_new(nullptr, &err);
     if (!mh) {
         fprintf(stderr, "mpg123_new failed: %s\n", mpg123_plain_strerror(err));
-        return FALSE;
+        return false;
     }
 
     if (mpg123_open(mh, szFile) != MPG123_OK) {
         fprintf(stderr, "mpg123_open(%s) failed: %s\n", szFile, mpg123_strerror(mh));
         mpg123_delete(mh);
-        return FALSE;
+        return false;
     }
 
     long rate; int ch, enc;
@@ -489,7 +489,7 @@ BOOL CMedia::RenderFile(char *szFile)
     mpg123_close(mh);
     mpg123_delete(mh);
 
-    if (buf_size == 0) { free(buf); return FALSE; }
+    if (buf_size == 0) { free(buf); return false; }
 
     p->mh        = nullptr; 
     p->rate      = rate;
@@ -507,10 +507,10 @@ BOOL CMedia::RenderFile(char *szFile)
     if (!p->stream) {
         free(buf);
         p->pcmData = nullptr;
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 void CMedia::OpenMediaFile(char *szFile)
@@ -590,9 +590,9 @@ double CMedia::GetCurrentPosition()
 }
 
 void CMedia::ChangeStateTo(State newState) { p->state = newState; }
-BOOL CMedia::CanPlay()  { return (p->state == Stopped || p->state == Paused); }
-BOOL CMedia::CanStop()  { return (p->state == Playing || p->state == Paused); }
-BOOL CMedia::CanPause() { return (p->state == Playing || p->state == Paused); }
+bool CMedia::CanPlay()  { return (p->state == Stopped || p->state == Paused); }
+bool CMedia::CanStop()  { return (p->state == Playing || p->state == Paused); }
+bool CMedia::CanPause() { return (p->state == Playing || p->state == Paused); }
 void CMedia::DeleteContents()
 {
     if (p->stream) { SDL_DestroyAudioStream(p->stream); p->stream = nullptr; }

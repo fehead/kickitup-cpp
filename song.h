@@ -100,11 +100,11 @@ public:
 	void ReadDouble_STF(char *Filename);
 	void ReadDouble_KSF(char *Filename);
 
-	BOOL HaveCrazy;
-	BOOL HaveHard;
-	BOOL HaveEasy;
-	BOOL HaveCouple;
-	BOOL HaveDouble;
+	bool HaveCrazy;
+	bool HaveHard;
+	bool HaveEasy;
+	bool HaveCouple;
+	bool HaveDouble;
 
 
 	Sound*	Int_Song;

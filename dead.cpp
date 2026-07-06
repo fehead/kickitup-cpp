@@ -16,7 +16,7 @@ extern	Surface*		DeadScreen;
 extern	Surface*		GameOver;
 
 
-extern	uint32_t	dwGameCount;
+extern	uint32_t	gameCount;
 
 void Dead(void)
 {
@@ -67,8 +67,8 @@ void Dead(void)
 		if((cur-last)>2500)
 		{
 			Firs=0;
-			g_p1.started=g_p2.started=FALSE;
-			dwGameCount=0;
+			g_p1.started=g_p2.started=false;
+			gameCount=0;
 
 			g_ProgramState=GAMEOVER;
 		}

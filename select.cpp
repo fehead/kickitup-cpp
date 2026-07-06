@@ -60,7 +60,6 @@ extern char					SongName[MAX_PATH+1];
 extern char					SongName2[MAX_PATH+1];
 extern char					SongName3[MAX_PATH+1];
 extern char					Title[MAX_PATH+1];
-extern	int					start1;
 
 extern	char				GameMode;
 
@@ -966,7 +965,7 @@ void SelectSong(void)
 		g_p1.state=0;
 		g_p2.state=0;
 
-		start1=0;
+		// start1 replaced by static initDone
 
 		g_p1.pressedKey[0]=0;
 		g_p2.pressedKey[0]=0;

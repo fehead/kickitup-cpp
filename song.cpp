@@ -338,7 +338,7 @@ void SONG::ReadCrazy_1_STF(char *Filename)
 
 	STP=ReadSTF(Filename);
 
-	HaveCrazy=TRUE;
+	HaveCrazy=true;
 	bpm=STP.BPM;
 
 	Crazy_Start=STP.start;
@@ -366,7 +366,7 @@ void SONG::ReadCrazy_1_KSF(char *Filename)
 
 	STP=ReadKSF(Filename);
 
-	HaveCrazy=TRUE;
+	HaveCrazy=true;
 	bpm=STP.BPM;
 	bpm2=STP.BPM2;
 	bpm3=STP.BPM3;
@@ -402,7 +402,7 @@ void SONG::ReadCrazy_2_STF(char *Filename)
 
 	STP=ReadSTF(Filename);
 
-	HaveCouple=TRUE;
+	HaveCouple=true;
 	bpm=STP.BPM;
 
 	Crazy_Start=STP.start;
@@ -430,7 +430,7 @@ void SONG::ReadCrazy_2_KSF(char *Filename)
 
 	STP=ReadKSF(Filename);
 
-	HaveCouple=TRUE;
+	HaveCouple=true;
 	bpm=STP.BPM;
 	bpm2=STP.BPM2;
 	bpm3=STP.BPM3;
@@ -466,7 +466,7 @@ void SONG::ReadHard_1_STF(char *Filename)
 
 	STP=ReadSTF(Filename);
 
-	HaveHard=TRUE;
+	HaveHard=true;
 	bpm=STP.BPM;
 
 	Hard_Start=STP.start;
@@ -494,7 +494,7 @@ void SONG::ReadHard_1_KSF(char *Filename)
 
 	STP=ReadKSF(Filename);
 
-	HaveHard=TRUE;
+	HaveHard=true;
 	bpm=STP.BPM;
 	bpm2=STP.BPM2;
 	bpm3=STP.BPM3;
@@ -530,7 +530,7 @@ void SONG::ReadHard_2_STF(char *Filename)
 
 	STP=ReadSTF(Filename);
 
-	HaveCouple=TRUE;
+	HaveCouple=true;
 	bpm=STP.BPM;
 
 	Hard_Start=STP.start;
@@ -558,7 +558,7 @@ void SONG::ReadHard_2_KSF(char *Filename)
 
 	STP=ReadKSF(Filename);
 
-	HaveCouple=TRUE;
+	HaveCouple=true;
 	bpm=STP.BPM;
 	bpm2=STP.BPM2;
 	bpm3=STP.BPM3;
@@ -594,7 +594,7 @@ void SONG::ReadEasy_1_STF(char *Filename)
 
 	STP=ReadSTF(Filename);
 
-	HaveEasy=TRUE;
+	HaveEasy=true;
 	bpm=STP.BPM;
 
 	Easy_Start=STP.start;
@@ -622,7 +622,7 @@ void SONG::ReadEasy_1_KSF(char *Filename)
 
 	STP=ReadKSF(Filename);
 
-	HaveEasy=TRUE;
+	HaveEasy=true;
 	bpm=STP.BPM;
 	bpm2=STP.BPM2;
 	bpm3=STP.BPM3;
@@ -659,7 +659,7 @@ void SONG::ReadEasy_2_STF(char *Filename)
 
 	STP=ReadSTF(Filename);
 
-	HaveCouple=TRUE;
+	HaveCouple=true;
 	bpm=STP.BPM;
 
 	Easy_Start=STP.start;
@@ -687,7 +687,7 @@ void SONG::ReadEasy_2_KSF(char *Filename)
 
 	STP=ReadKSF(Filename);
 
-	HaveCouple=TRUE;
+	HaveCouple=true;
 	bpm=STP.BPM;
 	bpm2=STP.BPM2;
 	bpm3=STP.BPM3;
@@ -724,7 +724,7 @@ void SONG::ReadDouble_STF(char *Filename)
 
 	STP=ReadSTF(Filename);
 
-	HaveDouble=TRUE;
+	HaveDouble=true;
 	bpm=STP.BPM;
 
 	Double_Start=STP.start;
@@ -752,7 +752,7 @@ void SONG::ReadDouble_KSF(char *Filename)
 
 	STP=ReadKSF(Filename);
 
-	HaveDouble=TRUE;
+	HaveDouble=true;
 	bpm=STP.BPM;
 	bpm2=STP.BPM2;
 	bpm3=STP.BPM3;

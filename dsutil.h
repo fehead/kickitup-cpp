@@ -18,7 +18,7 @@ extern "C" {
 #define DSLoadSoundBuffer(pDS, lpName) \
     Sound::LoadMP3(lpName)
 
-#define DSReloadSoundBuffer(pDSB, lpName)   TRUE
+#define DSReloadSoundBuffer(pDSB, lpName)   true
 
 #ifdef __cplusplus
 }
